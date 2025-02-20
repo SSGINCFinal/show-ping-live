@@ -1,12 +1,32 @@
 plugins {
     id 'java'
     id 'war'
-    id 'org.springframework.boot' version '3.3.8'
+    id 'org.springframework.boot' version '3.0.2'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.ssginc'
 version = '0.0.1-SNAPSHOT'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+tasks.withType(ProcessResources) {
+    filteringCharset = 'UTF-8'
+}
+
+
+tasks.withType(Test) {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
+tasks.withType(JavaExec) {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
+tasks.withType(JavaExec) {
+    jvmArgs '-Dfile.encoding=UTF-8'
+}
 
 java {
     toolchain {
@@ -83,7 +103,7 @@ dependencies {
     //************************************************************************
     //  redis
     //************************************************************************
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     //************************************************************************
     //  kurento
