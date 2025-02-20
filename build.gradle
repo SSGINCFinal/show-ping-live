@@ -86,6 +86,22 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     //************************************************************************
+    //  kurento
+    //************************************************************************
+    implementation 'org.kurento:kurento-client:7.1.0'
+    implementation 'org.kurento:kurento-utils-js:7.1.0'
+
+    //************************************************************************
+    //  module for html-js
+    //************************************************************************
+    implementation 'org.webjars:webjars-locator:0.52'
+    implementation 'org.webjars.bower:jquery:3.7.1'
+    implementation 'org.webjars.bower:bootstrap:5.3.3'
+    implementation 'org.webjars.bower:demo-console:1.5.1'
+    implementation 'org.webjars.bower:ekko-lightbox:5.2.0'
+    implementation 'org.webjars.bower:webrtc-adapter:7.4.0'
+
+    //************************************************************************
     //  lombok
     //************************************************************************
     compileOnly 'org.projectlombok:lombok'
