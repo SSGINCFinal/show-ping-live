@@ -30,7 +30,11 @@
                     </ul>
                 </li>
                 <li class="menu-item dropdown">
-                    <a href="/#">라이브</a>
+                    <a>라이브</a>
+                    <!-- 드롭다운 메뉴 -->
+                    <ul class="dropdown-menu">
+                        <li><a th:href="@{/webrtc/webrtc}">WebRTC</a></li>
+                    </ul>
                 </li>
                 <li class="menu-item dropdown">
                     <a href="/#">TV 편성표</a>
@@ -53,7 +57,7 @@
             </div>
             <div class="cart-bar">
                 <a href="/cart">
-                    <img src="/img/cart.png" style="height: 20px">
+                    <img th:src="@{/img/cart.png}" style="height: 20px">
                 </a>
             </div>
         </div>
