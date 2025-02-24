@@ -15,7 +15,7 @@
  *
  */
 
-var ws = new WebSocket('ws://' + location.host + '/call');
+var ws = new WebSocket('ws://' + location.host + '/live');
 var rec = new WebSocket('ws://' + location.host + '/record');
 var live;
 var webRtcPeer;
@@ -73,7 +73,7 @@ ws.onmessage = function(message) {
 
     switch (parsedMessage.id) {
         case 'presenterResponse':
-            presenterResponse(parsedMessage)
+            presenterResponse(parsedMessage);
             break;
         case 'viewerResponse':
             viewerResponse(parsedMessage);
@@ -114,28 +114,16 @@ rec.onmessage = function(message) {
     }
 }
 
-function processAnswerAsync(sdpAnswer) {
-    return new Promise((resolve, reject) => {
-        webRtcPeer.processAnswer(sdpAnswer, function(error) {
-            if (error) {
-                reject(error);
-            }
-            else {
-                resolve();
-            }
-        });
-    })
-}
-
 function presenterResponse(message) {
     setState(IN_CALL);
     console.log('SDP answer received from server. Processing ...');
 
-    processAnswerAsync(message.sdpAnswer)
-        .then(() => {
-            createVideo();
-        })
-        .catch(error => console.log(error));
+    webRtcPeer.processAnswer(message.sdpAnswer, function(error) {
+        if (error) {
+            reject(error);
+        }
+        createVideo();
+    })
 }
 
 function startResponse(message) {
@@ -148,7 +136,7 @@ function startResponse(message) {
 
 function viewerResponse(message) {
     if (message.response != 'accepted') {
-        var errorMsg = message.message ? message.message : 'Unknow error';
+        var errorMsg = message.message ? message.message : 'Unknown error';
         console.info('Call not accepted for the following reason: ' + errorMsg);
         dispose();
     } else {
@@ -173,7 +161,7 @@ function startLive() {
                     return console.error(error);
                 }
                 webRtcPeer.generateOffer(onLiveOffer);
-            });
+        });
     }
 }
 
@@ -185,16 +173,6 @@ function onLiveIceCandidate(candidate) {
         candidate : candidate
     };
     sendLiveMessage(message);
-}
-
-function onRecordIceCandidate(candidate) {
-    console.log("Local candidate" + JSON.stringify(candidate));
-
-    let message = {
-        id : 'onIceCandidate',
-        candidate : candidate
-    };
-    sendRecordMessage(message);
 }
 
 function createVideo() {
@@ -212,6 +190,16 @@ function createVideo() {
                 return console.error(error);
             webRtcRecord.generateOffer(onRecordOffer);
         });
+}
+
+function onRecordIceCandidate(candidate) {
+    console.log("Local candidate" + JSON.stringify(candidate));
+
+    let message = {
+        id : 'onIceCandidate',
+        candidate : candidate
+    };
+    sendRecordMessage(message);
 }
 
 function onLiveOffer(error, offerSdp) {
@@ -245,7 +233,6 @@ function getConstraints() {
 }
 
 function stopLive() {
-    setState(NO_CALL);
     let message = {
         id : 'stop'
     }
@@ -259,6 +246,7 @@ function stopRecord() {
     if (webRtcRecord) {
         webRtcRecord.dispose();
         webRtcRecord = null;
+        setState(NO_CALL);
 
         let message = {
             id : stopMessageId
