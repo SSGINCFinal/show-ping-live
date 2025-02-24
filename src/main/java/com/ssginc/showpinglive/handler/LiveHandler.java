@@ -23,8 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Boni Garcia (bgarcia@gsyc.es)
  * @since 5.0.0
  */
-public class WebSocketHandler extends TextWebSocketHandler {
-    private static final Logger log = LoggerFactory.getLogger(WebSocketHandler.class);
+public class LiveHandler extends TextWebSocketHandler {
+    private static final Logger log = LoggerFactory.getLogger(LiveHandler.class);
     private static final Gson gson = new GsonBuilder().create();
 
     private final ConcurrentHashMap<String, UserSession> viewers = new ConcurrentHashMap<>();
