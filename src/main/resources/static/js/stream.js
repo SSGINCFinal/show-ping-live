@@ -16,26 +16,64 @@
  */
 
 var ws = new WebSocket('ws://' + location.host + '/call');
+var rec = new WebSocket('ws://' + location.host + '/record');
 var live;
 var webRtcPeer;
+var webRtcRecord;
+var state;
+
+const NO_CALL = 0;
+const IN_CALL = 1;
+const POST_CALL = 2;
+const DISABLED = 3;
+const IN_PLAY = 4;
 
 window.onload = function() {
     live = document.getElementById('live-video');
-    console.log(ws);
-    disableStopButton();
+    setState(NO_CALL);
 }
 
 window.onbeforeunload = function() {
     ws.close();
+    rec.close();
+}
+
+function setState(nextState) {
+    switch (nextState) {
+        case NO_CALL:
+            $('#start').attr('disabled', false);
+            $('#stop').attr('disabled', true);
+            break;
+        case DISABLED:
+            $('#start').attr('disabled', true);
+            $('#stop').attr('disabled', true);
+            break;
+        case IN_CALL:
+            $('#start').attr('disabled', true);
+            $('#stop').attr('disabled', false);
+            break;
+        case POST_CALL:
+            $('#start').attr('disabled', false);
+            $('#stop').attr('disabled', true);
+            break;
+        case IN_PLAY:
+            $('#start').attr('disabled', true);
+            $('#stop').attr('disabled', false);
+            break;
+        default:
+            onError('Unknown state ' + nextState);
+            return;
+    }
+    state = nextState;
 }
 
 ws.onmessage = function(message) {
-    var parsedMessage = JSON.parse(message.data);
+    let parsedMessage = JSON.parse(message.data);
     console.info('Received message: ' + message.data);
 
     switch (parsedMessage.id) {
         case 'presenterResponse':
-            presenterResponse(parsedMessage);
+            presenterResponse(parsedMessage)
             break;
         case 'viewerResponse':
             viewerResponse(parsedMessage);
@@ -47,25 +85,65 @@ ws.onmessage = function(message) {
             });
             break;
         case 'stopCommunication':
-            dispose();
+            stopRecord();
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
     }
 }
 
-function presenterResponse(message) {
-    if (message.response != 'accepted') {
-        var errorMsg = message.message ? message.message : 'Unknow error';
-        console.info('Call not accepted for the following reason: ' + errorMsg);
-        dispose();
-    } else {
-        console.log("presenter");
-        webRtcPeer.processAnswer(message.sdpAnswer, function(error) {
-            if (error)
-                return console.error(error);
-        });
+rec.onmessage = function(message) {
+    let parsedMessage = JSON.parse(message.data);
+    console.info('Received message: ' + message.data);
+
+    switch (parsedMessage.id) {
+        case 'startResponse':
+            startResponse(parsedMessage);
+            break;
+        case 'stop':
+            dispose();
+            break;
+        case 'iceCandidate':
+            webRtcRecord.addIceCandidate(parsedMessage.candidate, function(error) {
+                if (error)
+                    return console.error('Error adding candidate: ' + error);
+            });
+            break;
+        default:
+            console.error('Unrecognized message', parsedMessage);
     }
+}
+
+function processAnswerAsync(sdpAnswer) {
+    return new Promise((resolve, reject) => {
+        webRtcPeer.processAnswer(sdpAnswer, function(error) {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve();
+            }
+        });
+    })
+}
+
+function presenterResponse(message) {
+    setState(IN_CALL);
+    console.log('SDP answer received from server. Processing ...');
+
+    processAnswerAsync(message.sdpAnswer)
+        .then(() => {
+            createVideo();
+        })
+        .catch(error => console.log(error));
+}
+
+function startResponse(message) {
+    console.log('SDP answer received from server. Processing ...');
+    webRtcRecord.processAnswer(message.sdpAnswer, function(error) {
+        if (error)
+            return console.error(error);
+    });
 }
 
 function viewerResponse(message) {
@@ -81,85 +159,112 @@ function viewerResponse(message) {
     }
 }
 
-function presenter() {
+function startLive() {
     if (!webRtcPeer) {
-        console.log(ws);
         showSpinner(live);
 
-        var options = {
+        let options = {
             localVideo : live,
-            onicecandidate : onIceCandidate
+            onicecandidate : onLiveIceCandidate
         }
         webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
             function(error) {
                 if (error) {
                     return console.error(error);
                 }
-                webRtcPeer.generateOffer(onOfferPresenter);
+                webRtcPeer.generateOffer(onLiveOffer);
             });
-
-        enableStopButton();
     }
 }
 
-function onOfferPresenter(error, offerSdp) {
-    if (error)
-        return console.error('Error generating the offer');
-    console.info('Invoking SDP offer callback function ' + location.host);
-    var message = {
-        id : 'presenter',
-        sdpOffer : offerSdp
-    }
-    sendMessage(message);
-}
-
-function viewer() {
-    if (!webRtcPeer) {
-        showSpinner(live);
-
-        var options = {
-            remoteVideo : live,
-            onicecandidate : onIceCandidate
-        }
-        webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
-            function(error) {
-                if (error) {
-                    return console.error(error);
-                }
-                this.generateOffer(onOfferViewer);
-            });
-
-        enableStopButton();
-    }
-}
-
-function onOfferViewer(error, offerSdp) {
-    if (error)
-        return console.error('Error generating the offer');
-    console.info('Invoking SDP offer callback function ' + location.host);
-    var message = {
-        id : 'viewer',
-        sdpOffer : offerSdp
-    }
-    sendMessage(message);
-}
-
-function onIceCandidate(candidate) {
+function onLiveIceCandidate(candidate) {
     console.log("Local candidate" + JSON.stringify(candidate));
 
-    var message = {
+    let message = {
         id : 'onIceCandidate',
         candidate : candidate
     };
-    sendMessage(message);
+    sendLiveMessage(message);
 }
 
-function stop() {
-    var message = {
+function onRecordIceCandidate(candidate) {
+    console.log("Local candidate" + JSON.stringify(candidate));
+
+    let message = {
+        id : 'onIceCandidate',
+        candidate : candidate
+    };
+    sendRecordMessage(message);
+}
+
+function createVideo() {
+    console.log('Starting video call ...');
+
+    let options = {
+        localVideo : live,
+        mediaConstraints : getConstraints(),
+        onicecandidate : onRecordIceCandidate
+    }
+
+    webRtcRecord = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
+                function(error) {
+            if (error)
+                return console.error(error);
+            webRtcRecord.generateOffer(onRecordOffer);
+        });
+}
+
+function onLiveOffer(error, offerSdp) {
+    if (error)
+        return console.error('Error generating the offer');
+    console.info('Invoking SDP offer callback function ' + location.host);
+    let message = {
+        id : 'presenter',
+        sdpOffer : offerSdp
+    }
+    sendLiveMessage(message);
+}
+
+function onRecordOffer(error, offerSdp) {
+    if (error)
+        return console.error('Error generating the offer');
+    console.info('Invoking SDP offer callback function ' + location.host);
+    let message = {
+        id : 'start',
+        sdpOffer : offerSdp,
+        mode :  $('input[name="mode"]:checked').val()
+    }
+    sendRecordMessage(message);
+}
+
+function getConstraints() {
+    return {
+        audio: true,
+        video: true
+    };
+}
+
+function stopLive() {
+    setState(NO_CALL);
+    let message = {
         id : 'stop'
     }
-    sendMessage(message);
+    sendLiveMessage(message);
     dispose();
+}
+
+function stopRecord() {
+    let stopMessageId = (state == IN_CALL) ? 'stop' : 'stopPlay';
+    console.log('Stopping video while in ' + state + '...');
+    if (webRtcRecord) {
+        webRtcRecord.dispose();
+        webRtcRecord = null;
+
+        let message = {
+            id : stopMessageId
+        }
+        sendRecordMessage(message);
+    }
 }
 
 function dispose() {
@@ -168,51 +273,37 @@ function dispose() {
         webRtcPeer = null;
     }
     hideSpinner(live);
-
-    disableStopButton();
 }
 
-function disableStopButton() {
-    enableButton('#presenter', 'presenter()');
-    enableButton('#viewer', 'viewer()');
-    disableButton('#stop');
-}
-
-function enableStopButton() {
-    disableButton('#presenter');
-    disableButton('#viewer');
-    enableButton('#stop', 'stop()');
-}
-
-function disableButton(id) {
-    $(id).attr('disabled', true);
-    $(id).removeAttr('onclick');
-}
-
-function enableButton(id, functionName) {
-    $(id).attr('disabled', false);
-    $(id).attr('onclick', functionName);
-}
-
-function sendMessage(message) {
-    var jsonMessage = JSON.stringify(message);
+function sendLiveMessage(message) {
+    let jsonMessage = JSON.stringify(message);
     console.log('Sending message: ' + jsonMessage);
     ws.send(jsonMessage);
 }
 
+function sendRecordMessage(message) {
+    let jsonMessage = JSON.stringify(message);
+    console.log('Sending message: ' + jsonMessage);
+    rec.send(jsonMessage);
+}
+
 function showSpinner() {
-    for (var i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < arguments.length; i++) {
         arguments[i].poster = '/img/transparent-1px.png';
         arguments[i].style.background = 'center transparent url("./img/spinner.gif") no-repeat';
     }
 }
 
 function hideSpinner() {
-    for (var i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < arguments.length; i++) {
         arguments[i].src = '';
         arguments[i].poster = '/img/webrtc.png';
         arguments[i].style.background = '';
     }
+}
+
+function onError(error) {
+    console.error(error);
 }
 
 /**
