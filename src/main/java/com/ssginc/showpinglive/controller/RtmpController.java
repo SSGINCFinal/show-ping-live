@@ -13,4 +13,9 @@ public class RtmpController {
         return "/rtmp/rtmp";
     }
 
+    @GetMapping("/view")
+    public String view() {
+        return "/rtmp/rtmpView";
+    }
+
 }
