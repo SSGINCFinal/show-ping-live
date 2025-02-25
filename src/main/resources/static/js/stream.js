@@ -85,7 +85,7 @@ ws.onmessage = function(message) {
             });
             break;
         case 'stopCommunication':
-            stopRecord();
+            dispose();
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
@@ -108,6 +108,10 @@ rec.onmessage = function(message) {
                 if (error)
                     return console.error('Error adding candidate: ' + error);
             });
+            break;
+        case 'recording':
+            break;
+        case 'stopped':
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
@@ -241,7 +245,7 @@ function stopLive() {
 }
 
 function stopRecord() {
-    let stopMessageId = (state == IN_CALL) ? 'stop' : 'stopPlay';
+    let stopMessageId = (state === IN_CALL) ? 'stop' : 'stopPlay';
     console.log('Stopping video while in ' + state + '...');
     if (webRtcRecord) {
         webRtcRecord.dispose();
@@ -253,6 +257,7 @@ function stopRecord() {
         }
         sendRecordMessage(message);
     }
+    hideSpinner(live);
 }
 
 function dispose() {
@@ -260,7 +265,7 @@ function dispose() {
         webRtcPeer.dispose();
         webRtcPeer = null;
     }
-    hideSpinner(live);
+    stopRecord();
 }
 
 function sendLiveMessage(message) {

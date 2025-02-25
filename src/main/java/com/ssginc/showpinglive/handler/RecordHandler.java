@@ -10,15 +10,21 @@ import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.Date;
 
+@Component
 public class RecordHandler extends TextWebSocketHandler {
-    private static final String RECORDER_FILE_PATH = "file:///video/test.mp4";
+
+    @Value("${upload.path}")
+    private String RECORDER_FILE_PATH;
 
     private final Logger log = LoggerFactory.getLogger(RecordHandler.class);
     private static final Gson gson = new GsonBuilder().create();
@@ -50,6 +56,7 @@ public class RecordHandler extends TextWebSocketHandler {
                 if (user != null) {
                     user.stop();
                 }
+                break;
             case "onIceCandidate": {
                 JsonObject jsonCandidate = jsonMessage.get("candidate").getAsJsonObject();
 
@@ -81,8 +88,14 @@ public class RecordHandler extends TextWebSocketHandler {
             webRtcEndpoint.connect(webRtcEndpoint);
 
             MediaProfileSpecType profile = MediaProfileSpecType.MP4;
+            Date date = new Date();
 
-            RecorderEndpoint recorder = new RecorderEndpoint.Builder(pipeline, RECORDER_FILE_PATH)
+            String fileName = "video_" + (date.getYear() + 1900) + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_"
+            + date.getHours() + "_" + date.getMinutes() + "_" + date.getSeconds() + ".mp4";
+
+            System.out.println(RECORDER_FILE_PATH + fileName);
+
+            RecorderEndpoint recorder = new RecorderEndpoint.Builder(pipeline, RECORDER_FILE_PATH + fileName)
                     .withMediaProfile(profile).build();
 
             // Error listeners.
