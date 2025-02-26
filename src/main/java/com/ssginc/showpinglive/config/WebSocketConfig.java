@@ -1,6 +1,8 @@
 package com.ssginc.showpinglive.config;
 
-import com.ssginc.showpinglive.handler.WebSocketHandler;
+import com.ssginc.showpinglive.handler.LiveHandler;
+import com.ssginc.showpinglive.handler.RecordHandler;
+import com.ssginc.showpinglive.util.UserRegistry;
 import org.kurento.client.KurentoClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,14 +14,25 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
+
     @Bean
-    public WebSocketHandler webSocketHandler() {
-        return new WebSocketHandler();
+    public LiveHandler liveHandler() {
+        return new LiveHandler();
+    }
+
+    @Bean
+    public RecordHandler recordHandler() {
+        return new RecordHandler();
     }
 
     @Bean
     public KurentoClient kurentoClient() {
         return KurentoClient.create();
+    }
+
+    @Bean
+    public UserRegistry registry() {
+        return new UserRegistry();
     }
 
     @Bean
@@ -31,6 +44,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler(), "/call");
+        registry.addHandler(liveHandler(), "/live");
+        registry.addHandler(recordHandler(), "/record");
     }
+
 }
