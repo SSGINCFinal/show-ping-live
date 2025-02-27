@@ -18,6 +18,7 @@
 var ws = new WebSocket('ws://' + location.host + '/live');
 var rec = new WebSocket('ws://' + location.host + '/record');
 var live;
+var watch;
 var webRtcPeer;
 var webRtcRecord;
 var state;
@@ -30,6 +31,13 @@ const IN_PLAY = 4;
 
 window.onload = function() {
     live = document.getElementById('live-video');
+    watch = document.getElementById('live');
+
+    // 시청모드이면 접속시 viewer 함수 실행
+    if (watch) {
+        viewer();
+    }
+
     setState(NO_CALL);
 }
 
@@ -169,6 +177,24 @@ function startLive() {
     }
 }
 
+function viewer() {
+    if (!webRtcPeer) {
+        showSpinner(watch);
+
+        var options = {
+            remoteVideo : watch,
+            onicecandidate : onLiveIceCandidate
+        }
+        webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
+            function(error) {
+                if (error) {
+                    return console.error(error);
+                }
+                this.generateOffer(onViewOffer);
+            });
+    }
+}
+
 function onLiveIceCandidate(candidate) {
     console.log("Local candidate" + JSON.stringify(candidate));
 
@@ -212,6 +238,17 @@ function onLiveOffer(error, offerSdp) {
     console.info('Invoking SDP offer callback function ' + location.host);
     let message = {
         id : 'presenter',
+        sdpOffer : offerSdp
+    }
+    sendLiveMessage(message);
+}
+
+function onViewOffer(error, offerSdp) {
+    if (error)
+        return console.error('Error generating the offer');
+    console.info('Invoking SDP offer callback function ' + location.host);
+    var message = {
+        id : 'viewer',
         sdpOffer : offerSdp
     }
     sendLiveMessage(message);

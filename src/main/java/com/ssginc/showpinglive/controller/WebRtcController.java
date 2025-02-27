@@ -12,4 +12,9 @@ public class WebRtcController {
     public String webrtc(){
         return "webrtc/webrtc";
     }
+
+    @GetMapping("watch")
+    public String watch(){
+        return "webrtc/watch";
+    }
 }
