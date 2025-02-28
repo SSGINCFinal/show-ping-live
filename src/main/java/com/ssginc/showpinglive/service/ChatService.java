@@ -14,10 +14,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final ChatRepository chatRepository; // 변수명 통일 (chatMessageRepository -> chatRepository)
+    private final ChatRepository chatRepository;
     private final ForbiddenWordRepository forbiddenWordRepository;
 
-    public ChatDto saveChatMessage(Long chatStreamNo, Long chatMemberNo, Long chatRoomNo, String chatMessage) {
+    public ChatDto saveChatMessage(Long chatStreamNo, Long chatMemberNo, Long chatRoomNo, String chatMessage, LocalDateTime chatCreatedAt) {
         // 1. 금칙어 필터링 로직
         if (isForbiddenWordIncluded(chatMessage)) {
             throw new IllegalArgumentException("금칙어가 포함된 메시지는 전송할 수 없습니다.");

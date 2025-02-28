@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.config;
 
+import com.ssginc.showpinglive.handler.WebSocketChatHandler;
 import com.ssginc.showpinglive.handler.WebSocketHandler;
 import org.kurento.client.KurentoClient;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
 
     @Bean
+    public WebSocketChatHandler webSocketChatHandler() {return new WebSocketChatHandler();}
+
+    @Bean
     public KurentoClient kurentoClient() {
         return KurentoClient.create();
     }
@@ -32,5 +36,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketHandler(), "/call");
+        registry.addHandler(webSocketChatHandler(), "/chat");
     }
 }
