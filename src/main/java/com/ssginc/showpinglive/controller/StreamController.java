@@ -6,13 +6,11 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Controller
 @RequestMapping("stream")
@@ -69,5 +67,13 @@ public class StreamController {
                                     .orElse(MediaType.APPLICATION_OCTET_STREAM))
                             .body(partialResource);
                 });
+    }
+
+    @PostMapping("/vod/upload")
+    public ResponseEntity<String> uploadVod(@RequestBody Map<String, String> requestData) {
+        System.out.println(requestData);
+        String title = requestData.get("title");
+        System.out.println(title);
+        return ResponseEntity.ok(streamService.uploadVideo(title));
     }
 }
