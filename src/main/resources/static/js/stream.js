@@ -120,6 +120,7 @@ rec.onmessage = function(message) {
         case 'recording':
             break;
         case 'stopped':
+            uploadFileToNCP();
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
@@ -334,6 +335,19 @@ function hideSpinner() {
 
 function onError(error) {
     console.error(error);
+}
+
+function uploadFileToNCP() {
+    let title = 'test.mp4';
+    axios.post('/stream/vod/upload', {
+        title
+    })
+        .then(response => {
+            console.log("응답 데이터: ", response.data)
+        })
+        .catch(error => {
+            console.log("에러 발생: ", error);
+        })
 }
 
 /**

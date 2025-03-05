@@ -10,4 +10,6 @@ public interface StreamService {
 
     Mono<Resource> getVideo(String title);
 
+    String uploadVideo(String filePath);
+
 }
