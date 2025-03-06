@@ -89,18 +89,18 @@
 
 /* 채팅 메시지 래퍼 */
 .chat-wrapper {
-    flex: 1;               /* 위/아래로 늘어나도록 설정 */
-    overflow-y: auto;      /* 스크롤 가능 */
-    padding-bottom: 70px;  /* input-container가 겹치지 않도록 하단 여백 */
+    flex: 1; /* 위/아래로 늘어나도록 설정 */
+    overflow-y: auto; /* 스크롤 가능 */
+    padding-bottom: 70px; /* input-container가 겹치지 않도록 하단 여백 */
 }
 
 /* 입력 영역: 항상 하단 중앙 고정 */
 .input-container {
-    position: absolute;    /* 부모 .chat-container 기준 */
-    bottom: 0;             /* 하단에 붙임 */
-    left: 50%;             /* 수평 중앙 */
+    position: absolute; /* 부모 .chat-container 기준 */
+    bottom: 0; /* 하단에 붙임 */
+    left: 50%; /* 수평 중앙 */
     transform: translateX(-50%); /* 수평 중앙 정렬 보정 */
-    width: 100%;            /* 예시, 필요에 따라 조정 */
+    width: 100%; /* 예시, 필요에 따라 조정 */
     display: flex;
     background-color: #fff;
     /*padding: 10px;*/
@@ -124,3 +124,91 @@
 /*    color: #fff;*/
 /*    cursor: pointer;*/
 /*}*/
+
+
+.report-modal {
+    display: none; /* 초기에는 숨김 */
+    width: 320px;
+    margin: 50px auto; /* 화면 중앙 정렬 */
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999; /* 채팅창 위에 표시 */
+}
+
+/* 모달 배경(반투명) */
+.modal-overlay {
+    display: none; /* 초기에는 숨김 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9998;
+}
+
+.report-modal h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.description {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.radio-group {
+    margin-bottom: 20px;
+}
+
+.radio-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 8px;
+}
+
+.report-content {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+#cancelBtn,
+#submitBtn {
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+}
+
+#cancelBtn {
+    background-color: #ccc;
+    color: #333;
+}
+
+#submitBtn {
+    background-color: #f05d5e;
+    color: #fff;
+}

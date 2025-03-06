@@ -1,7 +1,7 @@
 let stompClient = null;
 let reconnectTimeout = 5000;
 
-window.onload = function() {
+window.onload = function () {
 
     // 쿠키에서 accessToken 추출
     const accessToken = getCookieValue("accessToken");
@@ -52,7 +52,7 @@ function onError(error) {
     console.error('STOMP error:', error);
 
     // 일정 시간 후 재연결 시도
-    setTimeout(function() {
+    setTimeout(function () {
         console.log('Attempting to reconnect...');
         connectToChatRoom();
     }, reconnectTimeout);
@@ -101,7 +101,7 @@ function sendChatMessage() {
         const message = {
             _id: "", // 서버 또는 DB에서 할당
             chat_member_id: memberId,
-            chat_room_no : chatRoomNo,
+            chat_room_no: chatRoomNo,
             chat_message: messageText,
             chat_created_at: new Date().toLocaleString()
         };
@@ -155,20 +155,32 @@ function addMessageToChat(message) {
     messageTextP.classList.add("chat-text");
     messageTextP.textContent = message.chat_message;
 
-    // 관리자인지 확인 (필요에 따라 조건 수정)
-    if(message.chat_member_id === "ADMIN") {
-        messageElement.classList.add("ADMIN");
+    // // 관리자인지 확인 (필요에 따라 조건 수정)
+    // if(message.chat_member_id === "ADMIN") {
+    //     messageElement.classList.add("ADMIN");
+    //     userNameSpan.textContent = "관리자 ✓";
+    //     // 관리자 이름을 빨간색으로 표시
+    //     userNameSpan.style.color = "red";
+    //
+    //     // 관리자 메시지라고 구분할 클래스 추가 (CSS 활용 가능)
+    //     messageElement.classList.add("admin");
+    //
+    //     // 예시: “관리자가 작성한 채팅 입니다.”로 고정
+    //     messageTextP.textContent = message.chat_message;
+    // } else {
+    //     messageElement.classList.add("USER");
+    //     userNameSpan.textContent = message.chat_member_id;
+    //     messageTextP.textContent = message.chat_message;
+    // }
+
+    if (message.chat_member_id === "admin01") {
         userNameSpan.textContent = "관리자 ✓";
         // 관리자 이름을 빨간색으로 표시
         userNameSpan.style.color = "red";
-
-        // 관리자 메시지라고 구분할 클래스 추가 (CSS 활용 가능)
         messageElement.classList.add("admin");
-
-        // 예시: “관리자가 작성한 채팅 입니다.”로 고정
+        messageTextP.style.color = "red";
         messageTextP.textContent = message.chat_message;
     } else {
-        messageElement.classList.add("USER");
         userNameSpan.textContent = message.chat_member_id;
         messageTextP.textContent = message.chat_message;
     }
@@ -191,3 +203,81 @@ function addMessageToChat(message) {
         chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
     }, 100);
 }
+
+// chatRoom.js (일부 예시)
+function addMessageToChat(message) {
+    const chatMessagesContainer = document.getElementById('chat-messages');
+
+    // 새 메시지 요소 생성
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("message");
+
+    // 사용자 아이디
+    const userNameSpan = document.createElement("span");
+    userNameSpan.classList.add("user-name");
+    userNameSpan.textContent = message.chat_member_id;
+
+    // (추가) 아이디 클릭 시 신고 모달 오픈
+    userNameSpan.addEventListener('click', () => {
+        openReportModal(message.chat_member_id, message.chat_message);
+    });
+
+    // 메시지 텍스트
+    const messageTextP = document.createElement("p");
+    messageTextP.classList.add("chat-text");
+    messageTextP.textContent = message.chat_message;
+
+    // 요소 합치기
+    messageElement.appendChild(userNameSpan);
+    messageElement.appendChild(messageTextP);
+    chatMessagesContainer.appendChild(messageElement);
+}
+
+function openReportModal(memberId, chatMessage) {
+    // 신고 대상 정보 세팅
+    const reportTargetText = document.getElementById('reportTargetText');
+    reportTargetText.textContent = `${memberId}님: ${chatMessage}`;
+
+    // 모달 & 오버레이 표시
+    const reportModal = document.getElementById('reportModal');
+    const modalOverlay = document.getElementById('modalOverlay');
+
+    reportModal.style.display = 'block';
+    modalOverlay.style.display = 'block';
+}
+
+// DOMContentLoaded 이후
+document.addEventListener('DOMContentLoaded', () => {
+    const reportForm = document.getElementById('reportForm');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const reportModal = document.getElementById('reportModal');
+    const modalOverlay = document.getElementById('modalOverlay');
+
+    // 폼 전송(신고하기)
+    reportForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const checkedReason = document.querySelector('input[name="reportReason"]:checked');
+        if (checkedReason) {
+            const reasonValue = checkedReason.value;
+            alert(`신고 사유: ${reasonValue}`);
+            closeReportModal();
+        }
+    });
+
+    // 취소 버튼
+    cancelBtn.addEventListener('click', () => {
+        alert('신고를 취소했습니다.');
+        closeReportModal();
+    });
+
+    // 모달 닫기 함수
+    function closeReportModal() {
+        reportModal.style.display = 'none';
+        modalOverlay.style.display = 'none';
+    }
+
+    // 모달 배경 클릭 시 닫히게 하려면
+    modalOverlay.addEventListener('click', () => {
+        closeReportModal();
+    });
+});
