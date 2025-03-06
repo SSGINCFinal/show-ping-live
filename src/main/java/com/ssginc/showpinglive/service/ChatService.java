@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -16,8 +18,9 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final ForbiddenWordRepository forbiddenWordRepository;
+    private final KafkaProducerService kafkaProducerService;
 
-    public ChatDto saveChatMessage(Long chatStreamNo, Long chatMemberNo, Long chatRoomNo, String chatMessage, LocalDateTime chatCreatedAt) {
+    public ChatDto saveChatMessage(String chatMemberId, Long chatRoomNo, String chatMessage, String chatCreatedAt) {
         // 1. 금칙어 필터링 로직
         if (isForbiddenWordIncluded(chatMessage)) {
             throw new IllegalArgumentException("금칙어가 포함된 메시지는 전송할 수 없습니다.");
@@ -25,16 +28,28 @@ public class ChatService {
 
         // 2. 채팅 메시지 저장
         ChatDto message = new ChatDto();
-        message.setChatStreamNo(chatStreamNo);
-        message.setChatMemberNo(chatMemberNo);
+        message.setChatMemberId(chatMemberId);
         message.setChatRoomNo(chatRoomNo);
         message.setChatMessage(chatMessage);
-        message.setChatCreatedAt(LocalDateTime.now());
 
-        return chatRepository.save(message); // MongoDB에 저장
+        ZoneId seoulZone = ZoneId.of("Asia/Seoul");
+        LocalDateTime nowKST = LocalDateTime.now(seoulZone);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String dateString = formatter.format(nowKST);
+        message.setChatCreatedAt(dateString);
+
+        ChatDto savedMessage = chatRepository.save(message);
+
+        // 2) Kafka 전송
+        kafkaProducerService.sendMessage(savedMessage);
+        System.out.println("[DEBUG] KafkaProducerService.sendMessage() 호출 완료. chatRoomNo=" + savedMessage.getChatRoomNo());
+
+
+        return savedMessage; // MongoDB에 저장
     }
 
-    // 금칙어 필터링 로직을 별도 메서드로 분리
+    // 금칙어 필터링 로직
     private boolean isForbiddenWordIncluded(String message) {
         List<ForbiddenWord> forbiddenWords = forbiddenWordRepository.findAll();
         for (ForbiddenWord slang : forbiddenWords) {

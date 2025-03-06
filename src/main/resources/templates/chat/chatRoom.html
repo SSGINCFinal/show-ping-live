@@ -12,12 +12,17 @@
 
     <script src="/webjars/jquery/3.7.1/dist/jquery.js"></script>
     <script src="/webjars/bootstrap/5.3.3/dist/js/bootstrap.min.js"></script>
-    <script src="/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.min.js"></script>
     <script src="/webjars/webrtc-adapter/7.4.0/release/adapter.js"></script>
     <script src="/webjars/demo-console/1.5.1/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
-    <script src="/js/kurento-utils.js"></script>
-    <script src="/js/stream.js"></script>
+    <script th:inline="javascript">
+        let chatRoomNo = [[${chatRoomNo}]];
+        let memberId   = [[${memberId}]];
+    </script>
+
+    <script src="/js/chat/chatRoom.js"></script>
 
     <div class="container">
         <!-- WebRTC Video Section -->
@@ -28,29 +33,29 @@
             </div>
         </div>
 
-        <!-- Chat Room Section -->
-        <div class="chat-container" style="width: 300px; height: 480px; position: relative;">
-            <div class="chatRoom-container" id="chatRoom-container" style="display: block; width: 100%; height: 100%; position: relative;">
-                <!-- Chat Room Header -->
-                <div class="announcement" id="announcement">
-                    공지 | Live 방송 중에만 초특가 세일 !!
-                    <!-- Chat Messages -->
+        <div class="chat-container">
+            <!-- 공지 영역 -->
+            <div class="announcement">
+                공지 | Live 방송 중에만 초특가 <strong>45% 세일 !!</strong>
+            </div>
 
-                </div>
-                <div id="chat-container" class="chat-messages">
-                    <!-- 채팅 메시지가 여기에 추가됩니다 -->
-
-                    <!-- Scroll to Latest Button -->
-                    <button id="scroll-to-latest" class="scroll-button" style="display: none">↓ 최신 채팅으로 이동</button>
+            <!-- 채팅 메시지 영역 -->
+            <div class="chat-wrapper">
+                <!-- 메시지는 초기에는 빈 상태이며, 실시간 WebSocket 메시지로 채워짐 -->
+                <div class="chat-messages" id="chat-messages">
+                    <!-- 초기 메시지가 필요하다면 여기에 추가 가능 -->
                 </div>
 
+                <!-- 최신 채팅으로 이동 버튼 -->
+                <button id="scroll-to-latest" class="scroll-button">
+                    ↓ 최신 채팅으로 이동
+                </button>
+            </div>
 
-
-                <!-- Chat Input -->
-                <div class="input-container">
-                    <input type="text" id="message-input" placeholder="메시지 입력">
-                    <button id="send-button">➤</button>
-                </div>
+            <!-- 메시지 입력 영역 -->
+            <div class="input-container">
+                <input type="text" id="message-input" placeholder="메시지 입력">
+                <button id="send-button">➤</button>
             </div>
         </div>
 
@@ -81,7 +86,7 @@
 
             <!-- Chat Buttons -->
             <div>
-                <button id="chatPresenter" class="btn btn-success" onclick="createChatRoom()">
+                <button id="chatStart" class="btn btn-success" onclick="createChatRoom()">
                     채팅시작
                 </button>
                 <button id="chatStop" href="#" class="btn btn-danger" onclick="stopChat()">
@@ -90,112 +95,6 @@
             </div>
         </div>
     </div>
-
-    <!-- JavaScript for Chat Room -->
-    <script src="/sockjs.min.js"></script>
-    <script src="/stomp.min.js"></script>
-    <script>
-        let stompClient;
-        const chatRoomNo = 101; // Example chat room number
-        const currentUserId = 'user1'; // 현재 사용자의 아이디 (예제)
-
-        function createChatRoom() {
-            // Show the chat room container
-            document.getElementById('chatRoom-container').style.display = 'block';
-
-            // Initialize WebSocket connection
-            const socket = new SockJS('/ws-stomp');
-            stompClient = Stomp.over(socket);
-
-            stompClient.connect({}, function () {
-                console.log('Connected to WebSocket');
-
-                // Subscribe to the chat room topic
-                stompClient.subscribe(`/sub/chat/room/${chatRoomNo}`, function (message) {
-                    showMessage(JSON.parse(message.body));
-                });
-            });
-
-            // Add event listener for sending messages
-            document.getElementById('send-button').addEventListener('click', sendMessage);
-
-            // Add scroll event listener for the chat container
-            const chatContainer = document.getElementById('chat-container');
-            const scrollToLatestButton = document.getElementById('scroll-to-latest');
-
-            chatContainer.addEventListener('scroll', function () {
-                if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight) {
-                    scrollToLatestButton.style.display = 'block'; // 스크롤이 위로 올라갔을 때 버튼 표시
-                } else {
-                    scrollToLatestButton.style.display = 'none'; // 스크롤이 맨 아래일 때 버튼 숨김
-                }
-            });
-
-            // Scroll to the latest message when the button is clicked
-            scrollToLatestButton.addEventListener('click', function () {
-                chatContainer.scrollTop = chatContainer.scrollHeight; // 스크롤을 맨 아래로 이동
-                scrollToLatestButton.style.display = 'none'; // 버튼 숨김
-            });
-        }
-
-        function stopChat() {
-            if (stompClient) {
-                stompClient.disconnect();
-                console.log('Disconnected from WebSocket');
-            }
-            document.getElementById('chatRoom-container').style.display = 'none';
-        }
-
-        function sendMessage() {
-            const inputField = document.getElementById('message-input');
-            const messageText = inputField.value.trim();
-
-            if (!messageText) {
-                alert('메시지를 입력해주세요.');
-                return;
-            }
-
-            const message = {
-                chatStreamNo: 101,
-                chatMemberNo: 1001,
-                chatRoomNo: Number(chatRoomNo),
-                chatMessage: messageText,
-                sender: currentUserId, // 현재 사용자의 아이디를 전송
-                type: 'TALK'
-            };
-
-            stompClient.send('/pub/chat/message', {}, JSON.stringify(message));
-            inputField.value = '';
-        }
-
-        function showMessage(message) {
-            const chatContainer = document.getElementById('chat-container');
-
-            // 새로운 메시지 요소 생성
-            const newMessage = document.createElement('div');
-            newMessage.classList.add('chat-message', message.type === 'ADMIN' ? 'admin' : 'user');
-
-            // 유저 아이디와 메시지 내용 표시
-            newMessage.innerHTML = `
-            <span class="username" style="font-weight: bold; color: ${message.sender === currentUserId ? '#007bff' : '#333'};">
-                ${message.sender || '사용자'}
-            </span>:
-            <span class="message" style="color: #555;">
-                ${message.chatMessage}
-            </span>
-        `;
-
-            // 메시지를 채팅 컨테이너에 추가
-            chatContainer.appendChild(newMessage);
-
-            // 자동 스크롤 (최신 메시지로 이동)
-            setTimeout(() => {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }, 100);
-        }
-    </script>
-
-
 </div>
 </body>
 </html>
