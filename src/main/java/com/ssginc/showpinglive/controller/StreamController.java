@@ -2,14 +2,12 @@ package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.service.StreamService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.Map;
 
 @Controller
@@ -19,54 +17,34 @@ public class StreamController {
 
     private final StreamService streamService;
 
-    @GetMapping(value = "/vod/fetch/{title}", produces = "video/mp4")
-    public Mono<ResponseEntity<Resource>> fetchVod(@PathVariable String title,
-                                                   @RequestHeader(value = "Range", required = false) String range) {
+    /**
+     * 영상 제목으로 HLS 파일을 받아오는 컨트롤러 메소드
+     * @param title 영상 제목
+     * @return HLS 파일이 포함된 응답객체 (확장자: m3u8)
+     */
+    @GetMapping(value = "/vod/{title}.m3u8")
+    public Mono<ResponseEntity<Resource>> getHLS(@PathVariable String title) {
+        return streamService.getHLS(title)
+                .map(resource -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE,
+                                "application/vnd.apple.mpegurl")
+                        .body(resource));
+    }
 
-        return streamService.getVideo(title)
-                .map(resource -> {
-                    long contentLength;
-                    try {
-                        contentLength = resource.contentLength();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-
-                    if (range == null || range.isEmpty()) {
-                        return ResponseEntity.ok()
-                                .contentType(MediaTypeFactory.getMediaType(resource)
-                                        .orElse(MediaType.APPLICATION_OCTET_STREAM))
-                                .body(resource);
-                    }
-
-                    String[] ranges = range.replace("bytes=", "").split("-");
-                    long start = Long.parseLong(ranges[0]);
-                    long end = ranges.length > 1 && !ranges[1].isEmpty() ? Long.parseLong(ranges[1]) : contentLength - 1;
-
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.add("Content-Range", "bytes " + start + "-" + end + "/" + contentLength);
-                    headers.setContentLength(end - start + 1);
-                    headers.set(HttpHeaders.ACCEPT_RANGES, "bytes");
-
-                    InputStreamResource partialResource;
-                    try {
-                        partialResource = new InputStreamResource(resource.getInputStream()) {
-                            @Override
-                            public long contentLength() {
-                                return end - start + 1;
-                            }
-                        };
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                            .headers(headers)
-                            .contentType(MediaTypeFactory.getMediaType(resource)
-                                    .orElse(MediaType.APPLICATION_OCTET_STREAM))
-                            .body(partialResource);
-                });
+    /**
+     * 영상 제목과 segment 번호로 TS 파일을 받아오는 컨트롤러 메소드
+     * @param title 영상 제목
+     * @param segment 세그먼트 번호
+     * @return TS 파일이 있는 응답객체 (확장자: ts)
+     */
+    @GetMapping(value = "/vod/{title}{segment}.ts")
+    public Mono<ResponseEntity<Resource>> getTsSegment(@PathVariable String title,
+                                                       @PathVariable String segment) {
+        return streamService.getTsSegment(title, segment)
+                .map(resource -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
+                        .body(resource))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
     @PostMapping("/vod/upload")
