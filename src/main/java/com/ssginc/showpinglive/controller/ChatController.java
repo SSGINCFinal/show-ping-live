@@ -3,6 +3,7 @@ package com.ssginc.showpinglive.controller;
 import com.ssginc.showpinglive.config.JwtTokenProvider;
 import com.ssginc.showpinglive.dto.object.ChatDto;
 import com.ssginc.showpinglive.entity.Member;
+import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.repository.StreamRepository;
 import com.ssginc.showpinglive.service.ChatService;
@@ -33,6 +34,7 @@ public class ChatController {
     private final MemberRepository memberRepository;
     private final StreamRepository streamRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
 
     // 공통 메세지 저장 로직
     private ChatDto processAndSaveMessage(ChatDto chatDto) {
@@ -97,11 +99,17 @@ public class ChatController {
     @GetMapping("chatRoom")
     public String getChatRoom(HttpServletRequest request, Model model, @RequestParam Long chatRoomNo) {
         String memberId = null;
+        String memberRole = null;
+
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("accessToken".equals(cookie.getName())) {
+//                    memberId = jwtUtil.getUsernameFromToken(cookie.getValue());
                     memberId = jwtTokenProvider.getMemberId(cookie.getValue());
+//                    memberRole = jwtUtil.getRoleFromToken(cookie.getValue());
+                    System.out.println("[DEBUG] memberId: " + memberId);
+//                    System.out.println("[DEBUG] memberRole: " + memberRole);
                     break;
                 }
             }

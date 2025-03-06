@@ -58,25 +58,25 @@ function onError(error) {
     }, reconnectTimeout);
 }
 
-function createChatRoom() {
-    const chatContainer = document.getElementById('chat-container');
-    const scrollToLatestButton = document.getElementById('scroll-to-latest');
-
-    chatContainer.addEventListener('scroll', function () {
-        if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight) {
-            scrollToLatestButton.style.display = 'block';
-        } else {
-            scrollToLatestButton.style.display = 'none';
-        }
-    });
-
-    scrollToLatestButton.addEventListener('click', function () {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-        scrollToLatestButton.style.display = 'none';
-    });
-
-
-}
+// function createChatRoom() {
+//     const chatContainer = document.getElementById('chat-messages');
+//     const scrollToLatestButton = document.getElementById('scroll-to-latest');
+//
+//     chatContainer.addEventListener('scroll', function () {
+//         if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight) {
+//             scrollToLatestButton.style.display = 'block';
+//         } else {
+//             scrollToLatestButton.style.display = 'none';
+//         }
+//     });
+//
+//     scrollToLatestButton.addEventListener('click', function () {
+//         chatContainer.scrollTop = chatContainer.scrollHeight;
+//         scrollToLatestButton.style.display = 'none';
+//     });
+//
+//
+// }
 
 function stopChat() {
     if (stompClient) {
@@ -147,8 +147,8 @@ function addMessageToChat(message) {
 
     // 사용자 아이디
     const userNameSpan = document.createElement("span");
-    // userNameSpan.classList.add("user-name");
-    // userNameSpan.textContent = message.chat_member_id;
+    userNameSpan.classList.add("user-name");
+    userNameSpan.textContent = message.chat_member_id;
 
     // 메시지 텍스트
     const messageTextP = document.createElement("p");
@@ -183,6 +183,11 @@ function addMessageToChat(message) {
     } else {
         userNameSpan.textContent = message.chat_member_id;
         messageTextP.textContent = message.chat_message;
+
+        // (추가) 아이디 클릭 시 신고 모달 오픈
+        userNameSpan.addEventListener('click', () => {
+            openReportModal(message.chat_member_id, message.chat_message);
+        });
     }
 
     // 채팅 시간 (문자열 그대로 사용하거나, 포맷팅 가능)
@@ -204,34 +209,7 @@ function addMessageToChat(message) {
     }, 100);
 }
 
-// chatRoom.js (일부 예시)
-function addMessageToChat(message) {
-    const chatMessagesContainer = document.getElementById('chat-messages');
 
-    // 새 메시지 요소 생성
-    const messageElement = document.createElement("div");
-    messageElement.classList.add("message");
-
-    // 사용자 아이디
-    const userNameSpan = document.createElement("span");
-    userNameSpan.classList.add("user-name");
-    userNameSpan.textContent = message.chat_member_id;
-
-    // (추가) 아이디 클릭 시 신고 모달 오픈
-    userNameSpan.addEventListener('click', () => {
-        openReportModal(message.chat_member_id, message.chat_message);
-    });
-
-    // 메시지 텍스트
-    const messageTextP = document.createElement("p");
-    messageTextP.classList.add("chat-text");
-    messageTextP.textContent = message.chat_message;
-
-    // 요소 합치기
-    messageElement.appendChild(userNameSpan);
-    messageElement.appendChild(messageTextP);
-    chatMessagesContainer.appendChild(messageElement);
-}
 
 function openReportModal(memberId, chatMessage) {
     // 신고 대상 정보 세팅
@@ -280,4 +258,59 @@ document.addEventListener('DOMContentLoaded', () => {
     modalOverlay.addEventListener('click', () => {
         closeReportModal();
     });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const reportForm = document.getElementById('reportForm');    // 신고 폼
+    const cancelBtn = document.getElementById('cancelBtn');      // 신고 취소 버튼
+    const messageInput = document.getElementById('message-input'); // 채팅 입력창
+
+    const chatContainer = document.getElementById('chat-messages');
+    const scrollToLatestButton = document.getElementById('scroll-to-latest');
+
+
+    // 채팅 영역 스크롤 이벤트
+    chatContainer.addEventListener('scroll', function() {
+        // 스크롤 위치가 최하단에 가까운지 확인 (예: 50px 이상 차이날 때 버튼 표시)
+        if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
+            scrollToLatestButton.style.display = 'block';
+        } else {
+            scrollToLatestButton.style.display = 'none';
+        }
+    });
+
+    // "최신 채팅으로 이동" 버튼 클릭 시 최하단으로 스크롤
+    scrollToLatestButton.addEventListener('click', function() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        scrollToLatestButton.style.display = 'none';
+    });
+
+    // 채팅 입력창에서 Enter 키로 메시지 전송
+    messageInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();   // Enter 시 줄바꿈 방지
+            sendChatMessage();       // 메시지 전송 함수 호출
+        }
+    });
+
+    // 폼 전송(신고하기) 버튼 클릭 시
+    if (reportForm) {
+        reportForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const checkedReason = document.querySelector('input[name="reportReason"]:checked');
+            if (checkedReason) {
+                const reasonValue = checkedReason.value;
+                alert(`신고 사유: ${reasonValue}`);
+                // 팝업 닫기나 다른 처리 로직 추가
+            }
+        });
+    }
+
+    // 취소 버튼 클릭 시
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            alert('신고를 취소했습니다.');
+            // 팝업 닫기나 다른 처리 로직 추가
+        });
+    }
 });

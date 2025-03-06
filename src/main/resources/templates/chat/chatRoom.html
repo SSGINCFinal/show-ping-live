@@ -40,17 +40,17 @@
             </div>
 
             <!-- 채팅 메시지 영역 -->
-            <div class="chat-wrapper">
-                <!-- 메시지는 초기에는 빈 상태이며, 실시간 WebSocket 메시지로 채워짐 -->
-                <div class="chat-messages" id="chat-messages">
-                    <!-- 초기 메시지가 필요하다면 여기에 추가 가능 -->
-                </div>
-
-                <!-- 최신 채팅으로 이동 버튼 -->
-                <button id="scroll-to-latest" class="scroll-button">
-                    ↓ 최신 채팅으로 이동
-                </button>
+<!--            <div class="chat-wrapper" id="chat-wrapper">   -->
+<!--            </div>-->
+            <!-- 메시지는 초기에는 빈 상태이며, 실시간 WebSocket 메시지로 채워짐 -->
+            <div class="chat-messages" id="chat-messages">
+                <!-- 초기 메시지가 필요하다면 여기에 추가 가능 -->
             </div>
+
+            <!-- 최신 채팅으로 이동 버튼 -->
+            <button id="scroll-to-latest" class="scroll-button" style="display:none;">
+                ↓ 최신 채팅으로 이동
+            </button>
 
             <!-- 메시지 입력 영역 -->
             <div class="input-container">
@@ -66,6 +66,8 @@
             </div>
         </div>
     </div>
+
+    <div class="modal-overlay" id="modalOverlay" style="display:none;"></div>
 
     <div class="report-modal" id="reportModal">
         <h2>채팅 신고</h2>
