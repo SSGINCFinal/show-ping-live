@@ -1,27 +1,22 @@
 package com.ssginc.showpinglive.controller;
 
-import com.ssginc.showpinglive.config.JwtTokenProvider;
 import com.ssginc.showpinglive.dto.object.ChatDto;
 import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.repository.StreamRepository;
 import com.ssginc.showpinglive.service.ChatService;
-import com.ssginc.showpinglive.service.CustomUserDetailsService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -33,7 +28,6 @@ public class ChatController {
     private final ChatService chatService; // 채팅 서비스 로직
     private final MemberRepository memberRepository;
     private final StreamRepository streamRepository;
-    private final JwtTokenProvider jwtTokenProvider;
     private final JwtUtil jwtUtil;
 
     // 공통 메세지 저장 로직
@@ -106,7 +100,7 @@ public class ChatController {
             for (Cookie cookie : cookies) {
                 if ("accessToken".equals(cookie.getName())) {
 //                    memberId = jwtUtil.getUsernameFromToken(cookie.getValue());
-                    memberId = jwtTokenProvider.getMemberId(cookie.getValue());
+                    memberId = jwtUtil.getUsernameFromToken(cookie.getValue());
 //                    memberRole = jwtUtil.getRoleFromToken(cookie.getValue());
                     System.out.println("[DEBUG] memberId: " + memberId);
 //                    System.out.println("[DEBUG] memberRole: " + memberRole);
@@ -177,7 +171,7 @@ public class ChatController {
         }
 
         // JWT 토큰에서 MemberId 추출
-        String memberId = jwtTokenProvider.getMemberId(token);
+        String memberId = jwtUtil.getUsernameFromToken(token);
 
         // JPQL을 사용하여 MemberRepository에서 로그인한 유저의 아이디로 Member 엔티티 조회
         Member member = memberRepository.findByMemberId(memberId)

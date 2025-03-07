@@ -38,7 +38,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (tokenOptional.isPresent()) {
             String token = tokenOptional.get();
-            System.out.println(">>>>>>>>>>>>> Extracted accessToken: " + token);
 
             if (jwtUtil.validateToken(token)) {
                 String username = jwtUtil.getUsernameFromToken(token);
@@ -55,16 +54,12 @@ public class JwtFilter extends OncePerRequestFilter {
                         .authorities(authorities) // ✅ 권한 설정 변경
                         .build();
 
-                System.out.println("=======================>>>> getUsername >> " + userDetails.getUsername() + "=====================");
-
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
-
 
         chain.doFilter(request, response);
     }

@@ -8,30 +8,40 @@
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
+    background-color: #E7F1F9;
 }
 
 main {
     background-color: #38A7FF;
 }
 
+.main-content {
+    width: 1300px;
+    min-height: 1000px;
+    margin: auto;
+    background-color: white;
+    border: 1px solid gainsboro;
+}
+
 /* 네비게이션 바 스타일 */
 .navbar {
     color: black;
-    padding: 10px 20px;
-    position: relative;
+    position: sticky;
+    top: 0;
 }
 
 .navbar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    border-bottom: 1px solid black;
-
+    max-width: 1300px;
+    margin: auto;
+    border: 1px solid gainsboro;
+    background-color: white;
 }
 
 .navbar-logo a {
+    padding: 30px;
     color: black;
     text-decoration: none;
     font-size: 1.5rem;
@@ -117,13 +127,12 @@ main {
 
 /* 검색 입력 필드 */
 .search-bar input[type="text"] {
-    width: 300px; /* 입력 필드 너비 */
+    width: 400px; /* 입력 필드 너비 */
     height: 30px;
     padding: 5px 10px;
-    border: 1px solid #ccc;
+    border: 2px solid black;
+    margin-right: 50px;
     font-size: 14px;
-    background-color: #E7F1F9;
-    color: black;
     border-radius: 20px;
 }
 
@@ -140,15 +149,10 @@ main {
     transition: background-color 0.3s;
 }
 
-/* 검색 버튼 호버 효과 */
-/*.search-bar button:hover {*/
-/*    background-color: #E7F1F9;*/
-/*    color: #38A7FF;*/
-/*}*/
-
-.cart-bar{
+.cart-bar {
     padding: 10px;
     padding-top: 10px;
+    margin-right: 80px;
 }
 
 /* 스크롤 */
