@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -23,12 +21,5 @@ public class Category {
 
     @Column(name = "category_name", length = 100)
     private String categoryName;
-
-    // =========== 관계 연결 ===========
-
-    // 상품
-    // 카테고리 : 상품은 1 : N의 관계를 가진다.
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Product> products;
 
 }
