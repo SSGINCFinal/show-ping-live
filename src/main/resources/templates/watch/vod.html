@@ -8,12 +8,13 @@
 
   <script src="/webjars/bootstrap/5.3.3/dist/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
   <script th:src="@{/js/vod.js}"></script>
 
   <div class="container">
     <div class="live-container">
       <div class="video">
-        <video id="vod" th:value="${vodDto.streamTitle}"controls>
+        <video id="vod" th:value="${vodDto.streamTitle}" controls>
         </video>
       </div>
     </div>

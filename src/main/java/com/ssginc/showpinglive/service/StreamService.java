@@ -8,7 +8,9 @@ public interface StreamService {
 
     VodResponseDto getVodByNo(Long streamNo);
 
-    Mono<Resource> getVideo(String title);
+    Mono<Resource> getHLS(String title);
+
+    Mono<Resource> getTsSegment(String title, String segment);
 
     String uploadVideo(String filePath);
 
