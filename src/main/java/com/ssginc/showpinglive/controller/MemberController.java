@@ -5,6 +5,7 @@ import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class MemberController {
 
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
-
-    @Autowired
-    public MemberController(JwtUtil jwtUtil, MemberRepository memberRepository, MemberService memberService) {
-        this.jwtUtil = jwtUtil;
-        this.memberRepository = memberRepository;
-        this.memberService = memberService;
-    }
 
     // 로그인 페이지 요청 처리
     @GetMapping("/login")

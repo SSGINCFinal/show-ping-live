@@ -72,7 +72,7 @@ public class MemberService {
         String role = userDetails.getAuthorities().isEmpty() ? "ROLE_USER" : userDetails.getAuthorities().iterator().next().getAuthority();
 
         // ✅ JWT 토큰 생성
-        String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), role);
+        String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), role); // member_id와 member_role로 토큰을 생성
         String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
 
         System.out.println("생성된 JWT Access 토큰: " + accessToken);
