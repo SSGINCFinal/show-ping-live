@@ -5,14 +5,13 @@ import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.dto.response.WatchResponseDto;
 import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.entity.Watch;
-import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.service.MemberService;
 import com.ssginc.showpinglive.service.StreamService;
 import com.ssginc.showpinglive.service.WatchService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,6 @@ public class WatchController {
 
     private final MemberService memberService;
 
-    private final JwtUtil jwtUtil;
 
     @GetMapping("/vod/{streamNo}")
     public String watchVod(@PathVariable Long streamNo, Model model) {
@@ -43,20 +41,19 @@ public class WatchController {
         return "watch/vod";
     }
 
+    /**
+     * 로그인한 사용자 시청내역 페이지 메소드
+     * @param userDetails 로그인한 사용자 객체
+     * @param model 타임리프에 전달할 Model 객체
+     * @return 라이브 메인 페이지 (타임리프)
+     */
     @GetMapping("/history")
-    public String watchHistory(HttpServletRequest request, Model model) {
-        Cookie[] cookies = request.getCookies();
-        String memberId = null;
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("accessToken")) {
-                memberId = jwtUtil.getUsernameFromToken(cookie.getValue());
-                break;
-            }
+    public String watchHistory(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        // 현재 로그인한 사용자 불러오기
+        if (userDetails != null) {
+            Member member = memberService.findMemberById(userDetails.getUsername());
+            model.addAttribute("member", member);
         }
-
-        Member member = memberService.findMemberById(memberId);
-        model.addAttribute("member", member);
-
         return "watch/history";
     }
 
@@ -71,10 +68,7 @@ public class WatchController {
 
     @PostMapping("/insert")
     public ResponseEntity<Watch> insertWatchHistory(@RequestBody WatchRequestDto watchRequestDto) {
-        System.out.println(watchRequestDto);
-
         Watch result = watchService.insertWatchHistory(watchRequestDto);
-
         return ResponseEntity.ok(result);
     }
 
