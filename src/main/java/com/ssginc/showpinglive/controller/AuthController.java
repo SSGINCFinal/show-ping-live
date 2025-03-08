@@ -1,18 +1,11 @@
 package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.entity.Member;
-import com.ssginc.showpinglive.jwt.JwtUtil;
-import com.ssginc.showpinglive.service.implement.MemberDetailsServiceImpl;
-import com.ssginc.showpinglive.service.MemberService;
-import jakarta.servlet.http.Cookie;
+import com.ssginc.showpinglive.service.AuthService;
+import com.ssginc.showpinglive.service.implement.AuthServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +16,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public String login(Member member, HttpServletResponse response, Model model) {
-        boolean loginSuccess = memberService.login(member, response);
+        boolean loginSuccess = authService.login(member, response);
 
         if (!loginSuccess) {
             model.addAttribute("message", "아이디 또는 비밀번호가 올바르지 않습니다.");
@@ -39,14 +32,14 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logout(HttpServletResponse response) {
-        memberService.logout(response); // ✅ 서비스에서 로그아웃 처리
+        authService.logout(response); // ✅ 서비스에서 로그아웃 처리
         return "redirect:/";  // 홈페이지로 이동
     }
 
     @GetMapping("/user-info3")
     @ResponseBody
     public Map<String, String> getUserInfo(Authentication authentication) {
-        return memberService.getUserInfo(authentication); // ✅ 서비스에서 사용자 정보 조회
+        return authService.getUserInfo(authentication); // ✅ 서비스에서 사용자 정보 조회
     }
 
 }
