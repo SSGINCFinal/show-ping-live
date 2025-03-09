@@ -13,6 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * @author dckat
+ * 영상 시청과 관련한 로직을 처리하는 서비스 layer 클래스
+ * <p>
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,6 +25,11 @@ public class WatchServiceImpl implements WatchService {
 
     private final WatchRepository watchRepository;
 
+    /**
+     * 로그인한 사용자의 시청내역 리스트를 반환하는 컨트롤러 메소드
+     * @param memberNo 로그인한 사용자 번호
+     * @return 로그인한 사용자의 시청내역 리스트
+     */
     @Override
     public List<WatchResponseDto> getWatchHistoryByMemberNo(Long memberNo) {
         return watchRepository.getWatchListByMemberNo(memberNo);

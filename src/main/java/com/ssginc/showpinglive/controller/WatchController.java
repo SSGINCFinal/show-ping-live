@@ -21,6 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * @author dckat
+ * 영상 시청과 관련한 요청-응답을 수행하는 컨트롤러 클래스
+ * <p>
+ */
 @Controller
 @RequestMapping("watch")
 @RequiredArgsConstructor
@@ -75,6 +80,11 @@ public class WatchController {
         return "watch/history";
     }
 
+    /**
+     * 로그인한 사용자의 시청내역 리스트를 반환하는 컨트롤러 메소드
+     * @param memberNo 로그인한 사용자 번호
+     * @return 로그인한 사용자의 시청내역 응답 객체
+     */
     @GetMapping("/history/{memberNo}")
     public ResponseEntity<?> getWatchHistory(@PathVariable Long memberNo) {
         List<WatchResponseDto> historyList = watchService.getWatchHistoryByMemberNo(memberNo);
