@@ -7,7 +7,18 @@
   <link rel="stylesheet" th:href="@{/css/stream/stream.css}">
   <link rel="stylesheet" href="/css/watch/vod.css">
 
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      var memberNo = [[${member.memberNo}]];
+      var streamNo = [[${vodDto.streamNo}]];
+      var title = [[${vodDto.streamTitle}]];
+      addWatch(memberNo, streamNo);
+      streamVideo(title);
+    });
+  </script>
+
   <script defer th:src="@{/js/watch/vod.js}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
 </head>
 
 <div layout:fragment="content">
@@ -17,7 +28,7 @@
     </div>
     <div class="content-container">
       <div class="vod-container">
-        <video id="vod" th:value="${vodDto.streamTitle}" controls>
+        <video id="vod" controls>
         </video>
       </div>
       <div class="chat-container">

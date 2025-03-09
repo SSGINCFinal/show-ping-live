@@ -1,6 +1,11 @@
-window.onload = async function () {
-    const title = document.getElementById('vod').getAttribute('value');
-    await streamVideo(title);
+function addWatch(memberNo, streamNo) {
+    const watchTime = new Date();
+    
+    axios.post('/watch/insert', {
+        memberNo: memberNo,
+        streamNo: streamNo,
+        watchTime: watchTime
+    });
 }
 
 async function streamVideo(title) {
