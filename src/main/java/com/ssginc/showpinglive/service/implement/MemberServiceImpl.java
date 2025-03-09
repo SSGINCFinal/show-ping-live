@@ -2,11 +2,11 @@ package com.ssginc.showpinglive.service.implement;
 
 import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.repository.MemberRepository;
+import com.ssginc.showpinglive.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +14,16 @@ import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
-public class MemberDetailsServiceImpl implements UserDetailsService {
+@Slf4j
+public class MemberServiceImpl implements MemberService {
+
     private final MemberRepository memberRepository;
+
+    @Override
+    public Member findMemberById(String memberId) {
+        return memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + memberId));
+    }
 
     @Override
     public UserDetails loadUserByUsername(String memberId) throws UsernameNotFoundException {
@@ -30,4 +38,5 @@ public class MemberDetailsServiceImpl implements UserDetailsService {
                 Collections.singleton(new SimpleGrantedAuthority(member.getMemberRole().name())) // ROLE_ 접두사 추가
         );
     }
+
 }

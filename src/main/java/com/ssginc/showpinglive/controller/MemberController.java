@@ -4,20 +4,15 @@ import com.ssginc.showpinglive.dto.object.MemberDTO;
 import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.repository.MemberRepository;
-import com.ssginc.showpinglive.service.MemberService;
+import com.ssginc.showpinglive.service.implement.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,7 +20,7 @@ public class MemberController {
 
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
-    private final MemberService memberService;
+    private final AuthServiceImpl authService;
 
     // 로그인 페이지 요청 처리
     @GetMapping("/login")
@@ -48,7 +43,7 @@ public class MemberController {
 
     @PostMapping("/login/authenticate")
     public String authenticate(String memberId, String password, RedirectAttributes redirectAttributes) {
-        return memberService.authenticate(memberId, password, redirectAttributes); // ✅ 서비스에서 로그인 처리
+        return authService.authenticate(memberId, password, redirectAttributes); // ✅ 서비스에서 로그인 처리
     }
 
     @GetMapping("/user-info")
@@ -64,7 +59,7 @@ public class MemberController {
         System.out.println(memberDto.toString());
         try {
             // 회원가입 처리 (회원 정보 DB 저장)
-            Member member = memberService.registerMember(memberDto);
+            Member member = authService.registerMember(memberDto);
             // 성공 시 메시지와 함께 로그인 페이지로 리다이렉트
             redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다.");
             return "redirect:/login";
@@ -78,7 +73,7 @@ public class MemberController {
     @GetMapping("/check-duplicate")
     public ResponseEntity<?> checkDuplicate(@RequestParam("id") String memberId) {
         // ID 중복 확인 로직을 추가
-        boolean isDuplicate = memberService.isDuplicateId(memberId);
+        boolean isDuplicate = authService.isDuplicateId(memberId);
 
         // 중복 여부에 따라 응답 처리
         if (isDuplicate) {
