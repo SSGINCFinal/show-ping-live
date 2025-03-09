@@ -32,12 +32,30 @@ public class WatchController {
 
     private final MemberService memberService;
 
-
+    /**
+     * VOD 페이지 이동을 위한 컨트롤러 메소드
+     * @param userDetails 로그인한 사용자 객체
+     * @param streamNo 시청할 영상 번호
+     * @param model 타임리프에 전달할 Model 객체
+     * @return 라이브 메인 페이지 (타임리프)
+     */
     @GetMapping("/vod/{streamNo}")
-    public String watchVod(@PathVariable Long streamNo, Model model) {
+    public String watchVod(@AuthenticationPrincipal UserDetails userDetails,
+                           @PathVariable Long streamNo,
+                           Model model) {
+        // 로그인 여부 확인
+        if (userDetails != null) {
+            Member member = memberService.findMemberById(userDetails.getUsername());
+            model.addAttribute("member", member);
+        }
+        else {
+            model.addAttribute("member", new Member());
+        }
+
+        // VOD 객체 정보 불러오기
         StreamResponseDto vodDto = streamService.getVodByNo(streamNo);
-        System.out.println(vodDto.toString());
         model.addAttribute("vodDto", vodDto);
+
         return "watch/vod";
     }
 
@@ -66,10 +84,15 @@ public class WatchController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 시청 내역 등록 컨트롤러 메소드
+     * @param watchRequestDto 시청내역 등록을 위한 요청 DTO (Body를 통해 전달)
+     * @return 응답 결과
+     */
     @PostMapping("/insert")
-    public ResponseEntity<Watch> insertWatchHistory(@RequestBody WatchRequestDto watchRequestDto) {
-        Watch result = watchService.insertWatchHistory(watchRequestDto);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<?> insertWatchHistory(@RequestBody WatchRequestDto watchRequestDto) {
+        Watch watch = watchService.insertWatchHistory(watchRequestDto);
+        return ResponseEntity.ok(watch);
     }
 
 }

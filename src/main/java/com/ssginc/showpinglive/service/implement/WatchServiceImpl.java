@@ -25,16 +25,30 @@ public class WatchServiceImpl implements WatchService {
         return watchRepository.getWatchListByMemberNo(memberNo);
     }
 
+    /**
+     * 시청 내역 등록 서비스 layer 메소드
+     * @param watchRequestDto 시청내역 등록을 위한 요청 DTO
+     * @return 추가된 시청내역 객체
+     */
     @Override
     public Watch insertWatchHistory(WatchRequestDto watchRequestDto) {
+        // 영상 엔티티 객체 생성 (빌더 패턴)
         Stream stream = Stream.builder()
                 .streamNo(watchRequestDto.getStreamNo())
                 .build();
 
-        Member member = Member.builder()
-                .memberNo(watchRequestDto.getMemberNo())
-                .build();
+        // 사용자 엔티티 객체 생성
+        // 로그인하지 않은 사용자도 insert 하기 위해 우선적으로 null 할당
+        Member member = null;
 
+        // 로그인한 사용자가 존재한 경우
+        if (watchRequestDto.getMemberNo() != null) {
+            member = Member.builder()
+                    .memberNo(watchRequestDto.getMemberNo())
+                    .build();
+        }
+
+        // DB 저장을 위한 엔티티 객체 생성 (빌더 패턴)
         Watch watch = Watch.builder()
                 .stream(stream)
                 .member(member)
