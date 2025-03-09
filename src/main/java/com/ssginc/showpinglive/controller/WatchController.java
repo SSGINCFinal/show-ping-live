@@ -76,7 +76,7 @@ public class WatchController {
     }
 
     @GetMapping("/history/{memberNo}")
-    public ResponseEntity<Map<String, Object>> getWatchHistory(@PathVariable Long memberNo) {
+    public ResponseEntity<?> getWatchHistory(@PathVariable Long memberNo) {
         List<WatchResponseDto> historyList = watchService.getWatchHistoryByMemberNo(memberNo);
 
         Map<String, Object> result = new HashMap<>();
