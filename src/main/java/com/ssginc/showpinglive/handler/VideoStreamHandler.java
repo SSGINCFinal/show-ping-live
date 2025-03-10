@@ -17,7 +17,7 @@ public class VideoStreamHandler extends BinaryWebSocketHandler {
     private Process ffmpegProcess;
     private OutputStream ffmpegInput;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private static final String RTMP_URL = "rtmp://localhost/live/test";
+    private static final String RTMP_URL = "rtmp://showping.duckdns.org:1935/live/stream";
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {

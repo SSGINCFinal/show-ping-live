@@ -26,7 +26,7 @@ function startStreaming() {
         return;
     }
 
-    ws = new WebSocket("ws://" + location.host + "/stream");
+    ws = new WebSocket("wss://showping.duckdns.org/stream");
     ws.binaryType = "arraybuffer";
 
     ws.onopen = () => {

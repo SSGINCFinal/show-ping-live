@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     var video = document.getElementById('video');
-    var videoUrl = 'http://localhost:7070/hls/test.m3u8';  // HLS 스트림 URL
+    var videoUrl = 'https://showping.duckdns.org/hls/stream.m3u8';  // HLS 스트림 URL
 
     if (Hls.isSupported()) {
         var hls = new Hls();
