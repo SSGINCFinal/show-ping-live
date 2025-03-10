@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.ssginc.showpinglive.api.StorageLoader;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.repository.StreamRepository;
 import com.ssginc.showpinglive.service.StreamService;
@@ -28,15 +29,12 @@ public class StreamServiceImpl implements StreamService {
     @Value("${download.path}")
     private String VIDEO_PATH;
 
-    @Value("${ncp.storage.bucketName}")
-    private String bucketName;
-
-    private final AmazonS3 amazonS3Client;
-
     private final StreamRepository streamRepository;
 
     @Qualifier("webApplicationContext")
     private final ResourceLoader resourceLoader;
+
+    private final StorageLoader storageLoader;
 
     /**
      * 전체 Vod 목록을 반환해주는 메소드
@@ -129,18 +127,7 @@ public class StreamServiceImpl implements StreamService {
         String filePath = VIDEO_PATH + title;
         File file = new File(filePath);
         String fileName = file.getName();
-
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.length());
-
-        try (InputStream inputStream = new FileInputStream(file)) {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-            throw new RuntimeException("파일 업로드 중 오류 발생", e);
-        }
-
-        return amazonS3Client.getUrl(bucketName, fileName).toString();
+        return storageLoader.uploadFile(file, fileName);
     }
 
 }
