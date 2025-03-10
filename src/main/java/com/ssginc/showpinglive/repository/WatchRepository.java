@@ -8,9 +8,19 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * @author dckat
+ * 영상 시청과 관련한 쿼리메소드를 수행하는 클래스
+ * <p>
+ */
 @Repository
 public interface WatchRepository extends JpaRepository<Watch, Long> {
 
+    /**
+     * 로그인한 사용자의 시청내역 리스트를 반환하는 메소드
+     * @param memberNo 로그인한 사용자 번호
+     * @return 로그인한 사용자의 시청내역 응답 객체
+     */
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.WatchResponseDto
         (w.stream.streamNo, s.streamTitle, p.productImg, p.productName, p.productPrice, MAX(w.watchTime))
