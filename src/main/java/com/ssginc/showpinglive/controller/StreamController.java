@@ -2,6 +2,7 @@ package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.service.StreamService;
+import com.ssginc.showpinglive.service.SubtitleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -16,12 +17,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author dckat
+ * 영상과 관련한 요청-응답을 수행하는 컨트롤러 클래스
+ * <p>
+ */
 @Controller
 @RequestMapping("stream")
 @RequiredArgsConstructor
 public class StreamController {
 
     private final StreamService streamService;
+
+    private final SubtitleService subtitleService;
 
     /**
      * 라이브 메인 페이지 요청 컨틀롤러 메소드
@@ -123,6 +131,18 @@ public class StreamController {
         String title = requestData.get("title");
         System.out.println(title);
         return ResponseEntity.ok(streamService.uploadVideo(title));
+    }
+
+    /**
+     * 영상 제목으로 자막 생성하는 컨트롤러 메소드
+     * @param title 영상 제목
+     * @return 자막 생성 여부 응답 객체
+     */
+    @PostMapping("/subtitle/create")
+    public ResponseEntity<?> createSubtitle(@RequestBody String title) {
+        subtitleService.createSubtitle(title);
+        return ResponseEntity.ok()
+                .body("자막 생성 성공");
     }
 
 }
