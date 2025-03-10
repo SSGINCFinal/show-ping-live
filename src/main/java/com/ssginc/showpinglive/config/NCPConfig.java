@@ -18,10 +18,10 @@ public class NCPConfig {
     @Value("${ncp.storage.endpoint}")
     private String endPoint;
 
-    @Value("${ncp.storage.accessKey}")
+    @Value("${ncp.storage.access-key}")
     private String accessKey;
 
-    @Value("${ncp.storage.secretKey}")
+    @Value("${ncp.storage.secret-key}")
     private String secretKey;
     
 
