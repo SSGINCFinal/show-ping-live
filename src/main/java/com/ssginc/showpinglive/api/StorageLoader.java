@@ -2,11 +2,11 @@ package com.ssginc.showpinglive.api;
 
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -45,6 +45,15 @@ public class StorageLoader {
         }
 
         return amazonS3Client.getUrl(bucketName, fileName).toString();
+    }
+
+    public Resource getSubtitle(String fileName) {
+        try {
+            S3Object s3Object = amazonS3Client.getObject(new GetObjectRequest(bucketName, fileName));
+            return new InputStreamResource(s3Object.getObjectContent());
+        } catch (AmazonS3Exception e) {
+            throw new RuntimeException("Amazon 서비스 예외 발생: " + e.getMessage(), e);
+        }
     }
 
 }
