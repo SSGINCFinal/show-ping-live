@@ -1,7 +1,6 @@
 package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.dto.object.ChatDto;
-import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.repository.StreamRepository;
@@ -12,13 +11,18 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
+/**
+ * @author juil1-kim
+ * 채팅 관련 요청-응답 수행하는 Controller 클래스
+ * <p>
+ */
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("chat") // REST API의 기본 경로 설정
@@ -30,7 +34,12 @@ public class ChatController {
     private final StreamRepository streamRepository;
     private final JwtUtil jwtUtil;
 
-    // 공통 메세지 저장 로직
+    /**
+     * 채팅 메시지를 저장하는 공통 로직 처리 메소드
+     *
+     * @param chatDto 채팅 메시지 객체 (전송자, 채팅방 번호, 메시지 내용, 생성시간)
+     * @return 저장된 채팅 메시지 객체
+     */
     private ChatDto processAndSaveMessage(ChatDto chatDto) {
         return chatService.saveChatMessage(
                 chatDto.getChatMemberId(),
@@ -40,9 +49,17 @@ public class ChatController {
         );
     }
 
-    // WebSocket 메시지 처리 (클라이언트에서 "/chat/message"로 메시지를 보낼 때 호출)
+    /**
+     * WebSocket을 통해 클라이언트에서 "/chat/message"로 전송된 메시지를 처리하는 메소드
+     * <p>
+     * 메시지를 처리하고 저장한 후, 해당 채팅방에 메시지를 브로드캐스트.
+     * 금칙어가 포함된 경우, 해당 유저에게 에러 메시지를 전송.
+     *
+     * @param message   클라이언트에서 전송한 채팅 메시지 객체
+     * @param principal 현재 WebSocket 연결 사용자 정보
+     */
     @MessageMapping("/chat/message")
-    public void sendMessage(ChatDto message) {
+    public void sendMessage(ChatDto message, Principal principal) {
         System.out.println("[DEBUG] Received message: " + message);
         try {
             ChatDto savedMessage = processAndSaveMessage(message);
@@ -57,39 +74,32 @@ public class ChatController {
             System.err.println("[ERROR] IllegalArgumentException in sendMessage: " + e.getMessage());
             ChatDto errorResponse = new ChatDto();
             errorResponse.setChatMessage("금칙어가 포함된 메시지는 전송할 수 없습니다.");
-            messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatRoomNo(), errorResponse);
+            if (principal != null) {
+                messagingTemplate.convertAndSendToUser(principal.getName(), "/queue/errors", errorResponse);
+                System.out.println("[DEBUG] Principal sent to user: " + principal.getName());
+                System.out.println("[DEBUG] Principal: " + principal);
+            } else {
+                System.err.println("Principal is null; cannot send user-specific error message.");
+            }
+//            messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatRoomNo(), errorResponse);
         } catch (Exception e) {
             System.err.println("[ERROR] Exception in sendMessage: " + e);
             e.printStackTrace();
         }
     }
 
-    // REST API를 통해 채팅 메시지 저장 (HTTP POST 요청 처리)
-    @PostMapping("/save")
-    public ChatDto saveChat(@RequestBody ChatDto chatDto) {
-        try {
-            // 채팅 메시지 저장 및 반환
-            return processAndSaveMessage(chatDto);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("금칙어가 포함된 메시지는 저장할 수 없습니다.");
-        }
-    }
+
     /**
-     * 특정 채팅방의 모든 메시지를 가져오는 REST API
+     * 채팅방 화면을 렌더링하기 위한 메소드
+     * <p>
+     * 요청 쿠키에서 accessToken을 추출하여 로그인한 사용자의 정보를 확인한 후, -> 추후 수정 예정(쿠키 사용X)
+     * 채팅방 번호와 사용자 아이디를 모델에 추가하여 뷰에 전달.
+     *
+     * @param request    HttpServletRequest 객체 (쿠키 접근)
+     * @param model      뷰에 데이터를 전달하기 위한 Model 객체
+     * @param chatRoomNo 채팅방 번호
+     * @return 채팅방 뷰 이름 (로그인하지 않은 경우 로그인 페이지로 리다이렉트)
      */
-    // 특정 채팅방의 모든 메시지 조회
-    @GetMapping("/room/{chatRoomNo}")
-    public List<ChatDto> getMessagesByRoom(@PathVariable Long chatRoomNo) {
-        return chatService.findMessagesByRoom(chatRoomNo);
-    }
-
-//    @GetMapping("chatRoom")
-//    public String getChatRoom(Model model, @RequestParam Long chatRoomNo, Principal principal) {
-//        model.addAttribute("chatRoomNo", chatRoomNo);
-//        model.addAttribute("memberId", principal.getName());
-//        return "chat/chatRoom";
-//    }
-
     @GetMapping("chatRoom")
     public String getChatRoom(HttpServletRequest request, Model model, @RequestParam Long chatRoomNo) {
         String memberId = null;
@@ -116,82 +126,4 @@ public class ChatController {
         model.addAttribute("memberId", memberId);
         return "chat/chatRoom";
     }
-
-
-//    // 이후 수정
-//    @GetMapping("chatRoom")
-//    public String chatRoom(
-//            @RequestParam(required = false, defaultValue = "1") Long chatRoomNo,
-//            @RequestParam(required = false, defaultValue = "1") Long streamNo,
-//            Model model,
-//            @AuthenticationPrincipal User user
-//    ) {
-//
-////        // 인증 정보가 없으면 로그인 페이지로 리다이렉트
-////        if (user == null || "anonymousUser".equals(user.getUsername())) {
-////            return "redirect:/login";
-////        }
-//
-//        Member member = memberRepository.findByMemberId(user.getUsername())
-//                .orElseThrow(() -> new UsernameNotFoundException("해당 memberId의 멤버가 존재하지 않습니다."));
-//
-//        System.out.println("=======================================");
-//        System.out.println("userName: " + user.getUsername());
-//        System.out.println("streamNo: " + streamNo);
-//        System.out.println("=======================================");
-//
-//
-//
-//        // 2) Model에 담기
-//        model.addAttribute("chatRoomNo", chatRoomNo);
-//        model.addAttribute("streamNo", streamNo);
-//        model.addAttribute("memberNo", member.getMemberNo());
-//
-//        return "chat/chatRoom";  // chatRoom.html
-//    }
-
-    @PostMapping("/sendWithToken")
-    @ResponseBody
-    public ChatDto sendChatMessageWithToken(
-            @RequestBody ChatDto chatDto,
-            HttpServletRequest request) {
-
-        // 쿠키에서 accessToken 추출
-        String token = null;
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("accessToken".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
-        if (token == null) {
-            throw new RuntimeException("Access token not found in cookies");
-        }
-
-        // JWT 토큰에서 MemberId 추출
-        String memberId = jwtUtil.getUsernameFromToken(token);
-
-        // JPQL을 사용하여 MemberRepository에서 로그인한 유저의 아이디로 Member 엔티티 조회
-        Member member = memberRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new UsernameNotFoundException("Member not found for memberId: " + memberId));
-
-        // 조회된 회원의 memberNo를 ChatDto에 설정 (JSON 형식으로 몽고디비에 전송)
-        chatDto.setChatMemberId(memberId);
-
-        // 채팅 메시지를 저장 및 후속 처리
-        ChatDto savedMessage = chatService.saveChatMessage(
-                member.getMemberId(),
-                chatDto.getChatRoomNo(),
-                chatDto.getChatMessage(),
-                chatDto.getChatCreatedAt()
-        );
-
-        // WebSocket을 통해 클라이언트에 메시지 전송
-        messagingTemplate.convertAndSend("/sub/chat/room/" + savedMessage.getChatRoomNo(), savedMessage);
-
-        return savedMessage;
-    }
-
 }
