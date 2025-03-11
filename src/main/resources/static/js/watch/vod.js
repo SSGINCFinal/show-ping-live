@@ -1,4 +1,4 @@
-let subtitles = [];
+let currentTimer = null;
 const videoElement = document.getElementById('vod');
 const track = videoElement.addTextTrack("subtitles", "Korean", "ko");
 
@@ -18,11 +18,13 @@ function fetchSubtitle(title) {
         .then(response => response.data)
         .then(data => {
             data.segments.forEach(segment => {
-                const cue = new VTTCue(
+                let cue = new VTTCue(
                     msToSeconds(segment.start),
                     msToSeconds(segment.end),
-                    segment.text
+                    ""
                 );
+                cue.words = segment.words;
+                cue.fullText = segment.text;
                 track.addCue(cue);
             })
         });
@@ -55,3 +57,23 @@ function offSubtitle() {
         track.mode = "disabled";
     }
 }
+
+videoElement.addEventListener('timeupdate', () => {
+    if (track.mode !== 'showing') {
+        return;
+    }
+
+    if (track.activeCues && track.activeCues.length > 0) {
+        const activeCue = track.activeCues[0]; // 활성 cue 하나를 대상으로 처리
+        let currentTime = videoElement.currentTime;
+        let displayedText = "";
+
+        activeCue.words.forEach(word => {
+            // word.start가 밀리초 단위이므로 비교 전 변환
+            if ((currentTime * 1000) >= word.start) {
+                displayedText += (displayedText ? " " : "") + word.text;
+            }
+        });
+        activeCue.text = displayedText;
+    }
+});
