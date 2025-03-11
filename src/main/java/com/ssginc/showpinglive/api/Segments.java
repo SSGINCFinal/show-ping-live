@@ -1,18 +1,16 @@
 package com.ssginc.showpinglive.api;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author dckat
  * segment별 자막정보를 저장한 클래스
  * <p>
  */
+@Getter
+@Setter
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Segments {
