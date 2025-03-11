@@ -1,7 +1,6 @@
 package com.ssginc.showpinglive.service.implement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssginc.showpinglive.api.Segments;
 import com.ssginc.showpinglive.api.StorageLoader;
@@ -34,8 +33,10 @@ public class SubtitleServiceImpl implements SubtitleService {
      */
     @Override
     public void createSubtitle(String title) {
+        // 자막 정보 불러오기
         List<Segments> segments = subtitleGenerator.getSubtitles(title);
 
+        // 저장할 파일이름 지정
         String fileName = title + ".json";
         File jsonFile = new File(fileName);
 
@@ -45,16 +46,23 @@ public class SubtitleServiceImpl implements SubtitleService {
         ObjectNode root = mapper.createObjectNode();
         root.set("segments", mapper.valueToTree(segments));
 
+        // json 파일 생성
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, root);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        // 생성된 json 파일을 NCP Storage 업로드
         storageLoader.uploadFile(jsonFile, fileName);
         jsonFile.delete();
     }
 
+    /**
+     * 지정된 파일 이름으로 json 자막파일 가져오는 메서드
+     * @param title    파일 이름
+     * @return 자막 json 파일
+     */
     @Override
     public Resource getSubtitle(String title) {
         String fileName = title + ".json";

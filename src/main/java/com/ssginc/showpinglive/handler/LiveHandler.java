@@ -18,10 +18,9 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Protocol handler for 1 to N video call communication.
- *
- * @author Boni Garcia (bgarcia@gsyc.es)
- * @since 5.0.0
+ * @author dckat
+ * 라이브 관련 웹소켓 메시지 처리 핸들러 클래스
+ * <p>
  */
 public class LiveHandler extends TextWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(LiveHandler.class);

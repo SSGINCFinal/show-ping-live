@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,7 +19,11 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.Date;
 
-@Component
+/**
+ * @author dckat
+ * 녹화 관련 웹소켓 메시지 처리 핸들러 클래스
+ * <p>
+ */
 public class RecordHandler extends TextWebSocketHandler {
 
     @Value("${upload.path}")

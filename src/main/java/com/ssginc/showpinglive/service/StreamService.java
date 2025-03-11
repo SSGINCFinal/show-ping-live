@@ -20,9 +20,9 @@ public interface StreamService {
 
     StreamResponseDto getVodByNo(Long streamNo);
 
-    Mono<Resource> getHLS(String title);
+    Mono<?> getHLS(String title);
 
-    Mono<Resource> getTsSegment(String title, String segment);
+    Mono<?> getTsSegment(String title, String segment);
 
     String uploadVideo(String filePath);
 

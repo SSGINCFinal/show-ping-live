@@ -32,6 +32,7 @@ public class StorageLoader {
      * 제목으로 파일을 NCP에 저장하는 메서드
      * @param file     저장할 파일 대상
      * @param fileName 영상 제목
+     * @return 업로드된 파일 링크
      */
     public String uploadFile(File file, String fileName) {
         ObjectMetadata metadata = new ObjectMetadata();
@@ -47,6 +48,11 @@ public class StorageLoader {
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
+    /**
+     * 지정된 파일 이름으로 NCP Storage json 자막파일 불러오는 메서드
+     * @param fileName 영상 제목
+     * @return 자막 json 파일
+     */
     public Resource getSubtitle(String fileName) {
         try {
             S3Object s3Object = amazonS3Client.getObject(new GetObjectRequest(bucketName, fileName));

@@ -32,7 +32,7 @@ public class StreamController {
     private final SubtitleService subtitleService;
 
     /**
-     * 라이브 메인 페이지 요청 컨틀롤러 메소드
+     * 라이브 메인 페이지 요청 컨틀롤러 메서드
      * @return 라이브 메인 페이지 (타임리프)
      */
     @GetMapping("/list")
@@ -41,53 +41,57 @@ public class StreamController {
     }
 
     /**
-     * 전체 Vod 목록을 반환해주는 컨트롤러 메소드
+     * 전체 Vod 목록을 반환해주는 컨트롤러 메서드
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/live")
-    public ResponseEntity<Map<String, Object>> getLive() {
+    public ResponseEntity<?> getLive() {
         StreamResponseDto live = streamService.getLive();
-        Map<String, Object> result = new HashMap<>();
 
+        // Map으로 전달할 응답객체 저장
+        Map<String, Object> result = new HashMap<>();
         result.put("live", live);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**
-     * 전체 Vod 목록을 반환해주는 컨트롤러 메소드
+     * 전체 Vod 목록을 반환해주는 컨트롤러 메서드
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/vod/list")
-    public ResponseEntity<Map<String, Object>> getVodList() {
+    public ResponseEntity<?> getVodList() {
         List<StreamResponseDto> vodList = streamService.getAllVod();
-        Map<String, Object> result = new HashMap<>();
 
+        // Map으로 전달할 응답객체 저장
+        Map<String, Object> result = new HashMap<>();
         result.put("vodList", vodList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**
-     * 전체 Vod 목록을 반환해주는 컨트롤러 메소드
+     * 전체 Vod 목록을 반환해주는 컨트롤러 메서드
      * @param pageNo 요청한 페이지 번호
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/vod/list/page")
-    public ResponseEntity<Map<String, Object>> getVodListByPage(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+    public ResponseEntity<?> getVodListByPage(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+        // 페이지 당 불러올 객체 단위 지정 (4개)
         Pageable pageable = PageRequest.of(pageNo, 4);
         Page<StreamResponseDto> pageInfo = streamService.getAllVodByPage(pageable);
-        Map<String, Object> result = new HashMap<>();
 
+        // Map으로 전달할 응답객체 저장
+        Map<String, Object> result = new HashMap<>();
         result.put("pageInfo", pageInfo);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**
-     * 전체 Vod 목록을 반환해주는 컨트롤러 메소드
+     * 전체 Vod 목록을 반환해주는 컨트롤러 메서드
      * @param categoryNo 카테고리 번호
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/vod/list/{categoryNo}")
-    public ResponseEntity<Map<String, Object>> getVodListByCategory(@PathVariable Long categoryNo) {
+    public ResponseEntity<?> getVodListByCategory(@PathVariable Long categoryNo) {
         List<StreamResponseDto> vodList = streamService.getAllVodByCategory(categoryNo);
         Map<String, Object> result = new HashMap<>();
 
@@ -96,12 +100,13 @@ public class StreamController {
     }
 
     /**
-     * 영상 제목으로 HLS 파일을 받아오는 컨트롤러 메소드
+     * 영상 제목으로 HLS 파일을 받아오는 컨트롤러 메서드
      * @param title 영상 제목
      * @return HLS 파일이 포함된 응답객체 (확장자: m3u8)
      */
     @GetMapping(value = "/vod/{title}.m3u8")
-    public Mono<ResponseEntity<Resource>> getHLS(@PathVariable String title) {
+    public Mono<?> getHLS(@PathVariable String title) {
+        // 불러온 m3u8 파일을 응답으로 전송
         return streamService.getHLS(title)
                 .map(resource -> ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE,
@@ -110,14 +115,15 @@ public class StreamController {
     }
 
     /**
-     * 영상 제목과 segment 번호로 TS 파일을 받아오는 컨트롤러 메소드
+     * 영상 제목과 segment 번호로 TS 파일을 받아오는 컨트롤러 메서드
      * @param title 영상 제목
      * @param segment 세그먼트 번호
      * @return TS 파일이 있는 응답객체 (확장자: ts)
      */
     @GetMapping(value = "/vod/{title}{segment}.ts")
-    public Mono<ResponseEntity<Resource>> getTsSegment(@PathVariable String title,
+    public Mono<?> getTsSegment(@PathVariable String title,
                                                        @PathVariable String segment) {
+        // 불러온 ts 파일을 응답으로 전송
         return streamService.getTsSegment(title, segment)
                 .map(resource -> ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
@@ -125,16 +131,19 @@ public class StreamController {
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
+    /**
+     * VOD 파일을 NCP Storage에 저장을 요청하는 컨트롤러 메서드
+     * @param requestData 요청 데이터 정보
+     * @return VOD의 저장결과 응답객체
+     */
     @PostMapping("/vod/upload")
-    public ResponseEntity<String> uploadVod(@RequestBody Map<String, String> requestData) {
-        System.out.println(requestData);
+    public ResponseEntity<?> uploadVod(@RequestBody Map<String, String> requestData) {
         String title = requestData.get("title");
-        System.out.println(title);
         return ResponseEntity.ok(streamService.uploadVideo(title));
     }
 
     /**
-     * 영상 제목으로 자막 생성하는 컨트롤러 메소드
+     * 영상 제목으로 자막 생성하는 컨트롤러 메서드
      * @param title 영상 제목
      * @return 자막 생성 여부 응답 객체
      */
@@ -146,7 +155,7 @@ public class StreamController {
     }
 
     /**
-     * 파일 제목으로 자막 정보 파일을 가져오는 함수
+     * 파일 제목으로 자막 정보 파일을 가져오는 메서드
      * @param title 파일 제목
      * @return 자막 생성 여부 응답 객체
      */

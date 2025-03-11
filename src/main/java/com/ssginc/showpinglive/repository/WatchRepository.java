@@ -17,7 +17,7 @@ import java.util.List;
 public interface WatchRepository extends JpaRepository<Watch, Long> {
 
     /**
-     * 로그인한 사용자의 시청내역 리스트를 반환하는 메소드
+     * 로그인한 사용자의 시청내역 리스트를 반환하는 메서드
      * @param memberNo 로그인한 사용자 번호
      * @return 로그인한 사용자의 시청내역 응답 객체
      */
