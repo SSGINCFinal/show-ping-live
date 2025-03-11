@@ -10,7 +10,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-
+/**
+ * @author juil1-kim
+ *  몽고DB Chat Collection으로 보낼 Dto 클래스
+ * <p>
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,9 +33,5 @@ public class ChatDto {
     private String chatMessage;
 
     @JsonProperty("chat_created_at")
-//    @JsonFormat(shape = JsonFormat.Shape.STRING,
-//            pattern = "yyyy. M. d. a h:mm:ss",
-//            locale = "ko",
-//            timezone = "Asia/Seoul")
     private String chatCreatedAt; // 생성 시간
 }

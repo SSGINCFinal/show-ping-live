@@ -33,6 +33,8 @@ function connectToChatRoom() {
 // 연결 성공 콜백
 function onConnected(frame) {
     console.log('Connected to WebSocket:', frame);
+    console.log(document.getElementById('error-message'));
+
 
     // 채팅방 구독
     stompClient.subscribe(`/sub/chat/room/${chatRoomNo}`, function (message) {
@@ -45,6 +47,13 @@ function onConnected(frame) {
             console.error("Error parsing message:", e);
         }
     });
+
+    // STOMP 클라이언트 연결 후 에러 채널 구독
+    stompClient.subscribe('/user/queue/errors', function(message) {
+        var errorResponse = JSON.parse(message.body);
+        alert(errorResponse.chatMessage);
+    });
+
 }
 
 // 연결 에러 콜백
@@ -90,12 +99,15 @@ function stopChat() {
 function sendChatMessage() {
     const input = document.getElementById('message-input');
     const messageText = input.value.trim();
+    const charCount = document.getElementById('char-count');
     console.log("Attempting to send message:", messageText);
 
     if (!stompClient || !stompClient.connected) {
         console.warn('WebSocket이 연결되어 있지 않습니다. 재연결 시도 후 다시 전송해 주세요.');
         return;
     }
+    // 메세지 전송 전 기존 에러 메세지 초기화
+    clearErrorMessage();
 
     if (messageText) {
         const message = {
@@ -108,6 +120,7 @@ function sendChatMessage() {
         console.log("Sending message:", message);
         stompClient.send('/pub/chat/message', {}, JSON.stringify(message));
         input.value = ''; // 입력 필드 초기화
+        charCount.textContent = '0/200'; // 글자 수 초기화
     }
 }
 
@@ -267,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const chatContainer = document.getElementById('chat-messages');
     const scrollToLatestButton = document.getElementById('scroll-to-latest');
+    const charCount = document.getElementById('char-count');
 
 
     // 채팅 영역 스크롤 이벤트
@@ -313,4 +327,32 @@ document.addEventListener('DOMContentLoaded', () => {
             // 팝업 닫기나 다른 처리 로직 추가
         });
     }
+
+    // 글자 수 업데이트 함수
+    function updateCharCount() {
+        const length = messageInput.value.length;
+        charCount.textContent = `${length}/200`;
+    }
+
+    // input 이벤트 발생 시마다 글자 수 갱신
+    messageInput.addEventListener('input', updateCharCount);
+
 });
+
+function showErrorMessage(errorText) {
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = errorText;
+        errorElement.style.display = 'block';
+    } else {
+        console.error("에러 메시지 표시 요소를 찾을 수 없습니다.");
+    }
+}
+
+function clearErrorMessage() {
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = '';
+        errorElement.style.display = 'none';
+    }
+}

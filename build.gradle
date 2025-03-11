@@ -133,6 +133,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    //************************************************************************
+    //  aho-corasick
+    //************************************************************************
+    implementation 'org.ahocorasick:ahocorasick:0.4.0'
+
     ////////////////////////////////////////////////////////////////////////////
     //************************************************************************
     // Spring Boot Test
