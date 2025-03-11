@@ -1,11 +1,14 @@
 package com.ssginc.showpinglive.service.implement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssginc.showpinglive.api.Segments;
 import com.ssginc.showpinglive.api.StorageLoader;
 import com.ssginc.showpinglive.api.SubtitleGenerator;
 import com.ssginc.showpinglive.service.SubtitleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -34,19 +37,28 @@ public class SubtitleServiceImpl implements SubtitleService {
         List<Segments> segments = subtitleGenerator.getSubtitles(title);
 
         String fileName = title + ".json";
-        System.out.println(fileName);
-
         File jsonFile = new File(fileName);
+
         ObjectMapper mapper = new ObjectMapper();
 
+        // 최상위 노드 생성
+        ObjectNode root = mapper.createObjectNode();
+        root.set("segments", mapper.valueToTree(segments));
+
         try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, segments.toString());
+            mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, root);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         storageLoader.uploadFile(jsonFile, fileName);
         jsonFile.delete();
+    }
+
+    @Override
+    public Resource getSubtitle(String title) {
+        String fileName = title + ".json";
+        return storageLoader.getSubtitle(fileName);
     }
 
 }

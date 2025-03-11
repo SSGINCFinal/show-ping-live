@@ -145,4 +145,17 @@ public class StreamController {
                 .body("자막 생성 성공");
     }
 
+    /**
+     * 파일 제목으로 자막 정보 파일을 가져오는 함수
+     * @param title 파일 제목
+     * @return 자막 생성 여부 응답 객체
+     */
+    @GetMapping("/subtitle/{title}.json")
+    public ResponseEntity<?> getSubtitle(@PathVariable String title) {
+        Resource subtitleJson = subtitleService.getSubtitle(title);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(subtitleJson);
+    }
+
 }
