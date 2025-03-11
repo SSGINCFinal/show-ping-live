@@ -1,8 +1,10 @@
 package com.ssginc.showpinglive.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.annotations.JsonAdapter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -69,7 +71,6 @@ public class SubtitleGenerator {
             HttpResponse response = httpClient.execute(postRequest);
             HttpEntity responseEntity = response.getEntity();
             String jsonResponse = EntityUtils.toString(responseEntity);
-            System.out.println("API 응답: " + jsonResponse);
 
             // ObjectMapper 생성
             ObjectMapper mapper = new ObjectMapper();
@@ -81,10 +82,29 @@ public class SubtitleGenerator {
             JsonNode segmentsNode = rootNode.path("segments");
 
             for (JsonNode segment : segmentsNode) {
+                // 어절별 정보 불러오기
+                JsonNode wordList = segment.get("words");
+
+                // 불러온 정보 리스트에 저장
+                List<List<Object>> wordsList = mapper.convertValue(
+                        wordList, new TypeReference<List<List<Object>>>() {});
+
+                // 어절별 정보를 Words 객체 리스트에 저장
+                List<Words> words = new ArrayList<>();
+                for (int i = 0; i < wordsList.size(); i++) {
+                    words.add(Words.builder()
+                            .start(wordList.get(i).get(0).asLong())
+                            .end(wordList.get(i).get(1).asLong())
+                            .text(wordList.get(i).get(2).asText())
+                            .build());
+                }
+
+                // 전체문장과 어절정보를 저장
                 segments.add(Segments.builder()
                         .start(segment.get("start").asLong())
                         .end(segment.get("end").asLong())
                         .text(segment.get("text").asText())
+                        .words(words)
                         .build());
             }
 
