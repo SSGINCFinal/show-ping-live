@@ -20,7 +20,7 @@ window.onload = function () {
 
     const chat = document.getElementById('chat-container');
     document.getElementById('send-button').addEventListener('click', sendChatMessage);
-    connectToChatRoom();  // STOMP 연결 초기화
+
 };
 
 function connectToChatRoom() {
@@ -67,25 +67,32 @@ function onError(error) {
     }, reconnectTimeout);
 }
 
-// function createChatRoom() {
-//     const chatContainer = document.getElementById('chat-messages');
-//     const scrollToLatestButton = document.getElementById('scroll-to-latest');
-//
-//     chatContainer.addEventListener('scroll', function () {
-//         if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight) {
-//             scrollToLatestButton.style.display = 'block';
-//         } else {
-//             scrollToLatestButton.style.display = 'none';
-//         }
-//     });
-//
-//     scrollToLatestButton.addEventListener('click', function () {
-//         chatContainer.scrollTop = chatContainer.scrollHeight;
-//         scrollToLatestButton.style.display = 'none';
-//     });
-//
-//
-// }
+function createChatRoom() {
+    let streamNo = document.getElementById('streamNoInput') ? document.getElementById('streamNoInput').value : '3'; // 기본값 예: 1
+
+    // API 호출
+    fetch(`/chatRoom/create?streamNo=${encodeURIComponent(streamNo)}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('채팅방 생성 실패');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('생성된 채팅방:', data);
+            alert(`채팅방 번호: ${data.chatRoomNo}`);
+        })
+        .catch(error => {
+            console.error('채팅방 생성 중 오류 발생:', error);
+            alert('채팅방 생성 중 오류가 발생했습니다.');
+        });
+}
 
 function stopChat() {
     if (stompClient) {
@@ -237,77 +244,33 @@ function openReportModal(memberId, chatMessage) {
     modalOverlay.style.display = 'block';
 }
 
-// DOMContentLoaded 이후
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 초기화: 쿠키, JWT, 변수, STOMP 연결 ---
+    const accessToken = getCookieValue("accessToken");
+    console.log("AccessToken:", accessToken);
+
+    const payload = parseJwt(accessToken);
+    console.log("JWT Payload:", payload);
+
+    const extractedMemberId = payload ? payload.sub || payload.memberId : null;
+    console.log("추출된 MemberId:", extractedMemberId);
+
+    console.log("chatRoomNo =", chatRoomNo); // Thymeleaf 치환 결과 확인
+    console.log("memberId =", memberId);
+
+    // send 버튼 이벤트와 STOMP 연결 초기화
+    const sendButton = document.getElementById('send-button');
+    if (sendButton) {
+        sendButton.addEventListener('click', sendChatMessage);
+    }
+    connectToChatRoom();
+
+    // --- 신고 모달 관련 이벤트 ---
     const reportForm = document.getElementById('reportForm');
     const cancelBtn = document.getElementById('cancelBtn');
     const reportModal = document.getElementById('reportModal');
     const modalOverlay = document.getElementById('modalOverlay');
 
-    // 폼 전송(신고하기)
-    reportForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const checkedReason = document.querySelector('input[name="reportReason"]:checked');
-        if (checkedReason) {
-            const reasonValue = checkedReason.value;
-            alert(`신고 사유: ${reasonValue}`);
-            closeReportModal();
-        }
-    });
-
-    // 취소 버튼
-    cancelBtn.addEventListener('click', () => {
-        alert('신고를 취소했습니다.');
-        closeReportModal();
-    });
-
-    // 모달 닫기 함수
-    function closeReportModal() {
-        reportModal.style.display = 'none';
-        modalOverlay.style.display = 'none';
-    }
-
-    // 모달 배경 클릭 시 닫히게 하려면
-    modalOverlay.addEventListener('click', () => {
-        closeReportModal();
-    });
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const reportForm = document.getElementById('reportForm');    // 신고 폼
-    const cancelBtn = document.getElementById('cancelBtn');      // 신고 취소 버튼
-    const messageInput = document.getElementById('message-input'); // 채팅 입력창
-
-    const chatContainer = document.getElementById('chat-messages');
-    const scrollToLatestButton = document.getElementById('scroll-to-latest');
-    const charCount = document.getElementById('char-count');
-
-
-    // 채팅 영역 스크롤 이벤트
-    chatContainer.addEventListener('scroll', function() {
-        // 스크롤 위치가 최하단에 가까운지 확인 (예: 50px 이상 차이날 때 버튼 표시)
-        if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
-            scrollToLatestButton.style.display = 'block';
-        } else {
-            scrollToLatestButton.style.display = 'none';
-        }
-    });
-
-    // "최신 채팅으로 이동" 버튼 클릭 시 최하단으로 스크롤
-    scrollToLatestButton.addEventListener('click', function() {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-        scrollToLatestButton.style.display = 'none';
-    });
-
-    // 채팅 입력창에서 Enter 키로 메시지 전송
-    messageInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();   // Enter 시 줄바꿈 방지
-            sendChatMessage();       // 메시지 전송 함수 호출
-        }
-    });
-
-    // 폼 전송(신고하기) 버튼 클릭 시
     if (reportForm) {
         reportForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -315,29 +278,73 @@ document.addEventListener('DOMContentLoaded', () => {
             if (checkedReason) {
                 const reasonValue = checkedReason.value;
                 alert(`신고 사유: ${reasonValue}`);
-                // 팝업 닫기나 다른 처리 로직 추가
+                closeReportModal();
             }
         });
     }
 
-    // 취소 버튼 클릭 시
     if (cancelBtn) {
         cancelBtn.addEventListener('click', () => {
             alert('신고를 취소했습니다.');
-            // 팝업 닫기나 다른 처리 로직 추가
+            closeReportModal();
         });
     }
 
-    // 글자 수 업데이트 함수
-    function updateCharCount() {
-        const length = messageInput.value.length;
-        charCount.textContent = `${length}/200`;
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', () => {
+            closeReportModal();
+        });
     }
 
-    // input 이벤트 발생 시마다 글자 수 갱신
-    messageInput.addEventListener('input', updateCharCount);
+    function closeReportModal() {
+        if (reportModal) {
+            reportModal.style.display = 'none';
+        }
+        if (modalOverlay) {
+            modalOverlay.style.display = 'none';
+        }
+    }
 
+    // --- 채팅 영역 관련 이벤트 ---
+    const messageInput = document.getElementById('message-input');
+    const chatContainer = document.getElementById('chat-messages');
+    const scrollToLatestButton = document.getElementById('scroll-to-latest');
+    const charCount = document.getElementById('char-count');
+
+    if (chatContainer && scrollToLatestButton) {
+        chatContainer.addEventListener('scroll', function() {
+            if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
+                scrollToLatestButton.style.display = 'block';
+            } else {
+                scrollToLatestButton.style.display = 'none';
+            }
+        });
+
+        scrollToLatestButton.addEventListener('click', function() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            scrollToLatestButton.style.display = 'none';
+        });
+    }
+
+    if (messageInput) {
+        // Enter 키로 메시지 전송
+        messageInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+        // 글자 수 업데이트
+        messageInput.addEventListener('input', () => {
+            const length = messageInput.value.length;
+            if (charCount) {
+                charCount.textContent = `${length}/200`;
+            }
+        });
+    }
 });
+
 
 function showErrorMessage(errorText) {
     const errorElement = document.getElementById('error-message');
