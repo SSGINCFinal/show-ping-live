@@ -9,22 +9,11 @@ import org.springframework.stereotype.Service;
  * Kafka를 이용하여 ChatDto 전송하는 Producer 클래스
  * <p>
  */
-@Service
-@RequiredArgsConstructor
-public class KafkaProducerService {
 
-    private final KafkaTemplate<String, ChatDto> kafkaTemplate;
-    private static final String TOPIC = "chat-messages"; // Kafka 토픽 이름
-
+public interface KafkaProducerService {
     /**
      * ChatDto 메시지를 Kafka로 전송
      * @param chatDto 전송할 채팅 메시지 객체
      */
-    public void sendMessage(ChatDto chatDto) {
-        try {
-            kafkaTemplate.send(TOPIC, chatDto); // Kafka로 메시지 전송
-        } catch (Exception e) {
-            System.err.println("Error sending message to Kafka: " + e.getMessage());
-        }
-    }
+    void sendMessage(ChatDto chatDto);
 }
