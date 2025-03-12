@@ -18,7 +18,7 @@ import java.util.List;
 public interface StreamRepository extends JpaRepository<Stream, Long> {
 
     /**
-     * 전체 Vod 목록을 반환해주는 쿼리 메소드
+     * 전체 Vod 목록을 반환해주는 쿼리 메서드
      * @return vod 목록
      */
     @Query("""
@@ -31,7 +31,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
     List<StreamResponseDto> findAllVod();
 
     /**
-     * VOD 목록과 페이지 정보를 반환해주는 쿼리 메소드
+     * VOD 목록과 페이지 정보를 반환해주는 쿼리 메서드
      * @param pageable 페이징 정보 객체
      * @return 페이징 정보가 포함된 VOD 목록
      */
@@ -45,7 +45,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
     Page<StreamResponseDto> findAllVodByPage(Pageable pageable);
 
     /**
-     * 특정 카테고리의 Vod 목록을 반환해주는 쿼리 메소드
+     * 특정 카테고리의 Vod 목록을 반환해주는 쿼리 메서드
      * @param categoryNo 카테고리 번호
      * @return vod 목록
      */
@@ -60,7 +60,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
     List<StreamResponseDto> findAllVodByCategory(Long categoryNo);
 
     /**
-     * 진행중인 라이브 방송을 반환해주는 쿼리 메소드
+     * 진행중인 라이브 방송을 반환해주는 쿼리 메서드
      * @return 라이브 방송 정보 리스트
      */
     @Query("""
@@ -73,7 +73,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
     List<StreamResponseDto> findLive();
 
     /**
-     * 특정 영상번호의 Vod 정보를 반환해주는 쿼리 메소드
+     * 특정 영상번호의 Vod 정보를 반환해주는 쿼리 메서드
      * @param streamNo 영상 번호
      * @return vod 목록
      */

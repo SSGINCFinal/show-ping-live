@@ -1,16 +1,12 @@
 package com.ssginc.showpinglive.service.implement;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.ssginc.showpinglive.api.StorageLoader;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.repository.StreamRepository;
 import com.ssginc.showpinglive.service.StreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,18 +24,15 @@ public class StreamServiceImpl implements StreamService {
     @Value("${download.path}")
     private String VIDEO_PATH;
 
-    @Value("${ncp.storage.bucketName}")
-    private String bucketName;
-
-    private final AmazonS3 amazonS3Client;
-
     private final StreamRepository streamRepository;
 
     @Qualifier("webApplicationContext")
     private final ResourceLoader resourceLoader;
 
+    private final StorageLoader storageLoader;
+
     /**
-     * 전체 Vod 목록을 반환해주는 메소드
+     * 전체 Vod 목록을 반환해주는 메서드
      * @return vod 목록
      */
     @Override
@@ -48,7 +41,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     /**
-     * 페이징 정보가 포함된 Vod 목록을 반환해주는 메소드
+     * 페이징 정보가 포함된 Vod 목록을 반환해주는 메서드
      * @param pageable 페이징 정보 객체
      * @return 페이징 정보가 있는 vod 목록
      */
@@ -58,7 +51,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     /**
-     * 특정 카테고리의 vod 목록을 반환하는 메소드
+     * 특정 카테고리의 vod 목록을 반환하는 메서드
      * @param categoryNo 카테고리 번호
      * @return vod 목록
      */
@@ -68,7 +61,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     /**
-     * 방송중인 라이브 방송 하나를 반환하는 메소드
+     * 방송중인 라이브 방송 하나를 반환하는 메서드
      * @return 라이브 방송정보 1개
      */
     @Override
@@ -77,18 +70,23 @@ public class StreamServiceImpl implements StreamService {
         return liveList.isEmpty() ? null : liveList.get(0);
     }
 
+    /**
+     * 영상번호로 VOD 정보를 가져오는 메서드
+     * @param streamNo 영상 번호
+     * @return 쿼리를 통해 가져온 영상정보 DTO
+     */
     @Override
     public StreamResponseDto getVodByNo(Long streamNo) {
         return streamRepository.findVodByNo(streamNo);
     }
 
     /**
-     * 영상 제목으로 HLS 파일을 받아오는 메소드
+     * 영상 제목으로 HLS 파일을 받아오는 메서드
      * @param title 영상 제목
      * @return HLS 파일 (확장자: m3u8)
      */
     @Override
-    public Mono<Resource> getHLS(String title) {
+    public Mono<?> getHLS(String title) {
         return Mono.fromCallable(() -> {
             File inputFile = new File(VIDEO_PATH, title + ".mp4");
             File outputFile = new File(VIDEO_PATH, title + ".m3u8");
@@ -113,34 +111,28 @@ public class StreamServiceImpl implements StreamService {
     }
 
     /**
-     * 영상 제목과 segment 번호로 TS 파일을 받아오는 메소드
+     * 영상 제목과 segment 번호로 TS 파일을 받아오는 메서드
      * @param title 영상 제목
      * @param segment 세그먼트 번호
      * @return TS 파일 (확장자: ts)
      */
     @Override
-    public Mono<Resource> getTsSegment(String title, String segment) {
+    public Mono<?> getTsSegment(String title, String segment) {
         return Mono.fromCallable(() ->
             resourceLoader.getResource("file:" + VIDEO_PATH + title + segment + ".ts"));
     }
 
+    /**
+     * VOD 파일을 NCP에 저장하는 메서드
+     * @param title 영상 제목
+     * @return VOD 저장 링크
+     */
     @Override
     public String uploadVideo(String title) {
         String filePath = VIDEO_PATH + title;
         File file = new File(filePath);
         String fileName = file.getName();
-
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.length());
-
-        try (InputStream inputStream = new FileInputStream(file)) {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-            throw new RuntimeException("파일 업로드 중 오류 발생", e);
-        }
-
-        return amazonS3Client.getUrl(bucketName, fileName).toString();
+        return storageLoader.uploadFile(file, fileName);
     }
 
 }
