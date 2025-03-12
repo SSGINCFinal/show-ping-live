@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("chatRoom")
@@ -21,15 +23,17 @@ public class ChatRoomController {
 
     /**
      * 채팅방 생성 API
-     *
-     * @param streamNo 채팅방에 연결될 영상의 번호
-     *                 //     * @param maxParticipants 채팅방 최대 참가자 수
+     * @param data 요청 데이터
      * @return 생성된 ChatRoom 객체 (JSON)
      */
     @PostMapping("/create")
-    public ResponseEntity<?> createChatRoom(@RequestBody Long streamNo) {
+    public ResponseEntity<?> createChatRoom(@RequestBody Map<String, Long> data) {
+        System.out.println(data);
+        Long streamNo = data.get("streamNo");
         try {
+            System.out.println();
             ChatRoom newRoom = chatRoomService.createChatRoom(streamNo);
+            System.out.println(newRoom);
             if (newRoom != null) {
                 return ResponseEntity.status(HttpStatus.CREATED).body(ChatRoomResponseDto.builder()
                         .chatRoomNo(newRoom.getChatRoomNo())

@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.service;
 
+import com.ssginc.showpinglive.dto.response.ChatRoomResponseDto;
 import com.ssginc.showpinglive.entity.ChatRoom;
 
 /**
@@ -13,4 +14,7 @@ public interface ChatRoomService {
      * @return 생성된 ChatRoom 객체
      */
     ChatRoom createChatRoom(Long streamNo);
+
+    ChatRoomResponseDto findChatRoomByStreamNo(Long streamNo);
+
 }

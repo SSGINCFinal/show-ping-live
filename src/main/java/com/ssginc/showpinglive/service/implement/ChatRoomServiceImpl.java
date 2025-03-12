@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.service.implement;
 
+import com.ssginc.showpinglive.dto.response.ChatRoomResponseDto;
 import com.ssginc.showpinglive.entity.ChatRoom;
 import com.ssginc.showpinglive.entity.Stream;
 import com.ssginc.showpinglive.repository.ChatRoomRepository;
@@ -34,6 +35,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 //        chatRoom.setChatRoomMaxParticipants(maxParticipants);
 
         return chatRoomRepository.save(chatRoom);
+    }
+
+    @Override
+    public ChatRoomResponseDto findChatRoomByStreamNo(Long streamNo) {
+        return chatRoomRepository.findChatRoomByStreamNo(streamNo);
     }
 
 }
