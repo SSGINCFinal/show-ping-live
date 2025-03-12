@@ -1,6 +1,8 @@
 package com.ssginc.showpinglive.controller;
 
+import com.ssginc.showpinglive.dto.object.ProductItemDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
+import com.ssginc.showpinglive.service.ProductService;
 import com.ssginc.showpinglive.service.StreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,8 @@ import java.util.Map;
 public class StreamController {
 
     private final StreamService streamService;
+
+    private final ProductService productService;
 
     /**
      * 라이브 메인 페이지 요청 컨틀롤러 메소드
@@ -123,6 +128,17 @@ public class StreamController {
         String title = requestData.get("title");
         System.out.println(title);
         return ResponseEntity.ok(streamService.uploadVideo(title));
+    }
+
+    /**
+     * 방송 등록 화면에서 상품 선택을 위해 상품 목록을 반환해주는 메서드
+     * @return 상품 목록이 포함된 응답 객체
+     */
+    @GetMapping("/product/list")
+    public ResponseEntity<List<ProductItemDto>> getProductList() {
+        List<ProductItemDto> productItemDtoList = productService.getProducts();
+
+        return ResponseEntity.status(HttpStatus.OK).body(productItemDtoList);
     }
 
 }
