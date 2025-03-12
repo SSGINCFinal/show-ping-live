@@ -4,6 +4,7 @@
       layout:decorate="layout.html">
 <div layout:fragment="content">
     <link rel="stylesheet" href="/css/watch/vod.css">
+    <link rel="stylesheet" href="/css/webrtc/product_modal.css">
     <link rel="stylesheet" href="/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.css">
     <link rel="stylesheet" href="/webjars/demo-console/1.5.1/index.css">
     <link rel="shortcut icon" href="/img/kurento.png" type="image/png" />
@@ -12,7 +13,9 @@
     <script src="/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.min.js"></script>
     <script src="/webjars/webrtc-adapter/7.4.0/release/adapter.js"></script>
     <script src="/webjars/demo-console/1.5.1/index.js"></script>
-
+    
+    <script src="/js/stream/register_stream.js"></script>
+    <script src="/js/stream/product_modal.js"></script>
     <script src="/js/kurento-utils.js"></script>
     <script src="/js/stream/stream.js"></script>
 
@@ -31,7 +34,70 @@
             </div>
             <div class="product-container">
                 <div id="product">
-                    <h1>상품화면</h1>
+                    <div class="product-form">
+                        <!-- 방송 제목 -->
+                        <div class="form-group horizontal">
+                            <label for="broadcastTitle">방송 제목</label>
+                            <input type="text" id="broadcastTitle" placeholder="방송 제목을 입력해주세요" />
+                        </div>
+                        
+                        <!-- 방송 설명 -->
+                        <div class="form-group horizontal">
+                            <label for="broadcastDesc">방송 설명</label>
+                            <textarea id="broadcastDesc" placeholder="방송 설명을 입력해주세요"></textarea>
+                        </div>
+                        
+                        <!-- 상품 선택 -->
+                        <div class="form-group horizontal select-group">
+                            <label>상품 선택</label>
+                            <button type="button" class="select-btn">+ 선택</button>
+                        </div>
+                        
+                        <!-- 상품 검색 모달(팝업) -->
+                        <div id="productModal" class="modal">
+                            <div class="modal-content">
+                                <!-- 닫기(X) 버튼 -->
+                                <span class="close">&times;</span>
+                                
+                                <!-- 모달 제목 -->
+                                <h2 class="modal-title">상품 검색</h2>
+                                
+                                <!-- 검색 영역 -->
+                                <div class="search-bar">
+                                    <input type="text" placeholder="상품을 검색하세요" />
+                                    <button class="search-btn">
+                                        <!-- 간단한 아이콘(이모지나 FontAwesome 등 사용 가능) -->
+                                        <span style="font-size:16px;">🔍</span>
+                                    </button>
+                                </div>
+                                
+                                <!-- 상품 목록 (스크롤) -->
+                                <div class="product-list-container">
+                                    <ul class="product-list">
+                                    
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 선택된 상품 예시 -->
+                        <div class="product-element">
+                        </div>
+                        
+                        <!-- 할인율 -->
+                        <div class="form-group horizontal discount-group">
+                            <label for="discountRate">할 인 율</label>
+                            <div class="discount-input">
+                                <input type="number" id="discountRate" placeholder="0" min="0" max="100" />
+                                <span>%</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 업데이트 버튼 -->
+                        <div class="form-group horizontal update-group">
+                            <button class="update-btn">업데이트</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
