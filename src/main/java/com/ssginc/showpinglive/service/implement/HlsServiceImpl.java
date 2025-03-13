@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -115,7 +116,8 @@ public class HlsServiceImpl implements HlsService {
         return Mono.fromCallable(() -> {
             String fileName = title + ".m3u8";
             return storageLoader.getHLS(fileName);
-        }).subscribeOn(Schedulers.boundedElastic());
+        }).subscribeOn(Schedulers.boundedElastic())
+                .onErrorResume(FileNotFoundException.class, e -> Mono.empty());
     }
 
     /**
@@ -129,7 +131,8 @@ public class HlsServiceImpl implements HlsService {
         return Mono.fromCallable(() -> {
             String fileName = title + segment + ".ts";
             return storageLoader.getHLS(fileName);
-        }).subscribeOn(Schedulers.boundedElastic());
+        }).subscribeOn(Schedulers.boundedElastic())
+                .onErrorResume(FileNotFoundException.class, e -> Mono.empty());
     }
 
 }
