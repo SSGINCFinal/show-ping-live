@@ -19,7 +19,7 @@
 
 h2 {
     margin-top: 20px;
-    margin-left: 30px;
+    margin-left: 40px;
 }
 
 
@@ -66,7 +66,7 @@ h2 {
     /*margin-left: auto;*/
     /*text-align: right;*/
     margin-top: 10px;
-    margin-right: 20px;
+    margin-right: 40px;
 }
 
 .search-btn,
@@ -147,12 +147,41 @@ td label {
 /* 테이블 스타일 */
 .table-container {
     /*width: 95%;*/
+    table-layout: fixed;
     margin-top: 30px;
     overflow-x: auto;
     text-align: center;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-left: 40px;
+    margin-right: 40px;
     margin-bottom: 20px;
+}
+
+.table-container th,
+.table-container td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table-container table th:nth-child(1),
+.table-container table td:nth-child(1) {
+    width: 60px;  /* 번호 컬럼 */
+}
+.table-container table th:nth-child(2),
+.table-container table td:nth-child(2) {
+    width: 130px; /* 접수일 컬럼 */
+}
+.table-container table th:nth-child(3),
+.table-container table td:nth-child(3) {
+    width: 150px; /* 신고 사유 컬럼 */
+}
+.table-container table th:nth-child(4),
+.table-container table td:nth-child(4) {
+    width: 100px; /* 피신고자 ID 컬럼 */
+}
+.table-container table th:nth-child(5),
+.table-container table td:nth-child(5) {
+    width: 60px; /* 처리 여부 컬럼 */
 }
 
 table {
@@ -174,7 +203,7 @@ td {
 
 /* 검색 결과 개수 */
 .result-count {
-    margin-left: 20px;
+    margin-left: 40px;
     margin-top: 10px;
     font-size: 14px;
     color: #666;
@@ -215,4 +244,14 @@ td {
 .pagination-container .pagination li.active a {
     background-color: #f7e35d; /* 노란색 배경 */
     border-radius: 50%;
+}
+
+.sort-arrow {
+    font-size: 13px;
+    margin-left: 5px;
+    font-weight: bold;
+    color: #333;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
 }

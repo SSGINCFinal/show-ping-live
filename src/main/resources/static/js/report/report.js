@@ -1,7 +1,7 @@
-// [추가!!!!] 페이지네이션 관련 전역 변수
 let allReports = [];     // 전체 신고 목록
 let currentPage = 1;     // 현재 페이지
 const itemsPerPage = 20; // 페이지당 표시할 신고 건수
+let sortState = {};
 
 document.addEventListener("DOMContentLoaded", () => {
     // 페이지 로딩 시 신고 목록 호출
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 검색 버튼 클릭 시, 폼 밖에 있어도 수동으로 폼의 submit 이벤트를 발생시킵니다.
+    // 검색 버튼 클릭 시, 폼 밖에 있어도 수동으로 폼의 submit 이벤트 발생.
     if (searchBtn && searchForm) {
         searchBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 기존 검색 버튼과 초기화 버튼 이벤트는 submit 이벤트에 위임할 수 있음
     if (resetBtn && searchForm) {
         resetBtn.addEventListener("click", () => {
             searchForm.reset();
@@ -68,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 default:
                     return;
             }
-            // [변경!!!!] valueAsDate 대신 "YYYY-MM-DD" 문자열로 직접 설정
+            // "YYYY-MM-DD" 문자열 직접 설정
             startDateInput.value = start.toISOString().slice(0, 10);
             endDateInput.value = end.toISOString().slice(0, 10);
         });
@@ -76,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * [변경!!!!] 신고 목록을 서버에서 받아온 뒤, 페이지/테이블을 렌더링
+ * 신고 목록을 서버에서 받아온 뒤, 페이지/테이블을 렌더링
  */
 function loadReports() {
     const searchForm = document.getElementById("searchForm");
@@ -86,7 +85,7 @@ function loadReports() {
     axios.get('/report/api/list', {params: params})
         .then((response) => {
             console.log("[DEBUG] Received report data:", response.data);
-            // [추가!!!!] 전체 신고 목록을 전역 변수에 저장하고, 페이지를 1로 초기화
+            // 전체 신고 목록을 전역 변수에 저장하고, 페이지를 1로 초기화
             allReports = response.data;
             currentPage = 1;
             renderPage();
@@ -97,7 +96,7 @@ function loadReports() {
 }
 
 /**
- * [추가!!!!] 현재 페이지의 데이터만 테이블에 표시하고, 페이지네이션 표시
+ * 현재 페이지의 데이터만 테이블에 표시하고, 페이지네이션 표시
  */
 function renderPage() {
     // 현재 페이지의 데이터 슬라이싱
@@ -113,24 +112,43 @@ function renderPage() {
 }
 
 /**
- * [추가!!!!] 테이블 생성 로직 (기존 loadReports 내부의 테이블 생성 부분을 분리)
+ * 테이블 생성 로직
  */
 function renderTable(reports) {
     const tableContainer = document.querySelector(".table-container");
     tableContainer.innerHTML = ""; // 기존 내용 클리어
 
+    const headerColumns = [
+        {title: "번호", field: "reportNo", type: "number"},
+        {title: "접수일", field: "reportCreatedAt", type: "date"},
+        {title: "신고 사유", field: "reportReason", type: "string"},
+        {title: "피신고자 ID", field: "memberId", type: "string"},
+        {title: "처리 여부", field: "reportStatus", type: "string"}
+    ];
+
     const table = document.createElement("table");
     const thead = document.createElement("thead");
-    thead.innerHTML = `
-        <tr>
-            <th>번호</th>
-            <th>접수일</th>
-            <th>신고 사유</th>
-            <th>피신고자 ID</th>
-            <th>처리 여부</th>
-        </tr>
-    `;
+
+    let headerHtml = "<tr>";
+    headerColumns.forEach(col => {
+        headerHtml += `<th data-field="${col.field}" data-type="${col.type}" style="cursor:pointer;">
+            ${col.title} <span class="sort-arrow">&#x21C5;</span>
+        </th>`;
+    });
+    headerHtml += "</tr>";
+    thead.innerHTML = headerHtml;
+
     table.appendChild(thead);
+
+    // 헤더 클릭 이벤트 설정 (정렬 기능)
+    const thElements = thead.querySelectorAll("th");
+    thElements.forEach(th => {
+        th.addEventListener("click", () => {
+            const field = th.getAttribute("data-field");
+            const type = th.getAttribute("data-type");
+            sortReports(field, type);
+        });
+    });
 
     const tbody = document.createElement("tbody");
     reports.forEach((report) => {
@@ -164,7 +182,7 @@ function renderTable(reports) {
 }
 
 /**
- * [추가!!!!] 페이지네이션 렌더링
+ *   페이지네이션 렌더링
  * - 한 페이지당 itemsPerPage(20건)
  * - ◀, ▶ 버튼 누르면 10페이지씩 이동
  */
@@ -230,7 +248,7 @@ function renderPagination() {
 }
 
 /**
- * [추가!!!!] 날짜 포맷팅 함수 (YYYY-MM-DD HH:MM)
+ *  날짜 포맷팅 함수 (YYYY-MM-DD HH:MM)
  */
 function formatDate(dateObj) {
     const year = dateObj.getFullYear();
@@ -239,4 +257,42 @@ function formatDate(dateObj) {
     const hours = ("0" + dateObj.getHours()).slice(-2);
     const minutes = ("0" + dateObj.getMinutes()).slice(-2);
     return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+// 정렬 함수: 주어진 필드와 타입에 따라 allReports를 정렬하고 renderPage() 호출
+function sortReports(field, type) {
+    // 기본 정렬 순서를 asc로 설정
+    if (!sortState[field] || sortState[field] === 'desc') {
+        sortState[field] = 'asc';
+    } else {
+        sortState[field] = 'desc';
+    }
+
+    // 정렬 비교 함수 생성
+    const compare = (a, b) => {
+        let aValue = a[field];
+        let bValue = b[field];
+
+        // 타입별 변환
+        if (type === 'number') {
+            aValue = Number(aValue);
+            bValue = Number(bValue);
+        } else if (type === 'date') {
+            aValue = new Date(aValue);
+            bValue = new Date(bValue);
+        } else {
+            // 문자열 비교: 대소문자 구분 없이
+            aValue = aValue.toString().toLowerCase();
+            bValue = bValue.toString().toLowerCase();
+        }
+
+        if (aValue < bValue) return sortState[field] === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortState[field] === 'asc' ? 1 : -1;
+        return 0;
+    };
+
+    // 정렬 적용
+    allReports.sort(compare);
+    // 정렬 후 현재 페이지 다시 렌더링
+    renderPage();
 }
