@@ -53,13 +53,13 @@ public class ChatServiceImpl implements ChatService {
         message.setChatCreatedAt(chatCreatedAt);
 
         // 메시지 저장
-        ChatDto savedMessage = chatRepository.save(message);
+//        ChatDto savedMessage = chatRepository.save(message);
 
         // Kafka 전송
-        kafkaProducerService.sendMessage(savedMessage);
-        System.out.println("[DEBUG] KafkaProducerService.sendMessage() 호출 완료. chatRoomNo=" + savedMessage.getChatRoomNo());
+        kafkaProducerService.sendMessage(message);
+        System.out.println("[DEBUG] KafkaProducerService.sendMessage() 호출 완료. chatRoomNo=" + message.getChatRoomNo());
 
-        return savedMessage;
+        return message;
     }
 
     // 금칙어 필터링 로직 (Aho-Corasick 알고리즘 기반 구현)
