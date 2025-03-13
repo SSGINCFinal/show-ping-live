@@ -446,6 +446,12 @@ function createChatRoom() {
 }
 
 function connectToChatRoom() {
+    // 이미 stompClient가 연결되어 있으면 재연결하지 않음
+    if (stompClient && stompClient.connected) {
+        console.log('이미 채팅방에 연결되어 있습니다.');
+        return;
+    }
+
     const socket = new SockJS('/ws-stomp-chat');
     stompClient = Stomp.over(socket);
 

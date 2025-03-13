@@ -67,9 +67,6 @@ public class ChatController {
             if (savedMessage.getChatRoomNo() == null) {
                 System.err.println("[ERROR] savedMessage.getChatRoomNo() is null!");
             }
-            String destination = "/sub/chat/room/" + savedMessage.getChatRoomNo();
-            messagingTemplate.convertAndSend(destination, savedMessage);
-            System.out.println("[DEBUG] Message sent to destination: " + destination);
         } catch (IllegalArgumentException e) {
             System.err.println("[ERROR] IllegalArgumentException in sendMessage: " + e.getMessage());
             ChatDto errorResponse = new ChatDto();
@@ -86,44 +83,5 @@ public class ChatController {
             System.err.println("[ERROR] Exception in sendMessage: " + e);
             e.printStackTrace();
         }
-    }
-
-
-    /**
-     * 채팅방 화면을 렌더링하기 위한 메소드
-     * <p>
-     * 요청 쿠키에서 accessToken을 추출하여 로그인한 사용자의 정보를 확인한 후, -> 추후 수정 예정(쿠키 사용X)
-     * 채팅방 번호와 사용자 아이디를 모델에 추가하여 뷰에 전달.
-     *
-     * @param request    HttpServletRequest 객체 (쿠키 접근)
-     * @param model      뷰에 데이터를 전달하기 위한 Model 객체
-     * @param chatRoomNo 채팅방 번호
-     * @return 채팅방 뷰 이름 (로그인하지 않은 경우 로그인 페이지로 리다이렉트)
-     */
-    @GetMapping("chatRoom")
-    public String getChatRoom(HttpServletRequest request, Model model, @RequestParam Long chatRoomNo) {
-        String memberId = null;
-        String memberRole = null;
-
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("accessToken".equals(cookie.getName())) {
-//                    memberId = jwtUtil.getUsernameFromToken(cookie.getValue());
-                    memberId = jwtUtil.getUsernameFromToken(cookie.getValue());
-//                    memberRole = jwtUtil.getRoleFromToken(cookie.getValue());
-                    System.out.println("[DEBUG] memberId: " + memberId);
-//                    System.out.println("[DEBUG] memberRole: " + memberRole);
-                    break;
-                }
-            }
-        }
-        if (memberId == null) {
-            // 인증 정보가 없는 경우 로그인 페이지로 리다이렉트
-            return "redirect:/login";
-        }
-        model.addAttribute("chatRoomNo", chatRoomNo);
-        model.addAttribute("memberId", memberId);
-        return "chat/chatRoom";
     }
 }
