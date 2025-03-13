@@ -78,33 +78,16 @@
         </div>
 
     </div>
-    <!-- 테이블 영역 -->
+    <!-- 결과 개수 영역 -->
     <div class="result-count">
         검색 결과 (총 <span th:text="${#lists.size(reports)}"></span>개)
     </div>
 
-    <div class="table-container">
-        <!--        <table>-->
-        <!--            <thead>-->
-        <!--            <tr>-->
-        <!--                <th>번호</th>-->
-        <!--                <th>접수일</th>-->
-        <!--                <th>신고 사유</th>-->
-        <!--                <th>피신고자 ID</th>-->
-        <!--                <th>처리 여부</th>-->
-        <!--            </tr>-->
-        <!--            </thead>-->
-        <!--            <tbody>-->
-        <!--            <tr th:each="report : ${reports}">-->
-        <!--                <td th:text="${report.reportNo}"></td>-->
-        <!--                <td th:text="${#temporals.format(report.reportCreatedAt, 'yyyy-MM-dd HH:mm')}"></td>-->
-        <!--                <td th:text="${report.reportReason}"></td>-->
-        <!--                <td th:text="${report.member.memberId}"></td>-->
-        <!--                <td th:text="${report.reportStatus.reportStatus}"></td>-->
-        <!--            </tr>-->
-        <!--            </tbody>-->
-        <!--        </table>-->
-    </div>
+    <!-- 테이블 영역 -->
+    <div class="table-container"></div>
+
+    <!-- 페이지네이션 영역 -->
+    <div class="pagination-container"></div>
 </div>
 <!--</div>-->
 </html>

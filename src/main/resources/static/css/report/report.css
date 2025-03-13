@@ -179,3 +179,40 @@ td {
     font-size: 14px;
     color: #666;
 }
+
+/* 페이지네이션 컨테이너 */
+.pagination-container {
+    text-align: center;
+    margin-bottom: 20px;
+    user-select: none; /* 텍스트 드래그 방지 (옵션) */
+}
+
+.pagination-container .pagination {
+    display: inline-block;
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.pagination-container .pagination li {
+    display: inline-block;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.pagination-container .pagination li a {
+    text-decoration: none;
+    color: #333;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.pagination-container .pagination li a:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination-container .pagination li.active a {
+    background-color: #f7e35d; /* 노란색 배경 */
+    border-radius: 50%;
+}
