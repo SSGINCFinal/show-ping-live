@@ -1,6 +1,7 @@
 package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.dto.object.ProductItemDto;
+import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.service.ProductService;
 import com.ssginc.showpinglive.service.StreamService;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -141,4 +144,24 @@ public class StreamController {
         return ResponseEntity.status(HttpStatus.OK).body(productItemDtoList);
     }
 
+    /**
+     * 방송 등록을 하는 메서드
+     * @param request 방송 등록에 필요한 방송 정보
+     * @return 생성 혹은 수정된 방송 데이터의 방송 번호가 포함된 응답 객체
+     */
+    @PostMapping("/stream")
+    public ResponseEntity<Map<String, Long>> createStream(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RegisterStreamRequestDto request) {
+        String memberId = null;
+
+        if (userDetails != null) {
+            memberId = userDetails.getUsername();
+        }
+
+        Long streamNo = streamService.createStream(memberId, request);
+
+        Map<String, Long> response = new HashMap<>();
+        response.put("streamNo", streamNo);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

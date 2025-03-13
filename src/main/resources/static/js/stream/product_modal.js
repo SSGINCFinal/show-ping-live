@@ -83,11 +83,12 @@ document.addEventListener("DOMContentLoaded", function() {
                         const imgSrc = item.querySelector("img").src;
                         const name = item.querySelector(".product-name").textContent.trim();
                         const originalPrice = item.querySelector(".original-price").textContent.trim();
+                        const productNo = item.id;
 
                         // 선택된 상품 표시 영역 내부를 동적으로 구성
                         productElement.innerHTML = `
                             <img src="${imgSrc}" alt="상품 이미지" class="product-img">
-                            <div class="product-info">
+                            <div class="product-info" id="${productNo}">
                                 <p class="product-name">${name}</p>
                                 <div class="product-price-container">
                                     <p class="product-origin-price">${originalPrice}</p>

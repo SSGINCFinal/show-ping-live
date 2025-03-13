@@ -4,7 +4,16 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.ssginc.showpinglive.dto.object.CreateStreamDto;
+import com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto;
+import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
+import com.ssginc.showpinglive.entity.Member;
+import com.ssginc.showpinglive.entity.Product;
+import com.ssginc.showpinglive.entity.Stream;
+import com.ssginc.showpinglive.entity.StreamStatus;
+import com.ssginc.showpinglive.repository.MemberRepository;
+import com.ssginc.showpinglive.repository.ProductRepository;
 import com.ssginc.showpinglive.repository.StreamRepository;
 import com.ssginc.showpinglive.service.StreamService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +28,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -34,6 +45,10 @@ public class StreamServiceImpl implements StreamService {
     private final AmazonS3 amazonS3Client;
 
     private final StreamRepository streamRepository;
+
+    private final ProductRepository productRepository;
+
+    private final MemberRepository memberRepository;
 
     @Qualifier("webApplicationContext")
     private final ResourceLoader resourceLoader;
@@ -143,4 +158,69 @@ public class StreamServiceImpl implements StreamService {
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
+    /**
+     * 로그인한 사용자가 등록하고 시작하지 않은 방송 정보를 가져오는 메서드
+     * @param memberId
+     * @return GetStreamRegisterInfoDto 로그인한 회원으로 등록된 방송 정보
+     */
+    @Override
+    public GetStreamRegisterInfoDto getStreamRegisterInfo(String memberId) {
+        return streamRepository.findStreamByMemberIdAndStreamStatus(memberId);
+    }
+
+    /**
+     * 방송 데이터를 생성하거나 수정하는 메서드
+     * @param memberId
+     * @param request
+     * @return 생성 혹은 수정된 방송의 방송 번호
+     */
+    @Override
+    public Long createStream(String memberId, RegisterStreamRequestDto request) {
+        // 생성 혹은 수정된 streamNo
+        Long responseStreamNo;
+        Product product = productRepository.findById(request.getProductNo()).orElseThrow(RuntimeException::new);
+
+        // 할인율 전처리
+        Integer productSale = request.getProductSale();
+        if (productSale == null) {
+            productSale = 0;
+        }
+
+        Long streamNo = request.getStreamNo();
+        // 기존에 등록된 방송 정보가 있는 경우 방송 데이터를 수정
+        if (streamNo != null) {
+            Stream stream = streamRepository.findById(streamNo).orElseThrow(RuntimeException::new);
+
+            stream.setStreamTitle(request.getStreamTitle());
+            stream.setStreamDescription(request.getStreamDescription());
+            // 기존에 선택된 상품의 할인율을 0으로 반영
+            stream.getProduct().setProductSale(0);
+            // 방송 정보를 새로 선택한 상품으로 변경
+            stream.setProduct(product);
+            // 새로 선택된 상품의 할인율 반영
+            product.setProductSale(productSale);
+
+            stream.setStreamEnrollTime(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+
+            responseStreamNo = streamRepository.save(stream).getStreamNo();
+        } else {    // 기존에 등록된 방송 정보가 없는 경우 새로 방송 데이터를 생성
+            Member member = memberRepository.findByMemberId(memberId).orElseThrow(RuntimeException::new);
+
+            CreateStreamDto stream = CreateStreamDto.builder()
+                    .member(member)
+                    .product(product)
+                    .streamTitle(request.getStreamTitle())
+                    .streamDescription(request.getStreamDescription())
+                    .streamStatus(StreamStatus.STANDBY)
+                    .streamEnrollTime(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
+                    .build();
+
+            // 할인율 적용
+            product.setProductSale(productSale);
+
+            responseStreamNo = streamRepository.save(stream.toEntity()).getStreamNo();
+        }
+
+        return responseStreamNo;
+    }
 }

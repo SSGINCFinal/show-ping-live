@@ -1,5 +1,7 @@
 package com.ssginc.showpinglive.service;
 
+import com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto;
+import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -25,5 +27,9 @@ public interface StreamService {
     Mono<Resource> getTsSegment(String title, String segment);
 
     String uploadVideo(String filePath);
+
+    GetStreamRegisterInfoDto getStreamRegisterInfo(String memberId);
+
+    Long createStream(String memberId, RegisterStreamRequestDto request);
 
 }
