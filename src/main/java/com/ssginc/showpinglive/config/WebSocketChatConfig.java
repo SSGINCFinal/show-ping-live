@@ -12,10 +12,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketChatConfig implements WebSocketMessageBrokerConfigurer {
-    @Bean
-    public WebSocketChatHandler webSocketChatHandler() {
-        return new WebSocketChatHandler();
-    }
+//    @Bean
+//    public WebSocketChatHandler webSocketChatHandler() {
+//        return new WebSocketChatHandler();
+//    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {

@@ -9,6 +9,7 @@ import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Boni Garcia (bgarcia@gsyc.es)
  * @since 5.0.0
  */
+@Component
 public class LiveHandler extends TextWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(LiveHandler.class);
     private static final Gson gson = new GsonBuilder().create();
