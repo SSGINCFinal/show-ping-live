@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.repository;
 
+import com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.entity.Stream;
 import org.springframework.data.domain.Page;
@@ -85,5 +86,19 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamNo = :streamNo
     """)
     StreamResponseDto findVodByNo(Long streamNo);
+
+    /**
+     * 로그인한 회원 정보와 STANDBY 상태인 방송 조회 메서드
+     * @param memberId 회원 아이디
+     * @return stream 정보
+     */
+    @Query("""
+                    SELECT new com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto
+                    (s.streamNo, s.streamTitle, s.streamDescription,
+                    p.productNo, p.productName, p.productPrice, p.productSale, p.productImg)
+                    FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
+                    WHERE s.member.memberId = :memberId AND s.streamStatus = "STANDBY"
+            """)
+    GetStreamRegisterInfoDto findStreamByMemberIdAndStreamStatus(String memberId);
 
 }
