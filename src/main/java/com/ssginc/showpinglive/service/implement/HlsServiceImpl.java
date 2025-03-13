@@ -1,16 +1,24 @@
 package com.ssginc.showpinglive.service.implement;
 
+import com.ssginc.showpinglive.api.StorageLoader;
 import com.ssginc.showpinglive.service.HlsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.io.File;
+import java.io.IOException;
 
+/**
+ * @author dckat
+ * HLS과 관련한 로직을 구현한 서비스 클래스
+ * <p>
+ */
 @Service
 @RequiredArgsConstructor
 public class HlsServiceImpl implements HlsService {
@@ -21,13 +29,15 @@ public class HlsServiceImpl implements HlsService {
     @Qualifier("webApplicationContext")
     private final ResourceLoader resourceLoader;
 
+    private final StorageLoader storageLoader;
+
     /**
-     * 영상 제목으로 HLS 파일을 받아오는 메서드
+     * 영상 제목으로 HLS 생성하여 받아오는 메서드
      * @param title 영상 제목
      * @return HLS 파일 (확장자: m3u8)
      */
     @Override
-    public Mono<?> getHLS(String title) {
+    public Mono<?> getHLSV1(String title) {
         return Mono.fromCallable(() -> {
             File inputFile = new File(VIDEO_PATH, title + ".mp4");
             File outputFile = new File(VIDEO_PATH, title + ".m3u8");
@@ -58,9 +68,41 @@ public class HlsServiceImpl implements HlsService {
      * @return TS 파일 (확장자: ts)
      */
     @Override
-    public Mono<?> getTsSegment(String title, String segment) {
+    public Mono<?> getTsSegmentV1(String title, String segment) {
         return Mono.fromCallable(() ->
                 resourceLoader.getResource("file:" + VIDEO_PATH + title + segment + ".ts"));
+    }
+
+    /**
+     * HLS를 생성하여 NCP에 저장하는 메서드
+     * @param title 영상 제목
+     * @return HLS 파일 (확장자: m3u8)
+     */
+    @Override
+    public String saveHLS(String title) throws IOException, InterruptedException {
+        String dirStr = VIDEO_PATH + "hls";
+        File inputFile = new File(VIDEO_PATH, title + ".mp4");
+        File outputFile = new File(dirStr, title + ".m3u8");
+        File outputDir = new File(dirStr);
+
+
+        // FFmpeg를 사용하여 HLS로 변환
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "ffmpeg", "-i", inputFile.getAbsolutePath(),
+                "-codec:", "copy", "-start_number", "0",
+                "-hls_time", "10", "-hls_list_size", "0",
+                "-f", "hls", outputFile.getAbsolutePath()
+        );
+        Process process = processBuilder.start();
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            throw new RuntimeException("FFmpeg 변환 실패. Exit code: " + exitCode);
+        }
+
+        File[] files = outputDir.listFiles();
+
+        return storageLoader.uploadHlsFiles(files, title);
     }
 
 }
