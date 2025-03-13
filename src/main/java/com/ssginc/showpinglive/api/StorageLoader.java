@@ -49,6 +49,21 @@ public class StorageLoader {
     }
 
     /**
+     * 생성된 HLS 파일과 TS를 NCP Storage에 저장하는 메서드
+     * @param files    저장할 파일 리스트
+     * @return 업로드된 파일 링크
+     */
+    public String uploadHlsFiles(File[] files, String fileName) {
+        if (files != null) {
+            for (File file : files) {
+                String remoteKey = "video/hls/" + file.getName();
+                amazonS3Client.putObject(new PutObjectRequest(bucketName, remoteKey, file));
+            }
+        }
+        return "video/hls/" + fileName + ".m3u8";
+    }
+
+    /**
      * 지정된 파일 이름으로 NCP Storage json 자막파일 불러오는 메서드
      * @param fileName 영상 제목
      * @return 자막 json 파일
@@ -60,6 +75,17 @@ public class StorageLoader {
         } catch (AmazonS3Exception e) {
             throw new RuntimeException("Amazon 서비스 예외 발생: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * 지정된 파일 이름으로 NCP Storage에서 HLS 파일들을 불러오는 메서드
+     * @param fileName 영상 제목
+     * @return 불러온 리소스
+     */
+    public Resource getHLS(String fileName) {
+        String remoteKey = "video/hls/" + fileName;
+        S3Object s3Object = amazonS3Client.getObject(new GetObjectRequest(bucketName, remoteKey));
+        return new InputStreamResource(s3Object.getObjectContent());
     }
 
 }

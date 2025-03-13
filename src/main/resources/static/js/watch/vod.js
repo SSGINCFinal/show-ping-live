@@ -42,7 +42,7 @@ function msToSeconds(ms) {
 async function streamVideo(title) {
     if (Hls.isSupported()) {
         var hls = new Hls();
-        hls.loadSource(`/stream/vod/${title}.m3u8`);
+        hls.loadSource(`/hls/v2/${title}.m3u8`);
         hls.attachMedia(videoElement);
     }
     else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
