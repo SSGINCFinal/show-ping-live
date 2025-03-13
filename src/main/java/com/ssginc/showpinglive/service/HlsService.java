@@ -12,4 +12,8 @@ public interface HlsService {
 
     String saveHLS(String title) throws IOException, InterruptedException;
 
+    Mono<?> getHLSV2(String title);
+
+    Mono<?> getTsSegmentV2(String title, String segment);
+
 }

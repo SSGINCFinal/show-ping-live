@@ -66,4 +66,36 @@ public class HlsController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 영상 제목과 segment 번호로 HLS 파일을 NCP Storage에서 받아오는 컨트롤러 메서드
+     * @param title 영상 제목
+     * @return TS 파일이 있는 응답객체 (확장자: ts)
+     */
+    @GetMapping(value = "/v2/{title}.m3u8")
+    public Mono<?> getHLSV2(@PathVariable String title) {
+        // 불러온 ts 파일을 응답으로 전송
+        return hlsService.getHLSV2(title)
+                .map(resource -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
+                        .body(resource))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
+    /**
+     * 영상 제목과 segment 번호로 TS 파일을 NCP로 받아오는 컨트롤러 메서드
+     * @param title 영상 제목
+     * @param segment 세그먼트 번호
+     * @return TS 파일이 있는 응답객체 (확장자: ts)
+     */
+    @GetMapping(value = "/v2/{title}{segment}.ts")
+    public Mono<?> getTsSegmentV2(@PathVariable String title,
+                                  @PathVariable String segment) {
+        // 불러온 ts 파일을 응답으로 전송
+        return hlsService.getTsSegmentV2(title, segment)
+                .map(resource -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
+                        .body(resource))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
 }

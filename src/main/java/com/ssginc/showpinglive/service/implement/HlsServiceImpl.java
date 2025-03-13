@@ -105,4 +105,31 @@ public class HlsServiceImpl implements HlsService {
         return storageLoader.uploadHlsFiles(files, title);
     }
 
+    /**
+     * NCP Storage에 저장된 HLS를 불러오는 메서드
+     * @param title 파일 제목
+     * @return HLS 파일 (확장자: m3u8)
+     */
+    @Override
+    public Mono<Resource> getHLSV2(String title) {
+        return Mono.fromCallable(() -> {
+            String fileName = title + ".m3u8";
+            return storageLoader.getHLS(fileName);
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    /**
+     * 영상 제목과 segment 번호로 NCP Storage에 저장된 TS 파일을 받아오는 메서드
+     * @param title 영상 제목
+     * @param segment 세그먼트 번호
+     * @return TS 파일 (확장자: ts)
+     */
+    @Override
+    public Mono<?> getTsSegmentV2(String title, String segment) {
+        return Mono.fromCallable(() -> {
+            String fileName = title + segment + ".ts";
+            return storageLoader.getHLS(fileName);
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+
 }
