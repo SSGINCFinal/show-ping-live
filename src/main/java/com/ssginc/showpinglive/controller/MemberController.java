@@ -1,11 +1,13 @@
 package com.ssginc.showpinglive.controller;
 
-import com.ssginc.showpinglive.dto.object.MemberDTO;
+import com.ssginc.showpinglive.dto.object.MemberDto;
 import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.repository.MemberRepository;
-import com.ssginc.showpinglive.service.implement.AuthServiceImpl;
+import com.ssginc.showpinglive.service.AuthService;
+import com.ssginc.showpinglive.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,7 +22,7 @@ public class MemberController {
 
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
-    private final AuthServiceImpl authService;
+    private final AuthService authService;
 
     // 로그인 페이지 요청 처리
     @GetMapping("/login")
@@ -55,7 +57,7 @@ public class MemberController {
     }
 
     @PostMapping("/register")
-    public String registerMember(@RequestBody MemberDTO memberDto, RedirectAttributes redirectAttributes) throws Exception {
+    public String registerMember(@RequestBody MemberDto memberDto, RedirectAttributes redirectAttributes) throws Exception {
         System.out.println(memberDto.toString());
         try {
             // 회원가입 처리 (회원 정보 DB 저장)

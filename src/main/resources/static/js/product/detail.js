@@ -1,68 +1,37 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const categoryNo = window.location.pathname.split('/').pop(); // URL에서 categoryNo 추출
-    loadProducts(categoryNo);
-});
-
-function loadProducts(categoryNo) {
-    axios.get(`/api/products/${categoryNo}`)
-        .then(response => {
-            const products = response.data;
-            const productGrid = document.getElementById('product-grid');
-            productGrid.innerHTML = '';
-
-            if (products.length === 0) {
-                productGrid.innerHTML = '<p>등록된 상품이 없습니다.</p>';
-            } else {
-                products.forEach(product => {
-                    const productDiv = document.createElement('div');
-                    productDiv.classList.add('product-item');
-                    const formattedPrice = product.productPrice.toLocaleString('ko-KR');
-
-                    productDiv.innerHTML = `
-                        <img src="/img/product_img/${product.productImg}" alt="${product.productName}" />
-                        <p id="product-name">${product.productName}</p>
-                        <p id="product-price">${formattedPrice}원</p>
-                    `;
-
-                    // 상품 클릭 시 상세 페이지로 이동
-                    productDiv.addEventListener('click', () => {
-                        window.location.href = `/product/detail/${product.productNo}`;
-                    });
-
-                    productGrid.appendChild(productDiv);
-                });
-            }
-        })
-        .catch(error => {
-            console.error("상품 목록을 불러오는 중 오류 발생:", error);
-        });
-}
-
+// 상품 클릭 시 상품 상세정보 페이지로 이동
 document.addEventListener("DOMContentLoaded", function () {
     const productNo = window.location.pathname.split('/').pop(); // URL에서 productNo 추출
     loadProductDetail(productNo);
+    loadProductReview(productNo);
 });
 
 function loadProductDetail(productNo) {
     axios.get(`/api/products/detail/${productNo}`)
         .then(response => {
             const product = response.data;
+            const productSale = product.productSale;  // productSale 값을 가져옵니다.
             const productDetail = document.getElementById('product-detail-page');
 
             const formattedPrice = product.productPrice.toLocaleString('ko-KR'); // 가격 콤마 포맷팅
-            const formattedQuantity = product.productQuantity.toLocaleString('ko-KR'); // 재고 콤마 포맷팅
+            const formattedFinalPrice = product.discountedPrice.toLocaleString('ko-KR');
+
 
             // 상품 상세 정보를 동적으로 삽입
             productDetail.innerHTML = `
                 <div class="product-detail">
-                    <img src="/img/product_img/${product.productImg}" alt="${product.productName}" />
+                    <img src="${product.productImg}" alt="${product.productName}" />
 
                     <div class="product-info">
                         <h1>${product.productName}</h1>
-
-                        <div class="final-price">
-                            <p>가격: ${formattedPrice}원</p>
-                        </div>
+                        
+                    <div class="product-price" id="product-sale" style="font-size: 25px">
+                        <p style="text-decoration: line-through">${formattedPrice}원</p>
+                        <p style="color: red">${product.productSale} %</p>
+                    </div>
+                    
+                    <div class="product-price-final" id="product-price-final">
+                        <p>${formattedFinalPrice}원</p>
+                    </div>
 
                         <div class="purchase-section">
                             <div class="quantity-control">
@@ -80,10 +49,16 @@ function loadProductDetail(productNo) {
 
                 <!-- 상품 상세 설명 이미지 추가 -->
                 <div class="promotion-banner">
-                    <img src="/img/product_detail_img/${product.productDescript}" alt="상품 상세 설명 이미지" />
+                    <img src="${product.productDescript}" alt="상품 상세 설명 이미지" />
                 </div>
-                
             `;
+
+            // productSale이 0일 경우 product-price를 숨기기
+            if (productSale === 0) {
+                document.getElementById("product-sale").style.display = "none"; // product-price 숨기기
+            } else {
+                document.getElementById("product-sale").style.display = "block"; // product-price 보이기
+            }
 
             setupEventListeners(productNo); // 수량 조절 및 장바구니 추가 기능 연결
 
@@ -93,10 +68,6 @@ function loadProductDetail(productNo) {
         });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const productNo = window.location.pathname.split('/').pop(); // URL에서 productNo 추출
-    loadProductReview(productNo);
-});
 
 function loadProductReview(productNo) {
     axios.get(`/api/products/reviews/${productNo}`)
@@ -176,34 +147,52 @@ function setupEventListeners(productNo) {
     // 장바구니 버튼 클릭 시 상품 추가 요청
     addToCartBtn.addEventListener("click", async function () {
         try {
-            const response = await axios.get("/api/carts/info");
+            // JWT 토큰 가져오기 (sessionStorage 사용)
+            const token = sessionStorage.getItem("accessToken");
 
-            const memberNo = response.data.memberNo;
+            if (!token) {
+                // 로그인하지 않은 경우 로그인 페이지로 리디렉션
+                if (confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                    window.location.href = "/login";
+                }
+                return; // 로그인하지 않았다면 함수 종료
+            }
+
+            // JWT 토큰을 Authorization 헤더에 포함시켜 API 호출
+            const response = await axios.get("/api/carts/info", {
+                headers: {
+                    Authorization: `Bearer ${token}`  // JWT 토큰을 Authorization 헤더에 포함
+                }
+            });
+
+            console.log(response.data);
+
+            const memberNo = response.data.memberNo;  // 로그인된 사용자 정보에서 memberNo 추출
 
             // 로그인 여부 확인
             if (!memberNo) {
-                if (confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?")) {
-                    window.location.href = "/login"; // 로그인 페이지로 이동
-                }
-                return; // 함수 종료
+                alert("사용자 정보가 없습니다.");
+                return;
             }
 
+            // 장바구니에 상품 추가 요청
             axios.post(`/api/carts/add?memberNo=${memberNo}`, {
                 productNo: productNo,
                 quantity: quantity
             })
                 .then(response => {
-                    quantityInput.value = 1;
+                    quantityInput.value = 1;  // 수량 초기화
                     if (confirm("장바구니에 상품이 추가되었습니다. 장바구니로 이동하시겠습니까?")) {
-                        window.location.href = "/cart"; // 장바구니 페이지로 이동
+                        window.location.href = "/cart";  // 장바구니 페이지로 이동
                     }
                 })
                 .catch(error => {
                     alert("장바구니 추가 실패: " + (error.response?.data || "알 수 없는 오류"));
                 });
         } catch (error) {
-            if(confirm("로그인 이후 장바구니를 사용할 수 있습니다. 로그인 하시겠습니까?")){
-                window.location.href = "/login"
+            console.error("로그인 이후 장바구니를 사용할 수 있습니다.", error);
+            if (confirm("로그인 이후 장바구니를 사용할 수 있습니다. 로그인 하시겠습니까?")) {
+                window.location.href = "/login";  // 로그인 페이지로 이동
             }
         }
     });

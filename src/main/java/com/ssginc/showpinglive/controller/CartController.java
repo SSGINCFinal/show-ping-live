@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.controller;
 
+import com.ssginc.showpinglive.dto.object.MemberDto;
 import com.ssginc.showpinglive.dto.request.CartRequestDto;
 import com.ssginc.showpinglive.dto.response.CartDto;
 import com.ssginc.showpinglive.entity.Member;
@@ -14,7 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/carts")
@@ -61,6 +61,16 @@ public class CartController {
         Member member = memberRepository.findByMemberId(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        return ResponseEntity.ok(member);
+        // Member 엔티티에서 필요한 데이터만 추출하여 MemberDTO로 변환
+        MemberDto memberDTO = new MemberDto();
+        memberDTO.setMemberNo(member.getMemberNo());
+        memberDTO.setMemberId(member.getMemberId());
+        memberDTO.setMemberName(member.getMemberName());
+        memberDTO.setMemberEmail(member.getMemberEmail());
+        memberDTO.setMemberAddress(member.getMemberAddress());
+        memberDTO.setMemberPhone(member.getMemberPhone());
+
+        return ResponseEntity.ok(memberDTO);
     }
 }
+

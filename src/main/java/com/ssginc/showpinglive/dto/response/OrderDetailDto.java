@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.dto.response;
 
+import com.ssginc.showpinglive.entity.OrderDetail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,13 +10,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class OrderDetailDto {
-    private Long orderNo;
-    private Long memberNo;
-    private LocalDateTime orderDate;
-    private Long totalPrice;
-    private List<OrderDetailDto> orderItems;
+    private String productName;
+    private Long orderDetailQuantity;
+    private Long orderDetailTotalPrice;
+
+    public OrderDetailDto(OrderDetail orderDetail) {
+        this.productName = orderDetail.getProduct().getProductName();
+        this.orderDetailQuantity = orderDetail.getOrderDetailQuantity();
+        this.orderDetailTotalPrice = orderDetail.getOrderDetailTotalPrice();
+    }
 }

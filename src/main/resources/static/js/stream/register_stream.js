@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const accessToken = sessionStorage.getItem('accessToken');
     const updateBtn = document.querySelector(".update-btn");    // 업데이트 버튼
 
     updateBtn.addEventListener("click", function () {
@@ -30,8 +31,15 @@ document.addEventListener("DOMContentLoaded", function () {
             productSale: productSale
         };
 
+        const header = {
+            "Authorization": "Bearer " + accessToken
+        }
+
         // axios로 방송을 등록
-        axios.post("/stream/stream", data)
+        axios.post("/stream/stream",
+            data, {
+            headers: header
+            })
             .then((response) => {
                 console.log("성공", response);
                 streamNo = response.data.streamNo;

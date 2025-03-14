@@ -5,8 +5,9 @@ import com.ssginc.showpinglive.dto.response.ReviewDto;
 import com.ssginc.showpinglive.service.ProductService;
 import com.ssginc.showpinglive.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +22,13 @@ public class ProductController {
     private ReviewService reviewService;
 
     @GetMapping("/{categoryNo}")
-    public List<ProductDto> getProductsByCategory(@PathVariable Long categoryNo) {
-        return productService.getProductsByCategory(categoryNo);
+    public Page<ProductDto> getProductsByCategory(
+            @PathVariable Long categoryNo,
+            @RequestParam(defaultValue = "0") int page, // 현재 페이지 번호
+            @RequestParam(defaultValue = "8") int size // 한 번에 가져올 상품 개수
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productService.getProductsByCategory(categoryNo, pageable);
     }
 
     @GetMapping("/detail/{productNo}")

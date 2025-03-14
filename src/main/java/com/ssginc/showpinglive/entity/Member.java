@@ -52,6 +52,9 @@ public class Member {
     @Column(name = "member_point")
     private Long memberPoint;
 
+    @Column(name = "otp_secret_key")
+    private String otpSecretKey;
+
     @NotNull
     @Column(name = "member_address")
     private String memberAddress;
@@ -97,6 +100,12 @@ public class Member {
     // 회원 : 신고는 1 : N의 관계를 가진다.
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Report> reports;
+
+    // memberId & memberPassword만 받는 생성자 추가
+    public Member(String memberId, String memberPassword) {
+        this.memberId = memberId;
+        this.memberPassword = memberPassword;
+    }
 
     // ⭐ 기본값 설정
     @PrePersist

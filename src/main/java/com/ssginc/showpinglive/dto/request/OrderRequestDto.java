@@ -1,6 +1,6 @@
 package com.ssginc.showpinglive.dto.request;
 
-import com.ssginc.showpinglive.dto.object.OrderItemDto;
+import com.ssginc.showpinglive.dto.response.OrderItemDto;
 import lombok.Data;
 
 import java.util.List;
@@ -9,5 +9,5 @@ import java.util.List;
 public class OrderRequestDto {
     private Long memberNo;
     private Long totalPrice;
-    private List<OrderItemDto> orderDetails;
+    private List<OrderItemDto> orderItems;
 }

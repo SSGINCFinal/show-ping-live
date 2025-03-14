@@ -29,21 +29,22 @@ public class WebRtcController {
 
     @GetMapping("webrtc")
     public String webrtc(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        System.out.println(userDetails);
-
-        String memberId = null;
-        if (userDetails != null) {
-            memberId = userDetails.getUsername();   // 로그인한 멤버 아이디
-        }
-        
-        GetStreamRegisterInfoResponseDto streamInfo = streamService.getStreamRegisterInfo(memberId);
-
-        System.out.println("########################");
-        System.out.println(streamInfo);
-        System.out.println("########################");
-
-        model.addAttribute("streamInfo", streamInfo);
-        model.addAttribute("memberId", memberId);
+//        System.out.println(userDetails);
+//
+//        String memberId = null;
+//        if (userDetails != null) {
+//            memberId = userDetails.getUsername();   // 로그인한 멤버 아이디
+//        }
+//        System.out.println(memberId);
+//
+//        GetStreamRegisterInfoResponseDto streamInfo = streamService.getStreamRegisterInfo(memberId);
+//
+//        System.out.println("########################");
+//        System.out.println(streamInfo);
+//        System.out.println("########################");
+//
+//        model.addAttribute("streamInfo", streamInfo);
+//        model.addAttribute("memberId", memberId);
 
         return "webrtc/webrtc";
     }

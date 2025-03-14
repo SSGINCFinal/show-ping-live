@@ -1,8 +1,34 @@
+let memberNo = null;
+
 document.addEventListener("DOMContentLoaded", async function () {
+    // JWT 토큰 가져오기 (sessionStorage 사용)
+    const token = sessionStorage.getItem("accessToken");
+
+    if (!token) {
+        console.error("로그인이 필요합니다.");
+        alert("로그인이 필요합니다.");
+        window.location.href = "/login"; // 로그인 페이지로 이동
+        return; // 토큰이 없으면 함수 종료
+    }
+
     try {
-        // API에서 사용자 정보 가져오기
-        const response = await axios.get("/api/carts/info");
-        console.log("API 응답 데이터:", response.data);
+        // JWT 토큰을 Authorization 헤더에 포함시켜 API 호출
+        const response = await axios.get("/api/carts/info", {
+            headers: {
+                Authorization: `Bearer ${token}` // JWT 토큰을 Authorization 헤더에 포함
+            }
+        });
+
+        console.log("로그인된 사용자 정보:", response.data);
+
+        memberNo = response.data.memberNo; // 로그인된 사용자 정보에서 memberNo 추출
+
+        console.log(memberNo);
+
+        if (!memberNo) {
+            alert("사용자 정보가 없습니다.");
+            return;
+        }
 
         if (response.data) {
             document.getElementById("name").value = response.data.memberName || "";
@@ -16,45 +42,50 @@ document.addEventListener("DOMContentLoaded", async function () {
         const orderItemsContainer = document.getElementById("order-items");
         let totalPrice = 0;
 
-        // 선택된 상품이 없을 경우 메시지 표시
         if (selectedItems.length === 0) {
             orderItemsContainer.innerHTML = "<p>선택된 상품이 없습니다.</p>";
             return;
         }
 
-        // 선택된 상품 목록을 동적으로 추가
         selectedItems.forEach(item => {
             const itemElement = document.createElement("div");
             itemElement.classList.add("order-item");
             itemElement.innerHTML = `
-                        <span>${item.name} x ${item.quantity}</span> 
-                        <strong>${item.totalPrice.toLocaleString()} 원</strong>
-                    `;
+                <span>${item.name} x ${item.quantity}</span> 
+                <strong>${item.totalPrice.toLocaleString()} 원</strong>
+            `;
             orderItemsContainer.appendChild(itemElement);
             totalPrice += item.totalPrice;
         });
 
-        // 총 금액 업데이트
         document.getElementById("total-price").textContent = `${totalPrice.toLocaleString()} 원`;
 
     } catch (error) {
         console.error("사용자 정보를 불러오는 중 오류 발생:", error);
         alert("로그인이 필요합니다.");
-        window.location.href = "/login"; // 로그인 페이지로 리디렉션
+        window.location.href = "/login";
     }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+// 결제 완료 버튼 클릭 시 주문 저장
+document.addEventListener("DOMContentLoaded", async function () {
     const paymentButton = document.querySelector(".payment-button");
 
     paymentButton.addEventListener("click", async function () {
         const name = document.getElementById("name").value.trim();
         const phone = document.getElementById("phone").value.trim();
         const email = document.getElementById("email").value.trim();
+        const address = document.getElementById("address").value.trim();
         const totalPrice = parseInt(document.getElementById("total-price").textContent.replace(" 원", "").replaceAll(",", ""), 10);
+        const selectedItems = JSON.parse(sessionStorage.getItem("selectedItems")) || [];
 
         if (!name || !phone || !email || totalPrice <= 0) {
             alert("모든 정보를 입력하고, 결제 금액을 확인해주세요.");
+            return;
+        }
+
+        if (selectedItems.length === 0) {
+            alert("결제할 상품이 없습니다.");
             return;
         }
 
@@ -71,7 +102,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const paymentId = generatePaymentId();
 
+        console.log(paymentId);
+
         try {
+            // 회원 정보 가져오기 (수정된 부분)
+
             const payment = await PortOne.requestPayment({
                 storeId: "store-e4038486-8d83-41a5-acf1-844a009e0d94",
                 channelKey: "channel-key-ebe7daa6-4fe4-41bd-b17d-3495264399b5",
@@ -96,27 +131,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const response = await fetch("/api/payments/complete", {
+            // 결제 성공 후 주문 정보 서버에 저장
+            const orderResponse = await fetch("/api/orders/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    paymentId: payment.paymentId,
+                    memberNo: memberNo,
+                    totalPrice: totalPrice,
+                    orderItems: selectedItems.map(item => ({
+                        productNo: item.productNo,
+                        quantity: item.quantity,
+                        totalPrice: item.totalPrice
+                    }))
                 }),
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                if (result.status === "PAID") {
-                    alert("결제가 성공적으로 완료되었습니다.");
-                    window.location.href = "/success"; // 성공 페이지로 이동
-                } else {
-                    alert("결제 처리 중 오류가 발생했습니다.");
-                }
+            if (orderResponse.ok) {
+                alert("결제가 성공적으로 완료되었습니다!");
+                window.location.href = "/success";
             } else {
-                alert("서버 응답 오류: 결제 처리에 실패했습니다.");
+                alert("주문 저장 중 오류가 발생했습니다.");
             }
+
         } catch (error) {
             console.error("결제 중 오류 발생:", error);
             alert("결제 중 오류가 발생했습니다. 다시 시도해주세요.");

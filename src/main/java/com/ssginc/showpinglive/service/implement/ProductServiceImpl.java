@@ -8,6 +8,9 @@ import com.ssginc.showpinglive.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,20 +22,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository productRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
-    public List<ProductDto> getProductsByCategory(Long categoryNo) {
-        return productRepository.findByCategoryCategoryNo(categoryNo)
-                .stream()
+//    @Value("${ncp.storage.product-url}")
+//    private String productUrl;
+
+    public Page<ProductDto> getProductsByCategory(Long categoryNo, Pageable pageable) {
+        Page<Product> productPage = productRepository.findByCategoryCategoryNo(categoryNo, pageable);
+
+        List<ProductDto> productDtoList = productPage.getContent().stream()
                 .map(product -> new ProductDto(
                         product.getProductNo(),
                         product.getProductName(),
                         product.getProductPrice(),
                         product.getProductQuantity(),
                         product.getProductImg(),
-                        product.getProductDescript()
+                        product.getProductDescript(),
+                        product.getProductSale(),
+                        product.getProductPrice() - (product.getProductPrice() * product.getProductSale() / 100)
                 ))
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(productDtoList, pageable, productPage.getTotalElements());
     }
 
     public ProductDto getProductById(Long productId) {
@@ -45,9 +57,11 @@ public class ProductServiceImpl implements ProductService {
                     product.getProductPrice(),
                     product.getProductQuantity(),
                     product.getProductImg(),
-                    product.getProductDescript()
+                    product.getProductDescript(),
+                    product.getProductSale(),
+                    product.getProductPrice() - (product.getProductPrice() * product.getProductSale() / 100)
             );
-        }else{
+        } else {
             throw new RuntimeException("상품을 찾을 수 없습니다: " + productId);
         }
     }
