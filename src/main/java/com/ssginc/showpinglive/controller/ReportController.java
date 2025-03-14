@@ -99,6 +99,7 @@ public class ReportController {
                     report.getReportNo(),
                     formattedDate,
                     report.getReportReason(),
+                    report.getReportContent(),
                     report.getMember().getMemberId(),
                     report.getReportStatus().getReportStatus()
             );
@@ -112,7 +113,7 @@ public class ReportController {
     public ResponseEntity<?> updateReportStatus(@RequestBody Map<String, Object> payload) {
         try {
             Long reportNo = Long.valueOf(payload.get("reportNo").toString());
-            // [추가!!!!] 서비스에서 해당 신고의 상태를 업데이트 (미처리(PROCEEDING) -> 처리(COMPLETED))
+            // 서비스에서 해당 신고의 상태를 업데이트 (미처리(PROCEEDING) -> 처리(COMPLETED))
             boolean updated = reportService.updateReportStatus(reportNo);
             if (updated) {
                 return ResponseEntity.ok("OK");

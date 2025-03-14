@@ -4,6 +4,7 @@ import com.ssginc.showpinglive.entity.Report;
 import com.ssginc.showpinglive.entity.ReportStatus;
 import com.ssginc.showpinglive.repository.ReportRepository;
 import com.ssginc.showpinglive.service.ReportService;
+import io.lettuce.core.ScriptOutputType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -131,7 +132,7 @@ public class ReportServiceImpl implements ReportService {
         Optional<Report> optReport = reportRepository.findById(reportNo);
         if (optReport.isPresent()) {
             Report report = optReport.get();
-            if ("PROCEEDING".equals(report.getReportStatus())) {
+            if (ReportStatus.PROCEEDING.equals(report.getReportStatus())) {
                 report.setReportStatus(ReportStatus.COMPLETED); // ENUM 변환: 미처리(PROCEEDING) -> 처리(COMPLETED)
                 reportRepository.save(report);
                 return true;

@@ -7,7 +7,7 @@ let selectedReport = null; // 선택된 신고 정보 저장
 // 전역 함수로 openReportDetailModal 정의
 function openReportDetailModal(report) {
     // '미처리' 상태는 DB ENUM 값 'PROCEEDING'
-    if (report.reportStatus !== '미처리') {
+    if (report.reportStatus !== '미처리' && report.reportStatus !== 'PROCEEDING') {
         return;
     }
     selectedReport = report;  // 전역 변수에 저장
@@ -18,7 +18,6 @@ function openReportDetailModal(report) {
     document.getElementById("modal-memberId").textContent = report.memberId;
     document.getElementById("modal-reportReason").textContent = report.reportReason;
     document.getElementById("modal-reportContent").textContent = report.reportContent || "";
-    document.getElementById("modal-createdAt").textContent = report.messageCreateAt || "";
 
     // 모달 표시
     const modal = document.getElementById("reportDetailModal");
@@ -111,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // [추가!!!!] 신고 접수 버튼 클릭 시, axios.post로 상태 업데이트
     submitBtn.addEventListener("click", () => {
         if (!selectedReport) return;
-        if (selectedReport.reportStatus !== '미처리') {
+        if (selectedReport.reportStatus !== '미처리' && selectedReport.reportStatus !== 'PROCEEDING') {
             alert("이미 처리된 신고입니다.");
             return;
         }
@@ -219,7 +218,7 @@ function renderTable(reports) {
         }
 
         // 첫 번째 컬럼: 신고 번호만 클릭 이벤트, 'PROCEEDING' (미처리)일 때만 모달 열기
-        const reportNoHtml = (report.reportStatus === '미처리')
+        const reportNoHtml = (report.reportStatus === '미처리' || report.reportStatus !== 'PROCEEDING')
             ? `<span class="report-no-click" onclick='openReportDetailModal(${JSON.stringify(report)})'>${report.reportNo}</span>`
             : `<span>${report.reportNo}</span>`;
         console.log("[DEBUG] reportNoHtml >> ", reportNoHtml);
