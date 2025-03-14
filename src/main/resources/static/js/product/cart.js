@@ -1,16 +1,42 @@
 let memberNo = null;
+let member = null
 
-document.addEventListener("DOMContentLoaded", function () {
-    axios.get("/api/carts/info")
-        .then(response => {
-            memberNo = response.data.memberNo;
-            loadCartItems(memberNo);
-        })
-        .catch(error => {
-            console.error("사용자 정보를 불러오는 중 오류 발생:", error);
-            alert("로그인이 필요합니다.");
-            window.location.href = "/login"; // 로그인 페이지로 리디렉션
+document.addEventListener("DOMContentLoaded", async function () {
+    // JWT 토큰 가져오기 (sessionStorage 사용)
+    const token = sessionStorage.getItem("accessToken");
+
+    if (!token) {
+        console.error("로그인이 필요합니다.");
+        alert("로그인이 필요합니다.");
+        window.location.href = "/login"; // 로그인 페이지로 이동
+        return; // 토큰이 없으면 함수 종료
+    }
+
+    try {
+        // JWT 토큰을 Authorization 헤더에 포함시켜 API 호출
+        const response = await axios.get("/api/carts/info", {
+            headers: {
+                Authorization: `Bearer ${token}` // JWT 토큰을 Authorization 헤더에 포함
+            }
         });
+
+        console.log("로그인된 사용자 정보:", response.data);
+
+        memberNo = response.data.memberNo; // 로그인된 사용자 정보에서 memberNo 추출
+
+        if (!memberNo) {
+            alert("사용자 정보가 없습니다.");
+            return;
+        }
+
+        // 장바구니 항목 로드
+        loadCartItems(memberNo);
+
+    } catch (error) {
+        console.error("사용자 정보를 불러오는 중 오류 발생:", error);
+        alert("로그인이 필요합니다.");
+        window.location.href = "/login"; // 로그인 페이지로 리디렉션
+    }
 });
 
 // 장바구니 데이터 불러오기 및 테이블 생성
@@ -33,18 +59,18 @@ function loadCartItems(memberNo) {
                                    data-quantity="${item.cartProductQuantity}">
                         </td>
                         <td class="product-order">
-                            <img class="product-img" src="/img/product_img/${item.productImg}" alt="${item.productName}">
+                            <img class="product-img" src="${item.productImg}" alt="${item.productName}">
                             ${item.productName}
                         </td>
                         <td>
                             <input type="number" class="quantity-input" 
                                    data-product-no="${item.productNo}" 
-                                   data-unit-price="${item.productPrice}" 
+                                   data-unit-price="${item.discountedPrice}" 
                                    value="${item.cartProductQuantity}" 
                                    min="1" style="width: 40px;">
                         </td>
-                        <td class="product-price" data-price="${item.productPrice * item.cartProductQuantity}">
-                            ${(item.productPrice * item.cartProductQuantity).toLocaleString('ko-KR')}원
+                        <td class="product-price" style="width: 200px;" data-price="${item.discountedPrice * item.cartProductQuantity}">
+                            ${(item.discountedPrice * item.cartProductQuantity).toLocaleString('ko-KR')}원
                         </td>
                         <td class="remove-btn" data-product-no="${item.productNo}">🗑</td>
                     </tr>
@@ -108,6 +134,7 @@ function setupEventListeners() {
     document.querySelectorAll(".quantity-input").forEach(input => {
         input.addEventListener("input", function () {
             if (this.value < 1) this.value = 1; // 최소값 유지
+            if (this.value > 50) this.value = 50; //최댓값 유지
 
             const row = this.closest("tr");
             const productNo = this.getAttribute("data-product-no");
@@ -160,14 +187,16 @@ document.getElementById("checkout-btn").addEventListener("click", function (even
 
     checkboxes.forEach(checkbox => {
         const row = checkbox.closest("tr");
+        const productNo = row.querySelector(".quantity-input").getAttribute("data-product-no"); // ✅ productNo 가져오기
         const productName = row.querySelector(".product-order").textContent.trim();
         const productPrice = parseInt(row.querySelector(".product-price").getAttribute("data-price"));
         const quantity = parseInt(row.querySelector(".quantity-input").value);
 
         selectedItems.push({
+            productNo: parseInt(productNo),
             name: productName,
             quantity: quantity,
-            totalPrice: productPrice
+            totalPrice: productPrice,
         });
     });
 
@@ -176,7 +205,7 @@ document.getElementById("checkout-btn").addEventListener("click", function (even
         return;
     }
 
-    console.log("선택된 상품:", selectedItems);
+    console.log("선택된 상품:", selectedItems); // ✅ 콘솔에서 productNo 포함 여부 확인
     sessionStorage.setItem("selectedItems", JSON.stringify(selectedItems));
 
     window.location.href = "/payment";

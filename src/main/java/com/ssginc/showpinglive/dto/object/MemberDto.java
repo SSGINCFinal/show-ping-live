@@ -7,7 +7,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class MemberDTO {
+public class MemberDto {
+    private Long memberNo;
     private String memberId;
     private String memberName;
     private String memberEmail;

@@ -1,12 +1,13 @@
 package com.ssginc.showpinglive.controller;
 
-import com.ssginc.showpinglive.entity.Orders;
+import com.ssginc.showpinglive.dto.request.OrderRequestDto;
+import com.ssginc.showpinglive.dto.response.OrderDetailDto;
+import com.ssginc.showpinglive.dto.response.OrdersDto;
 import com.ssginc.showpinglive.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -18,13 +19,23 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // 특정 회원의 가장 최근 주문 내역 조회
-    @GetMapping("/latest/{memberNo}")
-    public ResponseEntity<Orders> getLatestOrder(@PathVariable Long memberNo) {
-        Optional<Orders> latestOrder = orderService.findLatestOrderByMemberNo(memberNo);
-
-        return latestOrder
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.noContent().build()); // 204 No Content 반환
+    @GetMapping("/member/{memberNo}")
+    public ResponseEntity<List<OrdersDto>> getAllOrdersByMember(@PathVariable Long memberNo) {
+        List<OrdersDto> orders = orderService.findAllOrdersByMember(memberNo);
+        return ResponseEntity.ok(orders);
     }
+
+    @GetMapping("/{orderNo}/details")
+    public ResponseEntity<List<OrderDetailDto>> getOrderDetails(@PathVariable Long orderNo) {
+        List<OrderDetailDto> orderDetails = orderService.findOrderDetailsByOrder(orderNo);
+        return ResponseEntity.ok(orderDetails);
+    }
+
+    // 주문 생성 API
+    @PostMapping("/create")
+    public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
+        orderService.createOrder(orderRequestDto);
+        return ResponseEntity.ok("주문이 성공적으로 저장되었습니다.");
+    }
+
 }

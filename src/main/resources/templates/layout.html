@@ -7,6 +7,8 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script defer src="/js/scripts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script defer src="/js/login/logout.js"></script>
 </head>
 <body>
 <!-- 공통 헤더 -->
@@ -50,30 +52,22 @@
             </ul>
         </nav>
 
-        <!-- 검색 및 언어 선택 -->
+        <!-- 검색 및 사용자 메뉴 -->
         <div class="navbar-right">
-<!--            <div class="search-bar">-->
-<!--                <form action="#" method="GET">-->
-<!--                    <input type="text" name="search">-->
-<!--                    <button type="submit">-->
-<!--                        <img src="/img/search.png" style="height: 20px">-->
-<!--                    </button>-->
-<!--                </form>-->
-<!--            </div>-->
             <div class="cart-bar">
                 <a href="/cart">
-                    <img th:src="@{/img/cart.png}" style="height: 20px">
+                    <img src="/img/icon/cart.png" style="height: 30px">
                 </a>
             </div>
 
-            <!-- 로그인 상태에 따른 버튼 변경 -->
-            <div class="user-menu" th:if="${#authorization.expression('isAuthenticated()')}">
-                <span th:text="'환영합니다, ' + ${#authentication.name} + '님'"></span>
-                <form id="logoutForm" action="/logout" method="post" style="display: inline;">
-                    <button type="submit" class="logout-button">로그아웃</button>
-                </form>
+            <!-- ✅ 로그인 상태 -->
+            <div id="user-menu" class="user-menu" style="display: none;">
+                <span id="user-greeting"></span>
+                <button class="logout-button">로그아웃</button>
             </div>
-            <a href="/login" class="login-button" th:unless="${#authorization.expression('isAuthenticated()')}">로그인</a>
+
+            <!-- ✅ 비로그인 상태 -->
+            <a href="/login" id="login-button" class="login-button">로그인</a>
         </div>
     </div>
 </header>
