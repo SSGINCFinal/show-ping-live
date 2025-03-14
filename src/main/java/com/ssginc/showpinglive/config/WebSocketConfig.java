@@ -22,18 +22,18 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-//    @Bean
-//    public LiveHandler liveHandler() {
-//        return new LiveHandler();
-//    }
-//
-//    @Bean
-//    public RecordHandler recordHandler() {
-//        return new RecordHandler();
-//    }
-//
-//    @Bean
-//    public WebSocketChatHandler webSocketChatHandler() {return new WebSocketChatHandler();}
+    @Bean
+    public LiveHandler liveHandler() {
+        return new LiveHandler();
+    }
+
+    @Bean
+    public RecordHandler recordHandler() {
+        return new RecordHandler();
+    }
+
+    @Bean
+    public WebSocketChatHandler webSocketChatHandler() {return new WebSocketChatHandler();}
 
     @Bean
     public KurentoClient kurentoClient() {
@@ -54,9 +54,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new WebSocketChatHandler(), "/chat");
-        registry.addHandler(new LiveHandler(), "/live");
-        registry.addHandler(new RecordHandler(), "/record");
+        registry.addHandler(webSocketChatHandler(), "/chat");
+        registry.addHandler(liveHandler(), "/live");
+        registry.addHandler(recordHandler(), "/record");
     }
 
 }

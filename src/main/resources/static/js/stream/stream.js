@@ -8,7 +8,6 @@ var state;
 
 let stompClient = null;
 let reconnectTimeout = 5000;
-let streamNo = 1;
 
 const NO_CALL = 0;
 const IN_CALL = 1;

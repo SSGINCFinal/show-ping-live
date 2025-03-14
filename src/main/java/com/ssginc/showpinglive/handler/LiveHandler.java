@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * 라이브 관련 웹소켓 메시지 처리 핸들러 클래스
  * <p>
  */
-@Component
 public class LiveHandler extends TextWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(LiveHandler.class);
     private static final Gson gson = new GsonBuilder().create();

@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * 채팅 메시지 전송 및 브로드캐스트를 담당하는 WebSocket 핸들러 클래스
  * <p>
  */
-@Component
 public class WebSocketChatHandler extends TextWebSocketHandler {
     private final ConcurrentHashMap<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final Logger log = LoggerFactory.getLogger(WebSocketChatHandler.class);
