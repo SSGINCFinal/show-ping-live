@@ -9,22 +9,35 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
+/**
+ * @author dckat
+ * NCP Storage 설정 클래스
+ * <p>
+ */
 @Configuration
 public class NCPConfig {
 
+    // NCP region 정보
     @Value("${ncp.storage.region}")
     private String region;
 
+    // 엔드포인트 주소
     @Value("${ncp.storage.endpoint}")
     private String endPoint;
 
-    @Value("${ncp.storage.accessKey}")
+    // access key
+    @Value("${ncp.storage.access-key}")
     private String accessKey;
 
-    @Value("${ncp.storage.secretKey}")
+    // secret key
+    @Value("${ncp.storage.secret-key}")
     private String secretKey;
-    
 
+    /**
+     * 설정된 정보로 S3 bean 생성하는 메서드
+     * @return S3 Client 객체
+     */
     @Bean
     public AmazonS3Client objectStorageClient() {
         return (AmazonS3Client) AmazonS3ClientBuilder.standard()

@@ -38,7 +38,7 @@ public class WatchController {
     private final MemberService memberService;
 
     /**
-     * VOD 페이지 이동을 위한 컨트롤러 메소드
+     * VOD 페이지 이동을 위한 컨트롤러 메서드
      * @param userDetails 로그인한 사용자 객체
      * @param streamNo 시청할 영상 번호
      * @param model 타임리프에 전달할 Model 객체
@@ -65,7 +65,7 @@ public class WatchController {
     }
 
     /**
-     * 로그인한 사용자 시청내역 페이지 메소드
+     * 로그인한 사용자 시청내역 페이지 메서드
      * @param userDetails 로그인한 사용자 객체
      * @param model 타임리프에 전달할 Model 객체
      * @return 라이브 메인 페이지 (타임리프)
@@ -81,7 +81,7 @@ public class WatchController {
     }
 
     /**
-     * 로그인한 사용자의 시청내역 리스트를 반환하는 컨트롤러 메소드
+     * 로그인한 사용자의 시청내역 리스트를 반환하는 컨트롤러 메서드
      * @param memberNo 로그인한 사용자 번호
      * @return 로그인한 사용자의 시청내역 응답 객체
      */
@@ -95,7 +95,7 @@ public class WatchController {
     }
 
     /**
-     * 시청 내역 등록 컨트롤러 메소드
+     * 시청 내역 등록 컨트롤러 메서드
      * @param watchRequestDto 시청내역 등록을 위한 요청 DTO (Body를 통해 전달)
      * @return 응답 결과
      */

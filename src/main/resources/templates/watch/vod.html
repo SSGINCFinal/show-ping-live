@@ -4,8 +4,7 @@
       layout:decorate="layout.html">
 
 <head>
-  <link rel="stylesheet" th:href="@{/css/stream/stream.css}">
-  <link rel="stylesheet" href="/css/watch/stream.css">
+  <link rel="stylesheet" th:href="@{/css/watch/stream.css}">
 
   <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function () {
@@ -13,6 +12,7 @@
       var streamNo = [[${vodDto.streamNo}]];
       var title = [[${vodDto.streamTitle}]];
       addWatch(memberNo, streamNo);
+      fetchSubtitle(title);
       streamVideo(title);
     });
   </script>
@@ -28,7 +28,7 @@
     </div>
     <div class="content-container">
       <div class="vod-container">
-        <video id="vod" controls>
+        <video id="vod" controls controlsList="nofullscreen">
         </video>
       </div>
       <div class="chat-container">
@@ -47,10 +47,10 @@
   <br>
   <div class="settings-buttons">
     <div class="buttons-container">
-      <button id="subtitle-on">
+      <button id="subtitle-on" onclick="onSubtitle()">
         <span class="glyphicon glyphicon-play">자막켜기</span>
       </button>
-      <button id="subtitle-off">
+      <button id="subtitle-off" onclick="offSubtitle()">
         <span class="glyphicon glyphicon-play">자막끄기</span>
       </button>
     </div>

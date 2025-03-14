@@ -223,3 +223,20 @@
     font-weight: bold;
     cursor: pointer;
 }
+
+#char-count {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+#error-message {
+    display: none;  /* 기본 상태에서는 숨김 */
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: bold;
+    position: relative;  /* 또는 상황에 맞게 absolute 등으로 설정 */
+    z-index: 10;
+}

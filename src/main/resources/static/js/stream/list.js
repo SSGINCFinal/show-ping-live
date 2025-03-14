@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     loadLive();                 // 단일 라이브 방송 불러오기
-    loadVods(0);        // 최초 1페이지의 VOD 목록 불러오기
+    loadVod(0);        // 최초 1페이지의 VOD 목록 불러오기
 });
 
 function loadLive() {
@@ -47,85 +47,63 @@ function loadLive() {
         });
 }
 
-function loadVods(pageNo) {
+function loadVod(pageNo) {
     // 현재 페이지의 VOD 목록 불러오기
     axios.get('/stream/vod/list/page', {
         params: {
             pageNo: pageNo
         }
-    })
-        .then(response => {
+    }).then(response => {
             const pageInfo = response.data['pageInfo'];
             const vodContent = pageInfo['content'];
             const vodGrid = document.getElementById('vod-grid');
-            vodGrid.innerHTML = '';
 
-            // VOD 정보 추가
-            if (vodContent.length === 0) {
-                vodGrid.innerHTML = '<p>등록된 VOD가 없습니다.</p>';
-            } else {
-                vodContent.forEach(vod => {
-                    const vodDiv = document.createElement('div');
-                    vodDiv.classList.add('item');
-                    const productPrice = vod.productPrice;
-                    const discountRate = vod.productSale;
-                    const streamStartTime = vod.streamStartTime;
+            vodContent.forEach(vod => {
+                const vodDiv = document.createElement('div');
+                vodDiv.classList.add('item');
+                const productPrice = vod.productPrice;
+                const discountRate = vod.productSale;
+                const streamStartTime = vod.streamStartTime;
 
-                    const discountedPrice = productPrice * ((100 - discountRate) / 100);
-                    const formattedPrice = discountedPrice.toLocaleString('ko-KR');
+                const discountedPrice = productPrice * ((100 - discountRate) / 100);
+                const formattedPrice = discountedPrice.toLocaleString('ko-KR');
 
-                    const date = new Date(streamStartTime);
+                const date = new Date(streamStartTime);
 
-                    // 년, 월, 일을 추출하여 포맷
-                    const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+                // 년, 월, 일을 추출하여 포맷
+                const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
-                    vodDiv.innerHTML = `
-                        <img src="/img/product_img/${vod.productImg}" alt="${vod.productName}" />
-                        <p id="date">${formattedDate}</p>
-                        <p id="title">${vod.streamTitle}</p>
-                        <p id="price">${formattedPrice}원</p>
-                    `;
+                vodDiv.innerHTML = `
+                    <img src="/img/product_img/${vod.productImg}" alt="${vod.productName}" />
+                    <p id="date">${formattedDate}</p>
+                    <p id="title">${vod.streamTitle}</p>
+                    <p id="price">${formattedPrice}원</p>
+                `;
 
-                    // VOD 클릭 시 상세 및 시청 페이지로 이동
-                    vodDiv.addEventListener('click', () => {
-                        window.location.href = `/watch/vod/${vod.streamNo}`;
-                    });
-
-                    vodGrid.appendChild(vodDiv);
+                // VOD 클릭 시 상세 및 시청 페이지로 이동
+                vodDiv.addEventListener('click', () => {
+                    window.location.href = `/watch/vod/${vod.streamNo}`;
                 });
 
-                // 페이지 버튼 영역 생성
+                vodGrid.appendChild(vodDiv);
+            });
 
-                const pageContainer = document.getElementById('page-container');
-                pageContainer.innerHTML = '';
-                const totalPages = pageInfo['totalPages'];
-                const pageNumber = pageInfo['number'];
+            // 페이지 버튼 영역 생성
+            const pageContainer = document.getElementById('page-container');
+            pageContainer.innerHTML = '';
+            const totalPages = pageInfo['totalPages'];
+            const pageNumber = pageInfo['number'];
 
-                // 페이지 버튼 생성 (최대 3개까지 표현)
-                var count = 0;
-                for (var pages = Math.max(pageNumber - 1, 0); count < 3 && pages < totalPages; pages++) {
-                    const current = pages;
-                    const pageDiv = document.createElement('div');
+            if (pageNumber !== totalPages - 1) {
+                const pageDiv = document.createElement('div');
+                pageDiv.classList.add('page-item');
+                pageDiv.innerHTML = `<button class="load-more">더보기</button>`
 
-                    // 현재 페이지 번호 버튼 추가
-                    if (pageNumber === current) {
-                        pageDiv.classList.add('page-item');
-                        pageDiv.innerHTML = `<button class="current">${pages + 1}</button>`
-                    }
-                    // 이전 다음 페이지 번호 버튼 추가
-                    else {
-                        pageDiv.classList.add('page-item');
-                        pageDiv.innerHTML = `<button class="prev-next">${pages + 1}</button>`
-                    }
-
-                    // 페이지 번호 클릭시 해당 페이지의 VOD 목록을 가져옴
-                    pageDiv.addEventListener('click', () => {
-                        loadVods(current);
-                    });
-
-                    pageContainer.appendChild(pageDiv);
-                    count++;
-                }
+                // 페이지 번호 클릭시 해당 페이지의 VOD 목록을 가져옴
+                pageDiv.addEventListener('click', () => {
+                    loadVod(pageNumber + 1);
+                });
+                pageContainer.appendChild(pageDiv);
             }
         })
         .catch(error => {

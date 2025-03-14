@@ -1,20 +1,3 @@
-/*
- * (C) Copyright 2014 Kurento (http://kurento.org/)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 var ws = new WebSocket('ws://' + location.host + '/live');
 var rec = new WebSocket('ws://' + location.host + '/record');
 var live;
@@ -22,6 +5,10 @@ var watch;
 var webRtcPeer;
 var webRtcRecord;
 var state;
+
+let stompClient = null;
+let reconnectTimeout = 5000;
+let streamNo = 1;
 
 const NO_CALL = 0;
 const IN_CALL = 1;
@@ -45,6 +32,90 @@ window.onload = function() {
         setState(NO_CALL);
     }
 
+    // send 버튼 이벤트와 STOMP 연결 초기화
+    const sendButton = document.getElementById('send-button');
+    if (sendButton) {
+        sendButton.addEventListener('click', sendChatMessage);
+    }
+
+    // --- 신고 모달 관련 이벤트 ---
+    const reportForm = document.getElementById('reportForm');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const reportModal = document.getElementById('reportModal');
+    const modalOverlay = document.getElementById('modalOverlay');
+
+    if (reportForm) {
+        reportForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const checkedReason = document.querySelector('input[name="reportReason"]:checked');
+            if (checkedReason) {
+                const reasonValue = checkedReason.value;
+                alert(`신고 사유: ${reasonValue}`);
+                closeReportModal();
+            }
+        });
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            alert('신고를 취소했습니다.');
+            closeReportModal();
+        });
+    }
+
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', () => {
+            closeReportModal();
+        });
+    }
+
+    function closeReportModal() {
+        if (reportModal) {
+            reportModal.style.display = 'none';
+        }
+        if (modalOverlay) {
+            modalOverlay.style.display = 'none';
+        }
+    }
+
+    // --- 채팅 영역 관련 이벤트 ---
+    const messageInput = document.getElementById('message-input');
+    const chatContainer = document.getElementById('chat-messages');
+    const scrollToLatestButton = document.getElementById('scroll-to-latest');
+    const charCount = document.getElementById('char-count');
+
+    if (chatContainer && scrollToLatestButton) {
+        chatContainer.addEventListener('scroll', function() {
+            if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
+                scrollToLatestButton.style.display = 'block';
+            } else {
+                scrollToLatestButton.style.display = 'none';
+            }
+        });
+
+        scrollToLatestButton.addEventListener('click', function() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            scrollToLatestButton.style.display = 'none';
+        });
+    }
+
+    if (messageInput) {
+        // Enter 키로 메시지 전송
+        messageInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+        // 글자 수 업데이트
+        messageInput.addEventListener('input', () => {
+            const length = messageInput.value.length;
+            if (charCount) {
+                charCount.textContent = `${length}/200`;
+            }
+        });
+    }
 }
 
 window.onbeforeunload = function() {
@@ -75,7 +146,7 @@ function setState(nextState) {
             $('#stop').attr('disabled', false);
             break;
         default:
-            onError('Unknown state ' + nextState);
+            onLiveError('Unknown state ' + nextState);
             return;
     }
     state = nextState;
@@ -126,7 +197,8 @@ rec.onmessage = function(message) {
         case 'recording':
             break;
         case 'stopped':
-            uploadFileToNCP();
+            // uploadFileToNCP();
+            stopChat();
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
@@ -151,19 +223,20 @@ function startResponse(message) {
         if (error)
             return console.error(error);
     });
+    createChatRoom();
 }
 
 function viewerResponse(message) {
     if (message.response != 'accepted') {
         var errorMsg = message.message ? message.message : 'Unknown error';
         console.info('Call not accepted for the following reason: ' + errorMsg);
-        dispose();
     } else {
         webRtcPeer.processAnswer(message.sdpAnswer, function(error) {
             if (error)
                 return console.error(error);
         });
     }
+    connectToChatRoom();
 }
 
 function startLive() {
@@ -318,8 +391,11 @@ function stopLive() {
             let message = {
                 id: 'stop'
             }
+            if (live) {
+                dispose();
+            }
             sendLiveMessage(message);
-            dispose();
+            stopRecord();
         })
         .catch((error) => {
             console.log(error);
@@ -339,6 +415,7 @@ function stopRecord() {
         }
         sendRecordMessage(message);
     }
+
     hideSpinner(live);
 }
 
@@ -347,7 +424,6 @@ function dispose() {
         webRtcPeer.dispose();
         webRtcPeer = null;
     }
-    stopRecord();
 }
 
 function sendLiveMessage(message) {
@@ -377,7 +453,7 @@ function hideSpinner() {
     }
 }
 
-function onError(error) {
+function onLiveError(error) {
     console.error(error);
 }
 
@@ -391,8 +467,209 @@ function uploadFileToNCP() {
         })
         .catch(error => {
             console.log("에러 발생: ", error);
-        })
+        });
+    stopChat();
 }
+
+function createChatRoom() {
+    // API 호출
+    axios.post(`/chatRoom/create`, {
+        streamNo
+    })
+        .then(response => {
+            console.log(response.data);
+            alert(`채팅방 번호: ${response.data.chatRoomNo}`);
+            chatRoomNo = response.data.chatRoomNo;
+            connectToChatRoom();
+        })
+        .catch(error => {
+            console.error('채팅방 생성 중 오류 발생:', error);
+            alert('채팅방 생성 중 오류가 발생했습니다.');
+        });
+}
+
+function connectToChatRoom() {
+    // 이미 stompClient가 연결되어 있으면 재연결하지 않음
+    if (stompClient && stompClient.connected) {
+        console.log('이미 채팅방에 연결되어 있습니다.');
+        return;
+    }
+
+    const socket = new SockJS('/ws-stomp-chat');
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, onConnected, onChatError);
+}
+
+// 연결 성공 콜백
+function onConnected(frame) {
+    console.log('Connected to WebSocket:', frame);
+    console.log(document.getElementById('error-message'));
+
+
+    // 채팅방 구독
+    stompClient.subscribe(`/sub/chat/room/${chatRoomNo}`, function (message) {
+        console.log("Received message from subscription:", message);
+        try {
+            const parsedMessage = JSON.parse(message.body);
+            console.log("Parsed message:", parsedMessage);
+            addMessageToChat(parsedMessage);
+        } catch (e) {
+            console.error("Error parsing message:", e);
+        }
+    });
+
+    // STOMP 클라이언트 연결 후 에러 채널 구독
+    stompClient.subscribe('/user/queue/errors', function(message) {
+        var errorResponse = JSON.parse(message.body);
+        alert(errorResponse.chatMessage);
+    });
+
+}
+
+// 채팅 메시지 송신 함수
+function sendChatMessage() {
+    const input = document.getElementById('message-input');
+    const messageText = input.value.trim();
+    const charCount = document.getElementById('char-count');
+    console.log("Attempting to send message:", messageText);
+
+    if (!stompClient || !stompClient.connected) {
+        console.warn('WebSocket이 연결되어 있지 않습니다. 재연결 시도 후 다시 전송해 주세요.');
+        return;
+    }
+    // 메세지 전송 전 기존 에러 메세지 초기화
+    clearErrorMessage();
+
+    if (messageText) {
+        const message = {
+            _id: "", // 서버 또는 DB에서 할당
+            chat_member_id: memberId,
+            chat_room_no: chatRoomNo,
+            chat_message: messageText,
+            chat_created_at: new Date().toLocaleString()
+        };
+        console.log("Sending message:", message);
+        stompClient.send('/pub/chat/message', {}, JSON.stringify(message));
+        input.value = ''; // 입력 필드 초기화
+        charCount.textContent = '0/200'; // 글자 수 초기화
+    }
+}
+
+function addMessageToChat(message) {
+    // 채팅 메시지를 삽입할 요소 선택 (chat-messages div)
+    const chatMessagesContainer = document.getElementById('chat-messages');
+
+    // 새 메시지 요소 생성
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("message");
+
+
+    // 사용자 아이디
+    const userNameSpan = document.createElement("span");
+    userNameSpan.classList.add("user-name");
+    userNameSpan.textContent = message.chat_member_id;
+
+    // 메시지 텍스트
+    const messageTextP = document.createElement("p");
+    messageTextP.classList.add("chat-text");
+    messageTextP.textContent = message.chat_message;
+
+    // // 관리자인지 확인 (필요에 따라 조건 수정)
+    // if(message.chat_member_id === "ADMIN") {
+    //     messageElement.classList.add("ADMIN");
+    //     userNameSpan.textContent = "관리자 ✓";
+    //     // 관리자 이름을 빨간색으로 표시
+    //     userNameSpan.style.color = "red";
+    //
+    //     // 관리자 메시지라고 구분할 클래스 추가 (CSS 활용 가능)
+    //     messageElement.classList.add("admin");
+    //
+    //     // 예시: “관리자가 작성한 채팅 입니다.”로 고정
+    //     messageTextP.textContent = message.chat_message;
+    // } else {
+    //     messageElement.classList.add("USER");
+    //     userNameSpan.textContent = message.chat_member_id;
+    //     messageTextP.textContent = message.chat_message;
+    // }
+
+    if (message.chat_member_id === "admin01") {
+        userNameSpan.textContent = "관리자 ✓";
+        // 관리자 이름을 빨간색으로 표시
+        userNameSpan.style.color = "red";
+        messageElement.classList.add("admin");
+        messageTextP.style.color = "red";
+        messageTextP.textContent = message.chat_message;
+    } else {
+        userNameSpan.textContent = message.chat_member_id;
+        messageTextP.textContent = message.chat_message;
+
+        // (추가) 아이디 클릭 시 신고 모달 오픈
+        userNameSpan.addEventListener('click', () => {
+            openReportModal(message.chat_member_id, message.chat_message);
+        });
+    }
+
+    // 채팅 시간 (문자열 그대로 사용하거나, 포맷팅 가능)
+    // const chatTimeSpan = document.createElement("span");
+    // chatTimeSpan.classList.add("chat-time");
+    // chatTimeSpan.textContent = message.chat_created_at;
+
+    // 요소 조합
+    messageElement.appendChild(userNameSpan);
+    messageElement.appendChild(messageTextP);
+    // messageElement.appendChild(chatTimeSpan);
+
+    // 채팅 메시지 컨테이너에 추가
+    chatMessagesContainer.appendChild(messageElement);
+
+    // 자동 스크롤
+    setTimeout(() => {
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+    }, 100);
+}
+
+function openReportModal(memberId, chatMessage) {
+    // 신고 대상 정보 세팅
+    const reportTargetText = document.getElementById('reportTargetText');
+    reportTargetText.textContent = `${memberId}님: ${chatMessage}`;
+
+    // 모달 & 오버레이 표시
+    const reportModal = document.getElementById('reportModal');
+    const modalOverlay = document.getElementById('modalOverlay');
+
+    reportModal.style.display = 'block';
+    modalOverlay.style.display = 'block';
+}
+
+// 연결 에러 콜백
+function onChatError(error) {
+    console.error('STOMP error:', error);
+
+    // 일정 시간 후 재연결 시도
+    setTimeout(function () {
+        console.log('Attempting to reconnect...');
+        connectToChatRoom();
+    }, reconnectTimeout);
+}
+
+
+function stopChat() {
+    if (stompClient) {
+        stompClient.disconnect(() => {
+            console.log('Disconnected from WebSocket');
+        });
+    }
+}7
+
+function clearErrorMessage() {
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = '';
+        errorElement.style.display = 'none';
+    }
+}
+
 
 /**
  * Lightbox utility (to display media pipeline image in a modal dialog)
