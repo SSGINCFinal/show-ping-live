@@ -29,4 +29,6 @@ public interface ReportService {
      */
     List<Report> searchReports(String searchKeyword, String searchCategory, String dateType,
                                String startDate, String endDate, String status);
+
+    boolean updateReportStatus(Long reportNo);
 }

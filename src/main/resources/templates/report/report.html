@@ -19,27 +19,29 @@
         <h2>신고 관리</h2><br>
         <form id="searchForm" method="get" action="/report/report">
             <table class="search-table">
-                <tbody>                <!-- 검색어 -->
+                <tbody>
                 <tr>
                     <th>검색어</th>
-                    <td><select id="searchCategory" name="searchCategory">
-                        <option value="" th:selected="${searchCategory == null || searchCategory == ''}">전체</option>
-                        <option value="reportNum" th:selected="${searchCategory == 'reportNum'}">신고번호</option>
-                        <option value="receipt" th:selected="${searchCategory == 'receipt'}">접수일</option>
-                        <option value="reason" th:selected="${searchCategory == 'reason'}">신고사유</option>
-                        <option value="writer" th:selected="${searchCategory == 'writer'}">신고자ID</option>
-                        <option value="proceed" th:selected="${searchCategory == 'proceed'}">처리여부</option>
-                    </select> <input type="text" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력하세요"
+                    <td>
+                        <select id="searchCategory" name="searchCategory" th:value="${searchCategory}">
+                            <option value="">전체</option>
+                            <option value="reportNum">신고번호</option>
+                            <option value="receipt">접수일</option>
+                            <option value="reason">신고사유</option>
+                            <option value="writer">피신고자ID</option>
+                            <option value="proceed">처리여부</option>
+                        </select>
+                        <input type="text" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력하세요"
                                      th:value="${searchKeyword}">
                     </td>
                 </tr>
                 <!-- 날짜 -->
                 <tr>
                     <th>날짜</th>
-                    <td><select id="dateType" name="dateType">
-                        <option value="접수일" th:selected="${dateType=='접수일' || dateType==null}">접수일</option>
-
-                    </select>
+                    <td>
+                        <select id="dateType" name="dateType" th:value="${dateType}">
+                            <option value="접수일">접수일</option>
+                        </select>
                         <input type="date" id="startDate" name="startDate" th:value="${startDate}">
                         -
                         <input type="date" id="endDate" name="endDate" th:value="${endDate}">
@@ -88,6 +90,49 @@
 
     <!-- 페이지네이션 영역 -->
     <div class="pagination-container"></div>
+
+    <!-- modal.html -->
+    <div id="reportDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>신고 상세정보</h2>
+                <span class="modal-close-icon">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h3>신고 내용</h3>
+                <table class="report-table">
+                    <tr>
+                        <th>신고 번호</th>
+                        <td id="modal-reportNo">1</td>
+                    </tr>
+                    <tr>
+                        <th>신고일</th>
+                        <td id="modal-reportDate">2024-01-06 14:33:21</td>
+                    </tr>
+                    <tr>
+                        <th>피신고자 아이디</th>
+                        <td id="modal-memberId">user2</td>
+                    </tr>
+                    <tr>
+                        <th>신고 사유</th>
+                        <td id="modal-reportReason">비방 및 명예훼손</td>
+                    </tr>
+                    <tr>
+                        <th>작성 내용</th>
+                        <td id="modal-reportContent">와 이건 너무 xxx인데...</td>
+                    </tr>
+                    <tr>
+                        <th>작성 일자</th>
+                        <td id="modal-createdAt">2024-01-06 14:30:00</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button id="report-submit-btn" class="submit-btn">신고 접수</button>
+                <button class="close-btn">닫기</button>
+            </div>
+        </div>
+    </div>
 </div>
 <!--</div>-->
 </html>

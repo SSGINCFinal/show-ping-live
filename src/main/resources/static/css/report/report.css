@@ -255,3 +255,145 @@ td {
     width: 20px;
     text-align: center;
 }
+
+/* 모달 전체 화면 덮는 배경 */
+.modal {
+    display: none;
+    /* 기본적으로 숨김 */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    /* 반투명 검정 배경 */
+}
+
+/* 모달 콘텐츠 박스 */
+.modal-content {
+    background-color: #fff;
+    width: 500px;
+    /* 모달 너비 조정 */
+    margin: 100px auto;
+    /* 화면 중앙 정렬 */
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s;
+}
+
+/* 모달 헤더 */
+.modal-header {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+/* 오른쪽 상단 X 아이콘 */
+.modal-close-icon {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+/* 모달 바디 */
+.modal-body {
+    padding: 16px;
+}
+
+.modal-body h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+/* 테이블 스타일 */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+
+.report-table th,
+.report-table td {
+    border: 1px solid #eee;
+    padding: 10px;
+    vertical-align: middle;
+    text-align: left;
+    font-size: 14px;
+}
+
+.report-table th {
+    width: 120px;
+    background-color: #f9f9f9;
+    color: #333;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+/* 모달 푸터 */
+.modal-footer {
+    padding: 16px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.submit-btn {
+    background-color: #d9534f;
+    /* 붉은색 */
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #c9302c;
+    /* 호버 시 좀 더 진한 붉은색 */
+}
+
+.close-btn {
+    background-color: #ddd;
+    color: #333;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.close-btn:hover {
+    background-color: #bbb;
+}
+
+/* 모달 팝업 페이드 인 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.report-no-click {
+    cursor: pointer;
+}
+
+.report-no-click:hover {
+    color: red;
+    font-weight: bold;
+}

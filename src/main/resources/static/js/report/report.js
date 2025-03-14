@@ -2,6 +2,28 @@ let allReports = [];     // 전체 신고 목록
 let currentPage = 1;     // 현재 페이지
 const itemsPerPage = 20; // 페이지당 표시할 신고 건수
 let sortState = {};
+let selectedReport = null; // 선택된 신고 정보 저장
+
+// 전역 함수로 openReportDetailModal 정의
+function openReportDetailModal(report) {
+    // '미처리' 상태는 DB ENUM 값 'PROCEEDING'
+    if (report.reportStatus !== '미처리') {
+        return;
+    }
+    selectedReport = report;  // 전역 변수에 저장
+
+    // 모달 내부 요소 채우기
+    document.getElementById("modal-reportNo").textContent = report.reportNo;
+    document.getElementById("modal-reportDate").textContent = formatDate(new Date(report.reportCreatedAt));
+    document.getElementById("modal-memberId").textContent = report.memberId;
+    document.getElementById("modal-reportReason").textContent = report.reportReason;
+    document.getElementById("modal-reportContent").textContent = report.reportContent || "";
+    document.getElementById("modal-createdAt").textContent = report.messageCreateAt || "";
+
+    // 모달 표시
+    const modal = document.getElementById("reportDetailModal");
+    modal.style.display = "block";
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     // 페이지 로딩 시 신고 목록 호출
@@ -72,10 +94,49 @@ document.addEventListener("DOMContentLoaded", () => {
             endDateInput.value = end.toISOString().slice(0, 10);
         });
     });
+
+    const modal = document.getElementById("reportDetailModal");
+    const closeElements = modal.querySelectorAll(".modal-close-icon, .close-btn");
+    const submitBtn = document.getElementById("report-submit-btn");
+
+    function closeReportDetailModal() {
+        modal.style.display = "none";
+        selectedReport = null;
+    }
+
+    closeElements.forEach(elem => {
+        elem.addEventListener("click", closeReportDetailModal);
+    });
+
+    // [추가!!!!] 신고 접수 버튼 클릭 시, axios.post로 상태 업데이트
+    submitBtn.addEventListener("click", () => {
+        if (!selectedReport) return;
+        if (selectedReport.reportStatus !== '미처리') {
+            alert("이미 처리된 신고입니다.");
+            return;
+        }
+        axios.post('/report/api/updateStatus', {
+            reportNo: selectedReport.reportNo
+        }).then(res => {
+            console.log("신고 처리 완료:", res.data);
+            alert("신고가 '처리' 상태로 변경되었습니다.");
+            closeReportDetailModal();
+            loadReports();
+        }).catch(err => {
+            console.error("신고 상태 업데이트 중 오류:", err);
+            alert("신고 처리 중 오류가 발생했습니다.");
+        });
+    });
+
+    window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            closeReportDetailModal();
+        }
+    });
 });
 
 /**
- * 신고 목록을 서버에서 받아온 뒤, 페이지/테이블을 렌더링
+ * 신고 목록 로드 및 페이지네이션 초기화
  */
 function loadReports() {
     const searchForm = document.getElementById("searchForm");
@@ -96,7 +157,7 @@ function loadReports() {
 }
 
 /**
- * 현재 페이지의 데이터만 테이블에 표시하고, 페이지네이션 표시
+ * 현재 페이지 데이터만 렌더링 및 페이지네이션 표시
  */
 function renderPage() {
     // 현재 페이지의 데이터 슬라이싱
@@ -128,7 +189,6 @@ function renderTable(reports) {
 
     const table = document.createElement("table");
     const thead = document.createElement("thead");
-
     let headerHtml = "<tr>";
     headerColumns.forEach(col => {
         headerHtml += `<th data-field="${col.field}" data-type="${col.type}" style="cursor:pointer;">
@@ -137,10 +197,9 @@ function renderTable(reports) {
     });
     headerHtml += "</tr>";
     thead.innerHTML = headerHtml;
-
     table.appendChild(thead);
 
-    // 헤더 클릭 이벤트 설정 (정렬 기능)
+    // 정렬 이벤트
     const thElements = thead.querySelectorAll("th");
     thElements.forEach(th => {
         th.addEventListener("click", () => {
@@ -159,16 +218,22 @@ function renderTable(reports) {
             formattedDate = formatDate(new Date(report.reportCreatedAt));
         }
 
+        // 첫 번째 컬럼: 신고 번호만 클릭 이벤트, 'PROCEEDING' (미처리)일 때만 모달 열기
+        const reportNoHtml = (report.reportStatus === '미처리')
+            ? `<span class="report-no-click" onclick='openReportDetailModal(${JSON.stringify(report)})'>${report.reportNo}</span>`
+            : `<span>${report.reportNo}</span>`;
+        console.log("[DEBUG] reportNoHtml >> ", reportNoHtml);
+
+
+
         tr.innerHTML = `
-            <td>${report.reportNo}</td>
+            <td>${reportNoHtml}</td>
             <td>${formattedDate}</td>
             <td>${report.reportReason}</td>
             <td>${report.memberId}</td>
             <td>${report.reportStatus}</td>
         `;
-        tr.addEventListener("click", () => {
-            window.location.href = `/report/detail/${report.reportNo}`;
-        });
+        // [변경!!!!] 다른 컬럼에는 click 이벤트를 부여하지 않음.
         tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -259,7 +324,9 @@ function formatDate(dateObj) {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
-// 정렬 함수: 주어진 필드와 타입에 따라 allReports를 정렬하고 renderPage() 호출
+/**
+ * 정렬 함수
+ */
 function sortReports(field, type) {
     // 기본 정렬 순서를 asc로 설정
     if (!sortState[field] || sortState[field] === 'desc') {

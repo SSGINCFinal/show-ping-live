@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -122,5 +123,20 @@ public class ReportServiceImpl implements ReportService {
 
             return matches;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean updateReportStatus(Long reportNo) {
+        // 해당 신고가 미처리(PROCEEDING)인 경우에만 업데이트
+        Optional<Report> optReport = reportRepository.findById(reportNo);
+        if (optReport.isPresent()) {
+            Report report = optReport.get();
+            if ("PROCEEDING".equals(report.getReportStatus())) {
+                report.setReportStatus(ReportStatus.COMPLETED); // ENUM 변환: 미처리(PROCEEDING) -> 처리(COMPLETED)
+                reportRepository.save(report);
+                return true;
+            }
+        }
+        return false;
     }
 }

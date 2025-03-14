@@ -6,11 +6,14 @@ import com.ssginc.showpinglive.entity.Report;
 import com.ssginc.showpinglive.service.ReportService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -102,6 +105,23 @@ public class ReportController {
         }).collect(Collectors.toList());
         responseDtos.forEach(dto -> System.out.println("[DEBUG] ReportResponseDto: " + dto));
         return responseDtos;
+    }
+
+    @PostMapping("api/updateStatus")
+    @ResponseBody
+    public ResponseEntity<?> updateReportStatus(@RequestBody Map<String, Object> payload) {
+        try {
+            Long reportNo = Long.valueOf(payload.get("reportNo").toString());
+            // [추가!!!!] 서비스에서 해당 신고의 상태를 업데이트 (미처리(PROCEEDING) -> 처리(COMPLETED))
+            boolean updated = reportService.updateReportStatus(reportNo);
+            if (updated) {
+                return ResponseEntity.ok("OK");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update failed");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     /**
