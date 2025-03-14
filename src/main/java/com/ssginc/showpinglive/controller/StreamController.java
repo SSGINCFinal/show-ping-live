@@ -178,4 +178,19 @@ public class StreamController {
         return ResponseEntity.status(HttpStatus.OK).body(startStreamResponseDto);
     }
 
+    /**
+     * 방송 종료를 하는 메서드
+     * @param request streamNo가 담긴 요청 객체
+     * @return 방송 종료 설정 적용 여부
+     */
+    @PostMapping("/stop")
+    public ResponseEntity<Map<String, Boolean>> stopStream(@RequestBody StreamRequestDto request) {
+        Boolean result = streamService.stopStream(request.getStreamNo());
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("result", result);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 }

@@ -309,11 +309,21 @@ function getConstraints() {
 }
 
 function stopLive() {
-    let message = {
-        id : 'stop'
-    }
-    sendLiveMessage(message);
-    dispose();
+    axios.post("/stream/stop", {
+        streamNo: streamNo
+    })
+        .then((response) => {
+            console.log(response);
+
+            let message = {
+                id: 'stop'
+            }
+            sendLiveMessage(message);
+            dispose();
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 }
 
 function stopRecord() {

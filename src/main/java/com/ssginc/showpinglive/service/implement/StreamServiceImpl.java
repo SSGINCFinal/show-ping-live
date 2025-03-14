@@ -19,6 +19,7 @@ import com.ssginc.showpinglive.repository.ProductRepository;
 import com.ssginc.showpinglive.repository.StreamRepository;
 import com.ssginc.showpinglive.service.StreamService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class StreamServiceImpl implements StreamService {
 
@@ -169,21 +171,33 @@ public class StreamServiceImpl implements StreamService {
      */
     @Override
     public GetStreamRegisterInfoResponseDto getStreamRegisterInfo(String memberId) {
-        GetStreamRegisterInfoDto streamInfo = streamRepository.findStreamByMemberIdAndStreamStatus(memberId);
+        try {
+            GetStreamRegisterInfoDto streamInfo = streamRepository.findStreamByMemberIdAndStreamStatus(memberId);
 
-        NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
-        String formattedPrice = nf.format(streamInfo.getProductPrice()) + "원";
+            if (streamInfo == null) {
+                throw new RuntimeException("해당 회원으로 등록된 방송 정보가 없습니다.");
+            }
 
-        return GetStreamRegisterInfoResponseDto.builder()
-                .streamNo(streamInfo.getStreamNo())
-                .streamTitle(streamInfo.getStreamTitle())
-                .streamDescription(streamInfo.getStreamDescription())
-                .productNo(streamInfo.getProductNo())
-                .productName(streamInfo.getProductName())
-                .productPrice(formattedPrice)
-                .productSale(streamInfo.getProductSale())
-                .productImg(streamInfo.getProductImg())
-                .build();
+            NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
+            String formattedPrice = nf.format(streamInfo.getProductPrice()) + "원";
+
+            return GetStreamRegisterInfoResponseDto.builder()
+                    .streamNo(streamInfo.getStreamNo())
+                    .streamTitle(streamInfo.getStreamTitle())
+                    .streamDescription(streamInfo.getStreamDescription())
+                    .productNo(streamInfo.getProductNo())
+                    .productName(streamInfo.getProductName())
+                    .productPrice(formattedPrice)
+                    .productSale(streamInfo.getProductSale())
+                    .productImg(streamInfo.getProductImg())
+                    .build();
+        } catch (RuntimeException e) {
+            log.error("Exception [Err_Msg]: {}", e.getMessage());
+            log.error("Exception [Err_Where]: {}", e.getStackTrace()[0]);
+
+            return null;
+        }
+
     }
 
     /**
@@ -271,6 +285,30 @@ public class StreamServiceImpl implements StreamService {
                 .productPrice(formattedPrice)
                 .productSale(product.getProductSale())
                 .build();
+    }
+
+    /**
+     * 방송 종료를 하는 메서드
+     * @param streamNo 종료하려는 방송 번호
+     * @return 방송 종료 설정 적용 여부
+     */
+    public Boolean stopStream(Long streamNo) {
+        Stream stream = streamRepository.findById(streamNo).orElseThrow(RuntimeException::new);
+
+        // 방송 종료 시간 설정
+        stream.setStreamEndTime(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+        // 방송 상태 송출 종료로 변경
+        stream.setStreamStatus(StreamStatus.ENDED);
+        // 해당 방송의 상품의 할인율 0으로 변경(할인 종료)
+        stream.getProduct().setProductSale(0);
+
+        stream = streamRepository.save(stream);
+
+        if (stream.getStreamEndTime() != null && stream.getStreamStatus() == StreamStatus.ENDED && stream.getProduct().getProductSale() == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

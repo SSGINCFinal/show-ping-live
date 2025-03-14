@@ -37,4 +37,6 @@ public interface StreamService {
 
     StartStreamResponseDto startStream(Long streamNo);
 
+    Boolean stopStream(Long streamNo);
+
 }
