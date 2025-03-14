@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -50,9 +51,6 @@ public class StreamServiceImpl implements StreamService {
     private final ProductRepository productRepository;
 
     private final MemberRepository memberRepository;
-
-    @Qualifier("webApplicationContext")
-    private final ResourceLoader resourceLoader;
 
     private final StorageLoader storageLoader;
 
