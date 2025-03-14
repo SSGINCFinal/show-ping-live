@@ -19,18 +19,6 @@ window.onload = function() {
     live = document.getElementById('live-video');
     watch = document.getElementById('live');
 
-    // 시청모드이면 접속시 viewer 함수 실행
-    if (watch) {
-        viewer();
-    }
-
-    // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
-    if (!streamInfo) {
-        setState(DISABLED);
-    } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
-        setState(NO_CALL);
-    }
-
     // send 버튼 이벤트와 STOMP 연결 초기화
     const sendButton = document.getElementById('send-button');
     if (sendButton) {
@@ -114,6 +102,18 @@ window.onload = function() {
                 charCount.textContent = `${length}/200`;
             }
         });
+    }
+
+    // 시청모드이면 접속시 viewer 함수 실행
+    if (watch) {
+        viewer();
+    }
+
+    // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
+    if (!streamInfo) {
+        setState(DISABLED);
+    } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
+        setState(NO_CALL);
     }
 }
 
@@ -423,6 +423,7 @@ function dispose() {
         webRtcPeer.dispose();
         webRtcPeer = null;
     }
+    stopChat();
 }
 
 function sendLiveMessage(message) {

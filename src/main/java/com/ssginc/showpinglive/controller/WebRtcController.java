@@ -52,7 +52,6 @@ public class WebRtcController {
     public String watch(@AuthenticationPrincipal UserDetails userDetails,
                         @PathVariable Long streamNo,
                         Model model) {
-        System.out.println(userDetails);
 
         if (userDetails != null) {
             Member member = memberService.findMemberById(userDetails.getUsername());
@@ -63,8 +62,7 @@ public class WebRtcController {
         }
 
         ChatRoomResponseDto chatRoom = chatRoomService.findChatRoomByStreamNo(streamNo);
-        System.out.println(chatRoom.getChatRoomNo());
-        model.addAttribute("chatRoom", chatRoom);
+        model.addAttribute("chatRoomInfo", chatRoom);
 
         return "webrtc/watch";
     }

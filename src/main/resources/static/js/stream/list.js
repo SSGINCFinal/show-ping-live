@@ -37,7 +37,7 @@ function loadLive() {
 
                 // 라이브 클릭 시 시청 및 상세 페이지로 이동
                 liveDiv.addEventListener('click', () => {
-                    window.location.href = `/watch/live/${live.streamNo}`;
+                    window.location.href = `/webrtc/watch/${live.streamNo}`;
                 });
                 liveGrid.appendChild(liveDiv);
             }
