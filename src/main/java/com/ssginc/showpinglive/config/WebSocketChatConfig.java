@@ -19,16 +19,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketChatConfig implements WebSocketMessageBrokerConfigurer {
 
     /**
-     * WebSocketChatHandler 빈을 생성하여 WebSocket 메시지 처리 담당.
-     *
-     * @return WebSocketChatHandler 객체
-     */
-    @Bean
-    public WebSocketChatHandler webSocketChatHandler() {
-        return new WebSocketChatHandler();
-    }
-
-    /**
      * 메시지 브로커의 구성 설정을 수행하는 메소드
      * <p>
      * 클라이언트로부터의 발행 메시지는 "/pub" prefix를 사용,

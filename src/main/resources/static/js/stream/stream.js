@@ -25,7 +25,12 @@ window.onload = function() {
         viewer();
     }
 
-    setState(NO_CALL);
+    // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
+    if (!streamInfo) {
+        setState(DISABLED);
+    } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
+        setState(NO_CALL);
+    }
 
     // send 버튼 이벤트와 STOMP 연결 초기화
     const sendButton = document.getElementById('send-button');
@@ -235,21 +240,49 @@ function viewerResponse(message) {
 }
 
 function startLive() {
-    if (!webRtcPeer) {
-        showSpinner(live);
+    axios.post("/stream/start", {
+        streamNo: streamNo
+    })
+        .then((response) => {
+            console.log(response);
 
-        let options = {
-            localVideo : live,
-            onicecandidate : onLiveIceCandidate
-        }
-        webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
-            function(error) {
-                if (error) {
-                    return console.error(error);
+            const data = response.data;
+
+            const productElement = document.querySelector(".product-element");
+            document.getElementById("broadcastTitle").value = data.streamTitle;
+            document.getElementById("broadcastDesc").value = data.streamDescription;
+
+            productElement.innerHTML = `
+                <img src="/img/product_img/${data.productImg}" alt="상품 이미지" class="product-img">
+                <div class="product-info" id="${data.productNo}">
+                    <p class="product-name">${data.productName}</p>
+                    <div class="product-price-container">
+                        <p class="product-origin-price">${data.productPrice}</p>
+                    </div>
+                </div>
+            `
+
+            document.getElementById("discountRate").value = data.productSale;
+
+            if (!webRtcPeer) {
+                showSpinner(live);
+
+                let options = {
+                    localVideo: live,
+                    onicecandidate: onLiveIceCandidate
                 }
-                webRtcPeer.generateOffer(onLiveOffer);
+                webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
+                    function (error) {
+                        if (error) {
+                            return console.error(error);
+                        }
+                        webRtcPeer.generateOffer(onLiveOffer);
+                    });
+            }
+        })
+        .catch((error) => {
+            console.log(error);
         });
-    }
 }
 
 function viewer() {
@@ -349,14 +382,24 @@ function getConstraints() {
 }
 
 function stopLive() {
-    let message = {
-        id : 'stop'
-    }
-    if (live) {
-        dispose();
-    }
-    sendLiveMessage(message);
-    stopRecord();
+    axios.post("/stream/stop", {
+        streamNo: streamNo
+    })
+        .then((response) => {
+            console.log(response);
+
+            let message = {
+                id: 'stop'
+            }
+            if (live) {
+                dispose();
+            }
+            sendLiveMessage(message);
+            stopRecord();
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 }
 
 function stopRecord() {

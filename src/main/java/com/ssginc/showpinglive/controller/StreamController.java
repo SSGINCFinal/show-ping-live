@@ -1,6 +1,11 @@
 package com.ssginc.showpinglive.controller;
 
+import com.ssginc.showpinglive.dto.object.ProductItemDto;
+import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
+import com.ssginc.showpinglive.dto.request.StreamRequestDto;
+import com.ssginc.showpinglive.dto.response.StartStreamResponseDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
+import com.ssginc.showpinglive.service.ProductService;
 import com.ssginc.showpinglive.service.StreamService;
 import com.ssginc.showpinglive.service.SubtitleService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +34,8 @@ import java.util.Map;
 public class StreamController {
 
     private final StreamService streamService;
+
+    private final ProductService productService;
 
     private final SubtitleService subtitleService;
 
@@ -132,6 +141,65 @@ public class StreamController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(subtitleJson);
+    }
+
+    /**
+     * 방송 등록 화면에서 상품 선택을 위해 상품 목록을 반환해주는 메서드
+     * @return 상품 목록이 포함된 응답 객체
+     */
+    @GetMapping("/product/list")
+    public ResponseEntity<List<ProductItemDto>> getProductList() {
+        List<ProductItemDto> productItemDtoList = productService.getProducts();
+
+        return ResponseEntity.status(HttpStatus.OK).body(productItemDtoList);
+    }
+
+    /**
+     * 방송 등록을 하는 메서드
+     * @param request 방송 등록에 필요한 방송 정보
+     * @return 생성 혹은 수정된 방송 데이터의 방송 번호가 포함된 응답 객체
+     */
+    @PostMapping("/stream")
+    public ResponseEntity<Map<String, Long>> createStream(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RegisterStreamRequestDto request) {
+        String memberId = null;
+
+        if (userDetails != null) {
+            memberId = userDetails.getUsername();
+        }
+
+        Long streamNo = streamService.createStream(memberId, request);
+
+        Map<String, Long> response = new HashMap<>();
+        response.put("streamNo", streamNo);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 방송 시작을 하는 메서드
+     * @param request streamNo가 담긴 요청 객체
+     * @return 시작한 방송에 대한 정보
+     */
+    @PostMapping("/start")
+    public ResponseEntity<StartStreamResponseDto> startStream(@RequestBody StreamRequestDto request) {
+        StartStreamResponseDto startStreamResponseDto = streamService.startStream(request.getStreamNo());
+
+        return ResponseEntity.status(HttpStatus.OK).body(startStreamResponseDto);
+    }
+
+    /**
+     * 방송 종료를 하는 메서드
+     * @param request streamNo가 담긴 요청 객체
+     * @return 방송 종료 설정 적용 여부
+     */
+    @PostMapping("/stop")
+    public ResponseEntity<Map<String, Boolean>> stopStream(@RequestBody StreamRequestDto request) {
+        Boolean result = streamService.stopStream(request.getStreamNo());
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("result", result);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }
