@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ssginc.showpinglive.dto.object.CreateStreamDto;
 import com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto;
 import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
+import com.ssginc.showpinglive.dto.response.GetStreamRegisterInfoResponseDto;
+import com.ssginc.showpinglive.dto.response.StartStreamResponseDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.entity.Product;
@@ -28,9 +30,11 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.io.*;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -164,8 +168,22 @@ public class StreamServiceImpl implements StreamService {
      * @return GetStreamRegisterInfoDto 로그인한 회원으로 등록된 방송 정보
      */
     @Override
-    public GetStreamRegisterInfoDto getStreamRegisterInfo(String memberId) {
-        return streamRepository.findStreamByMemberIdAndStreamStatus(memberId);
+    public GetStreamRegisterInfoResponseDto getStreamRegisterInfo(String memberId) {
+        GetStreamRegisterInfoDto streamInfo = streamRepository.findStreamByMemberIdAndStreamStatus(memberId);
+
+        NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
+        String formattedPrice = nf.format(streamInfo.getProductPrice()) + "원";
+
+        return GetStreamRegisterInfoResponseDto.builder()
+                .streamNo(streamInfo.getStreamNo())
+                .streamTitle(streamInfo.getStreamTitle())
+                .streamDescription(streamInfo.getStreamDescription())
+                .productNo(streamInfo.getProductNo())
+                .productName(streamInfo.getProductName())
+                .productPrice(formattedPrice)
+                .productSale(streamInfo.getProductSale())
+                .productImg(streamInfo.getProductImg())
+                .build();
     }
 
     /**
@@ -223,4 +241,36 @@ public class StreamServiceImpl implements StreamService {
 
         return responseStreamNo;
     }
+
+    /**
+     * 방송 시작을 하는 메서드
+     * @param streamNo 시작하려는 방송 번호
+     * @return 시작한 방송에 대한 정보
+     */
+    public StartStreamResponseDto startStream(Long streamNo) {
+        Stream stream = streamRepository.findById(streamNo).orElseThrow(RuntimeException::new);
+
+        // 방송 시작 시간 설정
+        stream.setStreamStartTime(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+        // 방송 상태 송출 중으로 변경
+        stream.setStreamStatus(StreamStatus.ONAIR);
+
+        stream = streamRepository.save(stream);
+
+        Product product = stream.getProduct();
+        // 천 단위 구분 포맷팅
+        NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
+        String formattedPrice = nf.format(product.getProductPrice()) + "원";
+
+        return StartStreamResponseDto.builder()
+                .streamTitle(stream.getStreamTitle())
+                .streamDescription(stream.getStreamDescription())
+                .productImg(product.getProductImg())
+                .productNo(product.getProductNo())
+                .productName(product.getProductName())
+                .productPrice(formattedPrice)
+                .productSale(product.getProductSale())
+                .build();
+    }
+
 }

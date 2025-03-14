@@ -2,6 +2,8 @@ package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.dto.object.ProductItemDto;
 import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
+import com.ssginc.showpinglive.dto.request.StreamRequestDto;
+import com.ssginc.showpinglive.dto.response.StartStreamResponseDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.service.ProductService;
 import com.ssginc.showpinglive.service.StreamService;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,4 +165,17 @@ public class StreamController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    /**
+     * 방송 시작을 하는 메서드
+     * @param request streamNo가 담긴 요청 객체
+     * @return 시작한 방송에 대한 정보
+     */
+    @PostMapping("/start")
+    public ResponseEntity<StartStreamResponseDto> startStream(@RequestBody StreamRequestDto request) {
+        StartStreamResponseDto startStreamResponseDto = streamService.startStream(request.getStreamNo());
+
+        return ResponseEntity.status(HttpStatus.OK).body(startStreamResponseDto);
+    }
+
 }

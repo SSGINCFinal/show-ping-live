@@ -3,7 +3,7 @@ package com.ssginc.showpinglive.dto.object;
 import lombok.*;
 
 /**
- * 방송 등록 화면에서 이미 등록한 방송 정보를 보내주기 위해 정의한 DTO 클래스
+ * 이미 등록한 방송 정보를 가져오기 위해 정의한 DTO 클래스
  */
 @Getter
 @Setter

@@ -35,6 +35,9 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((response) => {
                 console.log("성공", response);
                 streamNo = response.data.streamNo;
+
+                $('#start').attr('disabled', false);
+                $('#stop').attr('disabled', true);
             })
             .catch((error) => {
                 console.log("실패", error);

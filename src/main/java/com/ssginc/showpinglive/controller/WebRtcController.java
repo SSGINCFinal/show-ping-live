@@ -1,6 +1,6 @@
 package com.ssginc.showpinglive.controller;
 
-import com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto;
+import com.ssginc.showpinglive.dto.response.GetStreamRegisterInfoResponseDto;
 import com.ssginc.showpinglive.service.StreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +24,7 @@ public class WebRtcController {
             memberId = userDetails.getUsername();   // 로그인한 멤버 아이디
         }
 
-        GetStreamRegisterInfoDto streamInfo = streamService.getStreamRegisterInfo(memberId);
+        GetStreamRegisterInfoResponseDto streamInfo = streamService.getStreamRegisterInfo(memberId);
 
         System.out.println("########################");
         System.out.println(streamInfo);
