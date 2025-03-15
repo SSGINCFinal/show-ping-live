@@ -6,13 +6,6 @@
 <head>
   <link rel="stylesheet" th:href="@{/css/watch/history.css}">
 
-  <script th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-      var memberNo = [[${member.memberNo}]];
-      loadWatchHistory(memberNo);
-    });
-  </script>
-
   <script th:src="@{/js/watch/history.js}"></script>
 </head>
 
