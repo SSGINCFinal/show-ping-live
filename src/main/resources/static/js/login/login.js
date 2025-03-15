@@ -6,6 +6,17 @@ window.onload = function () {
             alert(message);
         }
     }
+
+    // 2FA 입력폼에서 엔터 키를 눌렀을 때 인증 버튼 클릭하도록 처리
+    const totpInput = document.getElementById("totpCode");
+    if (totpInput) {
+        totpInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // 기본 엔터 키 동작 방지 (폼 제출 방지)
+                verifyTOTP(event); // 인증 함수 호출
+            }
+        });
+    }
 };
 
 async function login(event) {  // ✅ event 파라미터 추가
