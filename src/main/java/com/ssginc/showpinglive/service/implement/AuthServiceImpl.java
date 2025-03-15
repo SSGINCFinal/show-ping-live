@@ -97,8 +97,10 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), role);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
 
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         System.out.println("✅ 생성된 JWT Access Token: " + accessToken);
         System.out.println("✅ 생성된 JWT Refresh Token: " + refreshToken);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
         refreshTokenService.saveRefreshToken(memberId, refreshToken);
 
@@ -169,6 +171,12 @@ public class AuthServiceImpl implements AuthService {
     public boolean isDuplicateId(String memberId) {
         // memberId로 회원을 조회하고, 결과가 있으면 중복된 ID라는 의미
         return memberRepository.existsByMemberId(memberId);
+    }
+
+    @Override
+    public boolean isDuplicateEmail(String memberEmail) {
+        // memberEmail로 회원을 조회하고, 결과가 있으면 중복된 Email이라는 의미
+        return memberRepository.existsByMemberEmail(memberEmail);
     }
 
     @Override
