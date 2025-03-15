@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (response.ok) {
                         sessionStorage.removeItem("accessToken"); // ✅ Access Token 삭제
                         sessionStorage.removeItem("refreshToken"); // ✅ Refresh Token 삭제
+                        sessionStorage.removeItem("memberId");
                         console.log("✅ 세션 토큰 삭제 완료");
                         window.location.href = "/login"; // ✅ 로그인 페이지로 이동
                     } else {

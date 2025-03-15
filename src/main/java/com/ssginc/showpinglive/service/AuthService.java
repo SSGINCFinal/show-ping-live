@@ -22,6 +22,8 @@ public interface AuthService {
 
     boolean isDuplicateId(String memberId);
 
+    boolean isDuplicateEmail(String memberEmail);
+
     Member findMemberById(String memberId);
 
     ResponseEntity<Map<String, String>> verifyTOTP(String memberId, int totpCode);
