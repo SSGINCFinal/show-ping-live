@@ -194,8 +194,7 @@ rec.onmessage = function(message) {
         case 'recording':
             break;
         case 'stopped':
-            // uploadFileToNCP();
-            stopChat();
+            uploadFileToNCP();
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
@@ -450,7 +449,7 @@ function onLiveError(error) {
 }
 
 function uploadFileToNCP() {
-    let title = 'test.mp4';
+    let title = document.getElementById('broadcastTitle').value + ".mp4";
     axios.post('/stream/vod/upload', {
         title
     })
