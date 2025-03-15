@@ -55,7 +55,7 @@
     width: 300px;
 }
 
-#vod #live #live-video {
+#vod, #live, #live-video {
     width: 100%; /* 부모 요소 너비에 맞춤 */
     height: 100%; /* 부모 요소 높이에 맞춤 */
     object-fit: fill; /* 비율을 유지하면서 div에 꽉 차게 조정 */
