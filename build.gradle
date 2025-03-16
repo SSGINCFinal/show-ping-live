@@ -167,6 +167,8 @@ dependencies {
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'net.pwall.json:jsonutil:5.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
     ////////////////////////////////////////////////////////////////////////////
 }
 
