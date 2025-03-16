@@ -41,8 +41,21 @@ window.onload = function() {
             const checkedReason = document.querySelector('input[name="reportReason"]:checked');
             if (checkedReason) {
                 const reasonValue = checkedReason.value;
-                alert(`신고 사유: ${reasonValue}`);
-                closeReportModal();
+                // 신고 대상 채팅 내용 (reportTargetText)
+                const reportContent = document.getElementById('reportTargetText').textContent;
+                axios.post('/report/api/register', {
+                    reportReason: reasonValue,
+                    reportContent: reportContent
+                })
+                    .then(response => {
+                        console.log("신고 등록 완료:", response.data);
+                        alert("신고가 접수되었습니다.");
+                        closeReportModal();
+                    })
+                    .catch(error => {
+                        console.error("신고 등록 중 오류 발생:", error);
+                        alert("신고 등록 중 오류가 발생했습니다.");
+                    });
             }
         });
     }
@@ -568,7 +581,6 @@ function addMessageToChat(message) {
     const messageElement = document.createElement("div");
     messageElement.classList.add("message");
 
-
     // 사용자 아이디
     const userNameSpan = document.createElement("span");
     userNameSpan.classList.add("user-name");
@@ -578,24 +590,6 @@ function addMessageToChat(message) {
     const messageTextP = document.createElement("p");
     messageTextP.classList.add("chat-text");
     messageTextP.textContent = message.chat_message;
-
-    // // 관리자인지 확인 (필요에 따라 조건 수정)
-    // if(message.chat_member_id === "ADMIN") {
-    //     messageElement.classList.add("ADMIN");
-    //     userNameSpan.textContent = "관리자 ✓";
-    //     // 관리자 이름을 빨간색으로 표시
-    //     userNameSpan.style.color = "red";
-    //
-    //     // 관리자 메시지라고 구분할 클래스 추가 (CSS 활용 가능)
-    //     messageElement.classList.add("admin");
-    //
-    //     // 예시: “관리자가 작성한 채팅 입니다.”로 고정
-    //     messageTextP.textContent = message.chat_message;
-    // } else {
-    //     messageElement.classList.add("USER");
-    //     userNameSpan.textContent = message.chat_member_id;
-    //     messageTextP.textContent = message.chat_message;
-    // }
 
     if (memberRole && memberRole === "ROLE_ADMIN") {
         userNameSpan.textContent = "관리자 ✓";
@@ -608,21 +602,15 @@ function addMessageToChat(message) {
         userNameSpan.textContent = message.chat_member_id;
         messageTextP.textContent = message.chat_message;
 
-        // (추가) 아이디 클릭 시 신고 모달 오픈
+        // 아이디 클릭 시 신고 모달 오픈
         userNameSpan.addEventListener('click', () => {
             openReportModal(message.chat_member_id, message.chat_message);
         });
     }
 
-    // 채팅 시간 (문자열 그대로 사용하거나, 포맷팅 가능)
-    // const chatTimeSpan = document.createElement("span");
-    // chatTimeSpan.classList.add("chat-time");
-    // chatTimeSpan.textContent = message.chat_created_at;
-
     // 요소 조합
     messageElement.appendChild(userNameSpan);
     messageElement.appendChild(messageTextP);
-    // messageElement.appendChild(chatTimeSpan);
 
     // 채팅 메시지 컨테이너에 추가
     chatMessagesContainer.appendChild(messageElement);

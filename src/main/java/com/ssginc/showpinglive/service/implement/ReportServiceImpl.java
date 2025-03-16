@@ -1,10 +1,13 @@
 package com.ssginc.showpinglive.service.implement;
 
+import com.ssginc.showpinglive.dto.request.ReportRegisterRequestDto;
+import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.entity.Report;
 import com.ssginc.showpinglive.entity.ReportStatus;
+import com.ssginc.showpinglive.entity.ReportType;
+import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.repository.ReportRepository;
 import com.ssginc.showpinglive.service.ReportService;
-import io.lettuce.core.ScriptOutputType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * 전체 신고 목록을 반환.
@@ -139,5 +143,22 @@ public class ReportServiceImpl implements ReportService {
             }
         }
         return false;
+    }
+
+    @Override
+    public Report registerReport(ReportRegisterRequestDto dto, String reporterMemberId) {
+        // 신고한 회원 조회
+        Member reporter = memberRepository.findByMemberId(reporterMemberId)
+                .orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
+
+        Report report = new Report();
+        report.setMember(reporter);
+        report.setReportStatus(ReportStatus.PROCEEDING); // 미처리 상태
+        report.setReportType(ReportType.CHAT);           // 채팅 신고 타입
+        report.setReportReason(dto.getReportReason());
+        report.setReportContent(dto.getReportContent());
+        report.setReportCreatedAt(LocalDateTime.now());  // 신고 시각
+
+        return reportRepository.save(report);
     }
 }
