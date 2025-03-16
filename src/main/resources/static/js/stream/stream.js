@@ -509,7 +509,10 @@ function connectToChatRoom() {
         return;
     }
 
-    const socket = new SockJS('/ws-stomp-chat');
+    const accessToken = sessionStorage.getItem('accessToken');
+    var socket = new SockJS('/ws-stomp-chat?access_token=' + accessToken, null, {
+        transports: ['websocket', 'xhr-streaming', 'xhr-polling']
+    });
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, onConnected, onChatError);
@@ -533,10 +536,12 @@ function onConnected(frame) {
         }
     });
 
-    // STOMP 클라이언트 연결 후 에러 채널 구독
+    // STOMP 클라이언트 연결 후 사용자 전용 에러 채널 구독
     stompClient.subscribe('/user/queue/errors', function(message) {
         var errorResponse = JSON.parse(message.body);
-        alert(errorResponse.chatMessage);
+        console.log("Inline error message:", errorResponse.chat_message); // 로그 출력 확인
+        alert(errorResponse.chat_message);
+        showInlineError(errorResponse.chat_message);
     });
 
 }
@@ -682,6 +687,23 @@ function getMemberInfo(){
         console.warn("accessToken이 존재하지 않습니다.");
     }
 }
+
+// 인라인 에러 메시지를 표시하는 함수
+function showInlineError(errorMessage) {
+    const errorElement = document.getElementById('inline-error');
+    if (errorElement) {
+        errorElement.textContent = errorMessage;
+        console.log("Inline error message: ", errorMessage);
+        errorElement.style.display = 'block';
+        // 5초 후 자동 숨김 처리
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 5000);
+    } else {
+        console.error("Inline error element not found!");
+    }
+}
+
 
 
 /**
