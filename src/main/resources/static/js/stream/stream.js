@@ -38,6 +38,7 @@ window.onload = function() {
     if (reportForm) {
         reportForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            const accessToken = sessionStorage.getItem('accessToken');
             const checkedReason = document.querySelector('input[name="reportReason"]:checked');
             if (checkedReason) {
                 const reasonValue = checkedReason.value;
@@ -46,7 +47,12 @@ window.onload = function() {
                 axios.post('/report/api/register', {
                     reportReason: reasonValue,
                     reportContent: reportContent
-                })
+                },
+                    {
+                        headers: {
+                            Authorization: 'Bearer ' + accessToken
+                        }
+                    })
                     .then(response => {
                         console.log("신고 등록 완료:", response.data);
                         alert("신고가 접수되었습니다.");
@@ -657,7 +663,7 @@ function getMemberInfo(){
     // accessToken을 sessionStorage에서 가져옴
     const accessToken = sessionStorage.getItem('accessToken');
     if (accessToken) {
-        // [추가!!!!] 사용자 정보를 가져오는 API 호출, 응답에서 memberId를 설정
+        // 사용자 정보 API 호출, 응답 >> memberId
         axios.get('/chat/api/info', {
             headers: {
                 Authorization: 'Bearer ' + accessToken
