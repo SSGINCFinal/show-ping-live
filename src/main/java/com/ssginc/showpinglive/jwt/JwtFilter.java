@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/images/") || requestURI.startsWith("/assets/") ||
                 requestURI.equals("/api/auth/login") ||
                 requestURI.equals("/login/signup") || requestURI.equals("/api/register") ||
-                requestURI.equals("/webrtc/webrtc")) {
+                requestURI.equals("/webrtc/webrtc") || requestURI.equals("/watch/history")) {
             chain.doFilter(request, response);
             return;
         }

@@ -153,7 +153,6 @@ function setState(nextState) {
 
 ws.onmessage = function(message) {
     let parsedMessage = JSON.parse(message.data);
-    console.info('Received message: ' + message.data);
 
     switch (parsedMessage.id) {
         case 'presenterResponse':
@@ -178,7 +177,6 @@ ws.onmessage = function(message) {
 
 rec.onmessage = function(message) {
     let parsedMessage = JSON.parse(message.data);
-    console.info('Received message: ' + message.data);
 
     switch (parsedMessage.id) {
         case 'startResponse':
@@ -196,8 +194,7 @@ rec.onmessage = function(message) {
         case 'recording':
             break;
         case 'stopped':
-            // uploadFileToNCP();
-            stopChat();
+            uploadFileToNCP();
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
@@ -313,7 +310,6 @@ function onLiveIceCandidate(candidate) {
 }
 
 function createVideo() {
-    console.log('Starting video call ...');
 
     let options = {
         localVideo : live,
@@ -322,7 +318,7 @@ function createVideo() {
     }
 
     webRtcRecord = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
-                function(error) {
+        function(error) {
             if (error)
                 return console.error(error);
             webRtcRecord.generateOffer(onRecordOffer);
@@ -330,8 +326,6 @@ function createVideo() {
 }
 
 function onRecordIceCandidate(candidate) {
-    console.log("Local candidate" + JSON.stringify(candidate));
-
     let message = {
         id : 'onIceCandidate',
         candidate : candidate
@@ -342,7 +336,6 @@ function onRecordIceCandidate(candidate) {
 function onLiveOffer(error, offerSdp) {
     if (error)
         return console.error('Error generating the offer');
-    console.info('Invoking SDP offer callback function ' + location.host);
     let message = {
         id : 'presenter',
         sdpOffer : offerSdp
@@ -353,7 +346,6 @@ function onLiveOffer(error, offerSdp) {
 function onViewOffer(error, offerSdp) {
     if (error)
         return console.error('Error generating the offer');
-    console.info('Invoking SDP offer callback function ' + location.host);
     var message = {
         id : 'viewer',
         sdpOffer : offerSdp
@@ -367,6 +359,7 @@ function onRecordOffer(error, offerSdp) {
     console.info('Invoking SDP offer callback function ' + location.host);
     let message = {
         id : 'start',
+        title: document.getElementById("broadcastTitle").value,
         sdpOffer : offerSdp,
         mode :  $('input[name="mode"]:checked').val()
     }
@@ -428,13 +421,11 @@ function dispose() {
 
 function sendLiveMessage(message) {
     let jsonMessage = JSON.stringify(message);
-    console.log('Sending message: ' + jsonMessage);
     ws.send(jsonMessage);
 }
 
 function sendRecordMessage(message) {
     let jsonMessage = JSON.stringify(message);
-    console.log('Sending message: ' + jsonMessage);
     rec.send(jsonMessage);
 }
 
@@ -458,7 +449,7 @@ function onLiveError(error) {
 }
 
 function uploadFileToNCP() {
-    let title = 'test.mp4';
+    let title = document.getElementById('broadcastTitle').value + ".mp4";
     axios.post('/stream/vod/upload', {
         title
     })

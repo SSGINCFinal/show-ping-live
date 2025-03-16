@@ -1,8 +1,21 @@
-function loadWatchHistory(memberNo) {
-    axios.get(`/watch/history/${memberNo}`)
+document.addEventListener("DOMContentLoaded", function () {
+    const accessToken = sessionStorage.getItem('accessToken');
+
+    if (!accessToken) {
+        window.location.href = '../login';
+    }
+
+    loadWatchHistory(accessToken);
+});
+
+function loadWatchHistory() {
+    axios.get(`/watch/history/list`, {
+        headers: {
+            accessToken: 'Bearer ' + accessToken
+        }
+    })
         .then(response => {
             const historyItems = response.data['historyList'];
-            console.log(historyItems);
             const tableBody = document.querySelector(".history-items tbody");
 
             tableBody.innerHTML = ""; // 기존 데이터 초기화
