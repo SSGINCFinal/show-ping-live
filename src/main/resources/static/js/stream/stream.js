@@ -7,6 +7,8 @@ var webRtcRecord;
 var state;
 
 let stompClient = null;
+let memberId = null;
+let memberRole = null;
 let reconnectTimeout = 5000;
 
 const NO_CALL = 0;
@@ -18,6 +20,8 @@ const IN_PLAY = 4;
 window.onload = function() {
     live = document.getElementById('live-video');
     watch = document.getElementById('live');
+
+    getMemberInfo();
 
     // send 버튼 이벤트와 STOMP 연결 초기화
     const sendButton = document.getElementById('send-button');
@@ -593,7 +597,7 @@ function addMessageToChat(message) {
     //     messageTextP.textContent = message.chat_message;
     // }
 
-    if (message.chat_member_id === "admin01") {
+    if (memberRole && memberRole === "ROLE_ADMIN") {
         userNameSpan.textContent = "관리자 ✓";
         // 관리자 이름을 빨간색으로 표시
         userNameSpan.style.color = "red";
@@ -660,13 +664,37 @@ function stopChat() {
             console.log('Disconnected from WebSocket');
         });
     }
-}7
+}
 
 function clearErrorMessage() {
     const errorElement = document.getElementById('error-message');
     if (errorElement) {
         errorElement.textContent = '';
         errorElement.style.display = 'none';
+    }
+}
+
+function getMemberInfo(){
+    // accessToken을 sessionStorage에서 가져옴
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (accessToken) {
+        // [추가!!!!] 사용자 정보를 가져오는 API 호출, 응답에서 memberId를 설정
+        axios.get('/chat/api/info', {
+            headers: {
+                Authorization: 'Bearer ' + accessToken
+            }
+        })
+            .then(response => {
+                memberId = response.data.memberId; // API에서 memberId를 반환
+                memberRole = response.data.role;
+                console.log("[DEBUG] Retrieved memberId:", memberId);
+                console.log("[DEBUG] Retrieved memberRole:", memberRole);
+            })
+            .catch(error => {
+                console.error("사용자 정보를 불러오는 중 오류:", error);
+            });
+    } else {
+        console.warn("accessToken이 존재하지 않습니다.");
     }
 }
 
