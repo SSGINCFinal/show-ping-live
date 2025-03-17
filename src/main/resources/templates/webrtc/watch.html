@@ -52,9 +52,27 @@
           <button id="send-button">➤</button>
         </div>
       </div>
-      <div class="product-container">
-        <div id="product">
-          <h1>상품화면</h1>
+      
+      <div class="product-view-container">
+        <!-- 상단 탭 영역 -->
+        <div class="tabs">
+          <button class="active">상품 정보</button>
+          <button>FAQ</button>
+          <button>이벤트</button>
+        </div>
+        <!-- 상품 이미지 영역 -->
+        <div class="product-image">
+          <!-- 실제 이미지를 사용하실 경우 src 속성을 변경하세요 -->
+          <img th:src="@{'/img/product_img/' + ${productInfo.productImg}}" alt="상품 이미지" th:if="${productInfo != null}">
+        </div>
+        <!-- 상품 정보 영역 (하단) -->
+        <div class="product-details" th:if="${productInfo != null}">
+          <p class="product-view-name" th:text="${productInfo.productName}"></p>
+          <div class="prices">
+            <span class="current-view-price" th:text="${productInfo.productSalePrice}"></span>
+            <span class="original-view-price" th:text="${productInfo.productPrice}"></span>
+          </div>
+          <button class="buy-button">구매하기</button>
         </div>
       </div>
     </div>

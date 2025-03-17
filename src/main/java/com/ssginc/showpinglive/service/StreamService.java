@@ -2,6 +2,7 @@ package com.ssginc.showpinglive.service;
 
 import com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto;
 import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
+import com.ssginc.showpinglive.dto.response.GetStreamProductInfoResponseDto;
 import com.ssginc.showpinglive.dto.response.GetStreamRegisterInfoResponseDto;
 import com.ssginc.showpinglive.dto.response.StartStreamResponseDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
@@ -34,5 +35,7 @@ public interface StreamService {
     StartStreamResponseDto startStream(Long streamNo);
 
     Boolean stopStream(Long streamNo);
+
+    GetStreamProductInfoResponseDto getStreamProductInfo(Long streamNo);
 
 }
