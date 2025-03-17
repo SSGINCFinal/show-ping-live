@@ -57,10 +57,10 @@ public class AdminAccountService implements CommandLineRunner {
                     .build();
 
             memberRepository.save(admin);
-            System.out.println("✅ 관리자 계정 생성 완료!: " + adminId);
-            System.out.println(" 관리자 계정 비밀키: " + secretKey);
+            System.out.println("관리자 계정 생성 완료!: " + adminId);
+            System.out.println("관리자 계정 비밀키:" + secretKey);
 
-            // ✅ TOTP 등록 이메일 전송
+            // TOTP 등록 이메일 전송
             sendTOTPRegistrationMail(admin, key);
 
             return admin;
@@ -72,6 +72,6 @@ public class AdminAccountService implements CommandLineRunner {
     private void sendTOTPRegistrationMail(Member admin, GoogleAuthenticatorKey key) {
         String qrCodeUrl = GoogleAuthenticatorQRGenerator.getOtpAuthURL("ShowPing", admin.getMemberId(), key);
         mailService.send(admin.getMemberEmail(), "ShowPing 관리자 2FA 등록", "TOTP QR 코드: " + qrCodeUrl);
-        System.out.println("📧 관리자 2FA 등록 이메일 전송 완료!");
+        System.out.println("관리자 2FA 등록 이메일 전송 완료!");
     }
 }

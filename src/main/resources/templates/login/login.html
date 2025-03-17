@@ -4,7 +4,7 @@
 
 <head>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script defer src="/js/login/login.js"></script> <!-- ✅ login.js 로드 -->
+    <script defer src="/js/login/login.js"></script> <!-- login.js 로드 -->
     <link rel="stylesheet" href="/css/login/login.css">
 </head>
 <body>
@@ -25,7 +25,7 @@
         </form>
     </div>
 
-    <!-- ✅ 2FA (TOTP) 입력 폼 (초기 상태: 숨김) -->
+    <!-- 2FA (TOTP) 입력 폼 (초기 상태: 숨김) -->
     <div id="totp-form" style="display: none;">
         <h2>2단계 인증</h2>
         <p>Google Authenticator 앱에서 생성된 6자리 코드를 입력하세요.</p>
@@ -34,11 +34,11 @@
     </div>
 
     <div class="social-login">
-        <button class="naver-login">
+        <button class="naver-login" onclick="naverLogin()">
             <img src="/img/naver.png" alt="네이버 로고" class="social-icon">
             네이버 로그인
         </button>
-        <button class="kakao-login">
+        <button class="kakao-login" onclick="kakaoLogin()">
             <img src="/img/kakao.png" alt="카카오 로고" class="social-icon">
             카카오 로그인
         </button>
@@ -48,7 +48,7 @@
         <p>아직 회원이 아니신가요? <a href="/login/signup">회원가입</a></p>
     </div>
 
-    <!-- ✅ 메시지를 전달하는 hidden 요소 -->
+    <!-- 메시지를 전달하는 hidden 요소 -->
     <div id="login-message" th:data-message="${message ?: ''}" style="display: none;"></div>
 </div>
 </body>

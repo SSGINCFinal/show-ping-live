@@ -21,6 +21,6 @@ public class RedisTestService {
 
         // 저장된 값 가져오기
         String storedValue = redisTemplate.opsForValue().get(key);
-        System.out.println("✅ Redis에서 가져온 값: " + storedValue);
+        System.out.println("Redis에서 가져온 값: " + storedValue);
     }
 }

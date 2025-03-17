@@ -1,5 +1,5 @@
 window.onload = async function() {
-    const adminId = "ShowPing_Admin"; // ✅ 관리자 ID (로그인 후 가져올 수도 있음)
+    const adminId = "ShowPing_Admin"; // 관리자 ID (로그인 후 가져올 수도 있음)
 
     try {
         const response = await axios.get(`/api/admin/totp-setup/${adminId}`);
