@@ -55,12 +55,22 @@ window.onload = function() {
                     })
                     .then(response => {
                         console.log("신고 등록 완료:", response.data);
-                        alert("신고가 접수되었습니다.");
+                        Swal.fire({
+                            icon: 'success',
+                            title: '신고 접수 완료',
+                            text: '신고가 접수되었습니다.'
+                        });
+
                         closeReportModal();
                     })
                     .catch(error => {
                         console.error("신고 등록 중 오류 발생:", error);
-                        alert("신고 등록 중 오류가 발생했습니다.");
+                        Swal.fire({
+                            icon: 'error',
+                            title: '신고 등록 오류',
+                            text: '신고 등록 중 오류가 발생했습니다.'
+                        });
+
                     });
             }
         });
@@ -68,7 +78,12 @@ window.onload = function() {
 
     if (cancelBtn) {
         cancelBtn.addEventListener('click', () => {
-            alert('신고를 취소했습니다.');
+            Swal.fire({
+                icon: 'info',
+                title: '신고 취소',
+                text: '신고를 취소했습니다.'
+            });
+
             closeReportModal();
         });
     }
@@ -492,13 +507,22 @@ function createChatRoom() {
     })
         .then(response => {
             console.log(response.data);
-            alert(`채팅방 번호: ${response.data.chatRoomNo}`);
+            Swal.fire({
+                icon: 'info',
+                title: '채팅방 생성 완료',
+                text: `채팅방 번호: ${response.data.chatRoomNo}`
+            });
             chatRoomNo = response.data.chatRoomNo;
             connectToChatRoom();
         })
         .catch(error => {
             console.error('채팅방 생성 중 오류 발생:', error);
-            alert('채팅방 생성 중 오류가 발생했습니다.');
+            Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: '채팅방 생성 중 오류가 발생했습니다.'
+            });
+
         });
 }
 
@@ -540,7 +564,12 @@ function onConnected(frame) {
     stompClient.subscribe('/user/queue/errors', function(message) {
         var errorResponse = JSON.parse(message.body);
         console.log("Inline error message:", errorResponse.chat_message); // 로그 출력 확인
-        alert(errorResponse.chat_message);
+        Swal.fire({
+            icon: 'error',
+            title: '금칙어 오류',
+            text: errorResponse.chat_message
+        });
+
         showInlineError(errorResponse.chat_message);
     });
 
