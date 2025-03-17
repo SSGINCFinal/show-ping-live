@@ -5,6 +5,10 @@
 
 <head>
     <link rel="stylesheet" href="/css/product/product.css">
+    <script th:inline="javascript">
+        const storeId = /*[[${storeId}]]*/ 'defaultStoreId';  // Thymeleaf에서 전달받은 storeId 사용
+        const channelKey = /*[[${channelKey}]]*/ 'defaultChannelKey';  // Thymeleaf에서 전달받은 channelKey 사용
+    </script>
     <script defer src="/js/product/payment.js"></script>
     <script src="https://cdn.portone.io/v2/browser-sdk.js" async defer></script>
 </head>

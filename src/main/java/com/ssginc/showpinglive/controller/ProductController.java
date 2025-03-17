@@ -3,7 +3,7 @@ package com.ssginc.showpinglive.controller;
 import com.ssginc.showpinglive.dto.response.ProductDto;
 import com.ssginc.showpinglive.dto.response.ReviewDto;
 import com.ssginc.showpinglive.service.ProductService;
-import com.ssginc.showpinglive.service.ReviewService;
+import com.ssginc.showpinglive.service.implement.ReviewServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +19,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
     @Autowired
-    private ReviewService reviewService;
+    private ReviewServiceImpl reviewService;
 
     @GetMapping("/{categoryNo}")
     public Page<ProductDto> getProductsByCategory(

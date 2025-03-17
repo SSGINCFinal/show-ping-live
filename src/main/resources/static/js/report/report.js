@@ -107,23 +107,35 @@ document.addEventListener("DOMContentLoaded", () => {
         elem.addEventListener("click", closeReportDetailModal);
     });
 
-    // [추가!!!!] 신고 접수 버튼 클릭 시, axios.post로 상태 업데이트
+    // 신고 접수 버튼 클릭 시, axios.post로 상태 업데이트
     submitBtn.addEventListener("click", () => {
         if (!selectedReport) return;
         if (selectedReport.reportStatus !== '미처리' && selectedReport.reportStatus !== 'PROCEEDING') {
-            alert("이미 처리된 신고입니다.");
+            Swal.fire({
+                icon: 'warning',
+                title: '경고',
+                text: '이미 처리된 신고입니다.'
+            });
             return;
         }
         axios.post('/report/api/updateStatus', {
             reportNo: selectedReport.reportNo
         }).then(res => {
             console.log("신고 처리 완료:", res.data);
-            alert("신고가 '처리' 상태로 변경되었습니다.");
+            Swal.fire({
+                icon: 'success',
+                title: '신고 처리 완료',
+                text: "신고가 '처리' 상태로 변경되었습니다."
+            });
             closeReportDetailModal();
             loadReports();
         }).catch(err => {
             console.error("신고 상태 업데이트 중 오류:", err);
-            alert("신고 처리 중 오류가 발생했습니다.");
+            Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: '신고 처리 중 오류가 발생했습니다.'
+            });
         });
     });
 

@@ -91,11 +91,8 @@ public class RecordHandler extends TextWebSocketHandler {
             webRtcEndpoint.connect(webRtcEndpoint);
 
             MediaProfileSpecType profile = MediaProfileSpecType.MP4;
-            Date date = new Date();
 
-            String fileName = "video_" + (date.getYear() + 1900) + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_"
-            + date.getHours() + "_" + date.getMinutes() + "_" + date.getSeconds() + ".mp4";
-
+            String fileName = jsonMessage.get("title").getAsString() + ".mp4";
             System.out.println(RECORDER_FILE_PATH + fileName);
 
             RecorderEndpoint recorder = new RecorderEndpoint.Builder(pipeline, RECORDER_FILE_PATH + fileName)

@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface ChatService {
 
-    ChatDto saveChatMessage(String chatMemberId, Long chatRoomNo, String chatMessage, String chatCreatedAt);
+    ChatDto saveChatMessage(String chatMemberId, Long chatRoomNo, String chatMessage, String chatRole, String chatCreatedAt);
 
 }

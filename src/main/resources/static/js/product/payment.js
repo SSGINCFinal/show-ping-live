@@ -1,5 +1,6 @@
 let memberNo = null;
 
+
 document.addEventListener("DOMContentLoaded", async function () {
     // JWT 토큰 가져오기 (sessionStorage 사용)
     const token = sessionStorage.getItem("accessToken");
@@ -108,8 +109,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             // 회원 정보 가져오기 (수정된 부분)
 
             const payment = await PortOne.requestPayment({
-                storeId: "store-e4038486-8d83-41a5-acf1-844a009e0d94",
-                channelKey: "channel-key-ebe7daa6-4fe4-41bd-b17d-3495264399b5",
+                storeId: storeId,
+                channelKey: channelKey,
                 paymentId,
                 orderName: "상품 결제",
                 totalAmount: totalPrice,

@@ -1,6 +1,7 @@
 package com.ssginc.showpinglive.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 @RequiredArgsConstructor
 public class CategoryProductController {
+
+    @Value("${portone.store-id}")
+    private String storeId;
+
+    @Value("${portone.channel-key}")
+    private String channelKey;
 
     @GetMapping("/category/{categoryNo}")
     public String viewCategoryProducts(@PathVariable Long categoryNo, Model model) {
@@ -35,7 +42,9 @@ public class CategoryProductController {
     }
 
     @GetMapping("/payment")
-    public String viewPayment() {
+    public String viewPayment(Model model) {
+        model.addAttribute("storeId", storeId);
+        model.addAttribute("channelKey", channelKey);
         return "product/product_payment";
     }
 

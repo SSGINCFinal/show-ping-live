@@ -31,9 +31,9 @@ public class JwtFilter extends OncePerRequestFilter {
         // 인증이 필요 없는 경로 (예외 처리)
         if (requestURI.equals("/") || requestURI.startsWith("/css/") || requestURI.startsWith("/js/") ||
                 requestURI.startsWith("/images/") || requestURI.startsWith("/assets/") ||
-                requestURI.equals("/api/auth/login") ||
+                requestURI.equals("/api/auth/login") || requestURI.equals("/report/report") ||
                 requestURI.equals("/login/signup") || requestURI.equals("/api/register") ||
-                requestURI.equals("/webrtc/webrtc")) {
+                requestURI.equals("/webrtc/webrtc") || requestURI.equals("/watch/history")) {
             chain.doFilter(request, response);
             return;
         }

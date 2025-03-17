@@ -55,7 +55,7 @@
     width: 300px;
 }
 
-#vod #live #live-video {
+#vod, #live, #live-video {
     width: 100%; /* 부모 요소 너비에 맞춤 */
     height: 100%; /* 부모 요소 높이에 맞춤 */
     object-fit: fill; /* 비율을 유지하면서 div에 꽉 차게 조정 */
@@ -491,4 +491,109 @@ div.dragged {
     font-weight: bold;
     position: relative;  /* 또는 상황에 맞게 absolute 등으로 설정 */
     z-index: 10;
+}
+
+/********************/
+/* 시청 페이지 상품 화면 */
+/********************/
+.product-view-container {
+    width: 300px;
+    height: 480px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    /* 중앙 정렬을 모두 해제하고 내부에서 배치할 수 있게 수정 */
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* 패딩을 포함하여 높이 계산 */
+}
+
+/* 상단 탭 영역 */
+.tabs {
+    height: 40px;
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 40px;
+    color: #333;
+}
+
+.tabs button.active {
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+}
+
+/* 상품 이미지 영역: flex를 이용해 이미지 중앙 정렬 */
+.product-image {
+    height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.product-image img {
+    width: 250px;
+    height: 250px;
+}
+
+/* 상품 정보 영역 (하단) */
+.product-details {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 120px;
+    background-color: #F4F5F7;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.product-view-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.prices {
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+.current-view-price {
+    color: #d9534f;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.original-view-price {
+    text-decoration: line-through;
+    color: #999;
+}
+
+/* 구매하기 버튼: 크기 약간 키우고, 우측 하단에 위치 */
+.buy-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    font-size: 12px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #D4D1D1;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.buy-button:hover {
+    background-color: #f0f0f0;
 }

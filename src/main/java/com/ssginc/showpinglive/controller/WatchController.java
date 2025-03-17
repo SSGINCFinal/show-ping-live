@@ -66,27 +66,23 @@ public class WatchController {
 
     /**
      * 로그인한 사용자 시청내역 페이지 메서드
-     * @param userDetails 로그인한 사용자 객체
-     * @param model 타임리프에 전달할 Model 객체
-     * @return 라이브 메인 페이지 (타임리프)
+     * @return 사용자 시청내역 페이지 (타임리프)
      */
     @GetMapping("/history")
-    public String watchHistory(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        // 현재 로그인한 사용자 불러오기
-        if (userDetails != null) {
-            Member member = memberService.findMemberById(userDetails.getUsername());
-            model.addAttribute("member", member);
-        }
+    public String watchHistory() {
         return "watch/history";
     }
 
     /**
      * 로그인한 사용자의 시청내역 리스트를 반환하는 컨트롤러 메서드
-     * @param memberNo 로그인한 사용자 번호
+     * @param userDetails 로그인한 사용자
      * @return 로그인한 사용자의 시청내역 응답 객체
      */
-    @GetMapping("/history/{memberNo}")
-    public ResponseEntity<?> getWatchHistory(@PathVariable Long memberNo) {
+    @GetMapping("/history/list")
+    public ResponseEntity<?> getWatchHistory(@AuthenticationPrincipal UserDetails userDetails) {
+        // 로그인한 사용자의 정보를 가져오기
+        Member member = memberService.findMemberById(userDetails.getUsername());
+        Long memberNo = member.getMemberNo();
         List<WatchResponseDto> historyList = watchService.getWatchHistoryByMemberNo(memberNo);
 
         Map<String, Object> result = new HashMap<>();

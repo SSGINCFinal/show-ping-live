@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.service;
 
+import org.springframework.core.io.Resource;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -12,8 +13,12 @@ public interface HlsService {
 
     String saveHLS(String title) throws IOException, InterruptedException;
 
-    Mono<?> getHLSV2(String title);
+    Mono<?> getHLSV2Flux(String title);
 
-    Mono<?> getTsSegmentV2(String title, String segment);
+    Mono<?> getTsSegmentV2Flux(String title, String segment);
+
+    Resource getHLSV2(String title);
+
+    Resource getTsSegmentV2(String title, String segment);
 
 }

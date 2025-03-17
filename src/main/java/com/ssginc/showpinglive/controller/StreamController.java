@@ -3,6 +3,7 @@ package com.ssginc.showpinglive.controller;
 import com.ssginc.showpinglive.dto.object.ProductItemDto;
 import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
 import com.ssginc.showpinglive.dto.request.StreamRequestDto;
+import com.ssginc.showpinglive.dto.response.GetStreamRegisterInfoResponseDto;
 import com.ssginc.showpinglive.dto.response.StartStreamResponseDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.service.ProductService;
@@ -159,7 +160,7 @@ public class StreamController {
      * @param request 방송 등록에 필요한 방송 정보
      * @return 생성 혹은 수정된 방송 데이터의 방송 번호가 포함된 응답 객체
      */
-    @PostMapping("/stream")
+    @PostMapping("/register")
     public ResponseEntity<Map<String, Long>> createStream(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RegisterStreamRequestDto request) {
         String memberId = null;
 
@@ -198,6 +199,23 @@ public class StreamController {
 
         Map<String, Boolean> response = new HashMap<>();
         response.put("result", result);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 방송 페이지 이동시 필요한 정보를 가져오는 메서드
+     * @param userDetails
+     * @return 방송 정보가 담긴 응답 객체
+     */
+    @GetMapping("/stream")
+    public ResponseEntity<GetStreamRegisterInfoResponseDto> getStreamInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        String memberId = null;
+        if (userDetails != null) {
+            memberId = userDetails.getUsername();
+        }
+
+        GetStreamRegisterInfoResponseDto response = streamService.getStreamRegisterInfo(memberId);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

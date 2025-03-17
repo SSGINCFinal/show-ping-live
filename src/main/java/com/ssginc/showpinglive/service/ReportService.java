@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.service;
 
+import com.ssginc.showpinglive.dto.request.ReportRegisterRequestDto;
 import com.ssginc.showpinglive.entity.Report;
 
 import java.util.List;
@@ -31,4 +32,6 @@ public interface ReportService {
                                String startDate, String endDate, String status);
 
     boolean updateReportStatus(Long reportNo);
+
+    Report registerReport(ReportRegisterRequestDto dto, String reporterMemberId);
 }

@@ -5,7 +5,7 @@ import com.ssginc.showpinglive.dto.request.CartRequestDto;
 import com.ssginc.showpinglive.dto.response.CartDto;
 import com.ssginc.showpinglive.entity.Member;
 import com.ssginc.showpinglive.repository.MemberRepository;
-import com.ssginc.showpinglive.service.CartService;
+import com.ssginc.showpinglive.service.implement.CartServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartController {
 
-    private final CartService cartService;
+    private final CartServiceImpl cartService;
     private final MemberRepository memberRepository;
 
     //특정 회원의 장바구니 조회
