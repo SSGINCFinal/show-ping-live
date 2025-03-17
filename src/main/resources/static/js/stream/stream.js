@@ -17,7 +17,7 @@ const POST_CALL = 2;
 const DISABLED = 3;
 const IN_PLAY = 4;
 
-window.onload = function() {
+window.addEventListener('dataLoaded', function () {
     live = document.getElementById('live-video');
     watch = document.getElementById('live');
 
@@ -89,7 +89,7 @@ window.onload = function() {
     const charCount = document.getElementById('char-count');
 
     if (chatContainer && scrollToLatestButton) {
-        chatContainer.addEventListener('scroll', function() {
+        chatContainer.addEventListener('scroll', function () {
             if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
                 scrollToLatestButton.style.display = 'block';
             } else {
@@ -97,7 +97,7 @@ window.onload = function() {
             }
         });
 
-        scrollToLatestButton.addEventListener('click', function() {
+        scrollToLatestButton.addEventListener('click', function () {
             chatContainer.scrollTop = chatContainer.scrollHeight;
             scrollToLatestButton.style.display = 'none';
         });
@@ -127,12 +127,12 @@ window.onload = function() {
     }
 
     // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
-    if (!streamInfo) {
+    if (streamInfo === false) {
         setState(DISABLED);
     } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
         setState(NO_CALL);
     }
-}
+});
 
 window.onbeforeunload = function() {
     ws.close();

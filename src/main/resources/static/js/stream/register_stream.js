@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // axios로 방송을 등록
-        axios.post("/stream/stream",
+        axios.post("/stream/register",
             data, {
             headers: header
             })
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 streamNo = response.data.streamNo;
 
                 $('#start').attr('disabled', false);
-                $('#stop').attr('disabled', true);
+                $('#stop').attr('disabled', false);
             })
             .catch((error) => {
                 console.log("실패", error);
