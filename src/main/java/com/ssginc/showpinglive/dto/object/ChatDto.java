@@ -32,6 +32,9 @@ public class ChatDto {
     @JsonProperty("chat_message")
     private String chatMessage;
 
+    @JsonProperty("chat_role")
+    private String chatRole;
+
     @JsonProperty("chat_created_at")
     private String chatCreatedAt; // 생성 시간
 }

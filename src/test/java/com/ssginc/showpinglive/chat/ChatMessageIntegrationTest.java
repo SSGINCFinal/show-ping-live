@@ -50,9 +50,10 @@ public class ChatMessageIntegrationTest {
                 for (int j = 1; j < messagesPerUser+1; j++) {
                     String chatMessage = "메시지 " + j + " from " + userId;
                     String chatCreatedAt = LocalDateTime.now().toString();
+                    String chatRole = "ROLE_USER";
                     try {
                         // DB 저장은 KafkaConsumer를 통해 이루어지므로, 여기서는 ChatService 호출만 수행
-                        chatService.saveChatMessage(userId, 1L, chatMessage, chatCreatedAt);
+                        chatService.saveChatMessage(userId, 1L, chatMessage, chatRole ,chatCreatedAt);
                     } catch (Exception e) {
                         sendFailures.incrementAndGet();
                     } finally {

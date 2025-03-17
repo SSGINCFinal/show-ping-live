@@ -47,6 +47,7 @@ public class ChatController {
                 chatDto.getChatMemberId(),
                 chatDto.getChatRoomNo(),
                 chatDto.getChatMessage(),
+                chatDto.getChatRole(),
                 chatDto.getChatCreatedAt()
         );
     }

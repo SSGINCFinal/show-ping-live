@@ -32,7 +32,7 @@ public class ChatServiceImpl implements ChatService {
      * @throws IllegalArgumentException 금칙어가 포함된 경우
      */
     @Override
-    public ChatDto saveChatMessage(String chatMemberId, Long chatRoomNo, String chatMessage, String chatCreatedAt) {
+    public ChatDto saveChatMessage(String chatMemberId, Long chatRoomNo, String chatMessage, String chatRole, String chatCreatedAt) {
         // 금칙어 체크
         if (isForbiddenWordIncluded(chatMessage)) {
             List<String> foundWords = forbiddenWordFilterService.getForbiddenWords(chatMessage);
@@ -43,6 +43,7 @@ public class ChatServiceImpl implements ChatService {
         ChatDto message = new ChatDto();
         message.setChatMemberId(chatMemberId);
         message.setChatRoomNo(chatRoomNo);
+        message.setChatRole(chatRole);
         message.setChatMessage(chatMessage);
 
         // 서버에서 현재 KST 기준 시간 생성
