@@ -1,5 +1,7 @@
 package com.ssginc.showpinglive.service;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -8,10 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Configuration
 public class PortOneService {
-    private static final String PORTONE_API_URL = "https://api.portone.io";
-    private static final String API_KEY = "Z93IX13AumKAYSZxgF1rEfUxwiSds9YvjAyO79aTdWEF6jw4jYT5XaHX9PH6u37FQZzCVPTuqUh5TElIvwDc/Q=="; // PortOne API Key
-    private static final String API_SECRET = "o4J1PjhlvKX8ZfB2mTgKWGSHV5ytz35ehdnV1SZc0ZWRRdDvM7NYZbyhcv6CoC6QzEoR6FIWnKkRVj9j"; // PortOne API Secret
+    @Value("portone.api-url")
+    private String PORTONE_API_URL;
+    @Value("portone.secret-key")
+    private String API_SECRET;
+    @Value("portone.api-key")
+    private String API_KEY;
 
     public String getPortOneAccessToken() {
         RestTemplate restTemplate = new RestTemplate();
