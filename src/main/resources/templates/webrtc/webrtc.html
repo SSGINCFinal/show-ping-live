@@ -7,7 +7,10 @@
     <link rel="stylesheet" th:href="@{/css/webrtc/product_modal.css}">
     <link rel="stylesheet" th:href="@{/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.css}">
     <link rel="shortcut icon" th:href="@{/img/kurento.png}" type="image/png" />
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script th:src="@{/webjars/jquery/3.7.1/dist/jquery.js}"></script>
     <script th:src="@{/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.min.js}"></script>
     <script th:src="@{/webjars/webrtc-adapter/7.4.0/release/adapter.js}"></script>
@@ -16,12 +19,12 @@
     <script th:src="@{https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js}"></script>
 
     <script type="text/javascript" th:inline="javascript">
-        let streamInfo = [[${streamInfo}]]
-        let streamNo = (typeof streamInfo !== "undefined" && streamInfo !== null) ? streamInfo.streamNo : null;
+        let streamInfo = false;
+        let streamNo;
         let chatRoomNo;
-        // let memberId = [[${memberId}]];
     </script>
-
+    
+    <script th:src="@{/js/stream/get_stream_info.js}"></script>
     <script th:src="@{/js/stream/register_stream.js}"></script>
     <script th:src="@{/js/stream/product_modal.js}"></script>
     <script th:src="@{/js/kurento-utils.js}"></script>
@@ -50,6 +53,9 @@
                     ↓ 최신 채팅으로 이동
                 </button>
 
+                <!-- 인라인 에러 메시지 영역 -->
+                <div id="inline-error" style="display: none; color: red; margin: 10px 0;"></div>
+
                 <!-- 메시지 입력 영역 -->
                 <div class="input-container">
                     <input type="text" id="message-input" placeholder="메시지 입력" maxlength="200">
@@ -63,15 +69,13 @@
                         <!-- 방송 제목 -->
                         <div class="form-group horizontal">
                             <label for="broadcastTitle">방송 제목</label>
-                            <input type="text" id="broadcastTitle" placeholder="방송 제목을 입력해주세요"
-                            th:value="${streamInfo != null ? streamInfo.streamTitle : ''}" />
+                            <input type="text" id="broadcastTitle" placeholder="방송 제목을 입력해주세요" value=""/>
                         </div>
                         
                         <!-- 방송 설명 -->
                         <div class="form-group horizontal">
                             <label for="broadcastDesc">방송 설명</label>
-                            <textarea id="broadcastDesc" placeholder="방송 설명을 입력해주세요"
-                            th:text="${streamInfo != null ? streamInfo.streamDescription : ''}"></textarea>
+                            <textarea id="broadcastDesc" placeholder="방송 설명을 입력해주세요" value=""></textarea>
                         </div>
                         
                         <!-- 상품 선택 -->
@@ -109,11 +113,11 @@
                         
                         <!-- 선택된 상품 -->
                         <div class="product-element">
-                            <img th:src="@{'/img/product_img/' + ${streamInfo.productImg}}" alt="상품 이미지" class="product-img" th:if="${streamInfo != null}">
-                            <div class="product-info" th:id="${streamInfo != null ? streamInfo.productNo : ''}" th:if="${streamInfo != null}">
-                                <p class="product-name" th:text="${streamInfo.productName}"></p>
+                            <img src="" alt="상품 이미지" class="product-img">
+                            <div class="product-info">
+                                <p class="product-name"></p>
                                 <div class="product-price-container">
-                                    <p class="product-origin-price" th:text="${streamInfo.productPrice}"></p>
+                                    <p class="product-origin-price"></p>
                                 </div>
                             </div>
                         </div>
@@ -122,8 +126,7 @@
                         <div class="form-group horizontal discount-group">
                             <label for="discountRate">할 인 율</label>
                             <div class="discount-input">
-                                <input type="number" id="discountRate" placeholder="0" min="0" max="100"
-                                th:value="${streamInfo != null ? streamInfo.productSale : ''}"/>
+                                <input type="number" id="discountRate" placeholder="0" min="0" max="100"/>
                                 <span>%</span>
                             </div>
                         </div>
