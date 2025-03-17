@@ -7,7 +7,10 @@
     <link rel="stylesheet" th:href="@{/css/webrtc/product_modal.css}">
     <link rel="stylesheet" th:href="@{/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.css}">
     <link rel="shortcut icon" th:href="@{/img/kurento.png}" type="image/png" />
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script th:src="@{/webjars/jquery/3.7.1/dist/jquery.js}"></script>
     <script th:src="@{/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.min.js}"></script>
     <script th:src="@{/webjars/webrtc-adapter/7.4.0/release/adapter.js}"></script>
@@ -19,7 +22,6 @@
         let streamInfo = [[${streamInfo}]]
         let streamNo = (typeof streamInfo !== "undefined" && streamInfo !== null) ? streamInfo.streamNo : null;
         let chatRoomNo;
-        // let memberId = [[${memberId}]];
     </script>
 
     <script th:src="@{/js/stream/register_stream.js}"></script>
@@ -49,6 +51,9 @@
                 <button id="scroll-to-latest" class="scroll-button" style="display:none;">
                     ↓ 최신 채팅으로 이동
                 </button>
+
+                <!-- 인라인 에러 메시지 영역 -->
+                <div id="inline-error" style="display: none; color: red; margin: 10px 0;"></div>
 
                 <!-- 메시지 입력 영역 -->
                 <div class="input-container">

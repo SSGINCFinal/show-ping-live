@@ -38,6 +38,7 @@ window.onload = function() {
     if (reportForm) {
         reportForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            const accessToken = sessionStorage.getItem('accessToken');
             const checkedReason = document.querySelector('input[name="reportReason"]:checked');
             if (checkedReason) {
                 const reasonValue = checkedReason.value;
@@ -46,15 +47,30 @@ window.onload = function() {
                 axios.post('/report/api/register', {
                     reportReason: reasonValue,
                     reportContent: reportContent
-                })
+                },
+                    {
+                        headers: {
+                            Authorization: 'Bearer ' + accessToken
+                        }
+                    })
                     .then(response => {
                         console.log("신고 등록 완료:", response.data);
-                        alert("신고가 접수되었습니다.");
+                        Swal.fire({
+                            icon: 'success',
+                            title: '신고 접수 완료',
+                            text: '신고가 접수되었습니다.'
+                        });
+
                         closeReportModal();
                     })
                     .catch(error => {
                         console.error("신고 등록 중 오류 발생:", error);
-                        alert("신고 등록 중 오류가 발생했습니다.");
+                        Swal.fire({
+                            icon: 'error',
+                            title: '신고 등록 오류',
+                            text: '신고 등록 중 오류가 발생했습니다.'
+                        });
+
                     });
             }
         });
@@ -62,7 +78,12 @@ window.onload = function() {
 
     if (cancelBtn) {
         cancelBtn.addEventListener('click', () => {
-            alert('신고를 취소했습니다.');
+            Swal.fire({
+                icon: 'info',
+                title: '신고 취소',
+                text: '신고를 취소했습니다.'
+            });
+
             closeReportModal();
         });
     }
@@ -486,13 +507,22 @@ function createChatRoom() {
     })
         .then(response => {
             console.log(response.data);
-            alert(`채팅방 번호: ${response.data.chatRoomNo}`);
+            Swal.fire({
+                icon: 'info',
+                title: '채팅방 생성 완료',
+                text: `채팅방 번호: ${response.data.chatRoomNo}`
+            });
             chatRoomNo = response.data.chatRoomNo;
             connectToChatRoom();
         })
         .catch(error => {
             console.error('채팅방 생성 중 오류 발생:', error);
-            alert('채팅방 생성 중 오류가 발생했습니다.');
+            Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: '채팅방 생성 중 오류가 발생했습니다.'
+            });
+
         });
 }
 
@@ -503,7 +533,10 @@ function connectToChatRoom() {
         return;
     }
 
-    const socket = new SockJS('/ws-stomp-chat');
+    const accessToken = sessionStorage.getItem('accessToken');
+    var socket = new SockJS('/ws-stomp-chat?access_token=' + accessToken, null, {
+        transports: ['websocket', 'xhr-streaming', 'xhr-polling']
+    });
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, onConnected, onChatError);
@@ -527,10 +560,17 @@ function onConnected(frame) {
         }
     });
 
-    // STOMP 클라이언트 연결 후 에러 채널 구독
+    // STOMP 클라이언트 연결 후 사용자 전용 에러 채널 구독
     stompClient.subscribe('/user/queue/errors', function(message) {
         var errorResponse = JSON.parse(message.body);
-        alert(errorResponse.chatMessage);
+        console.log("Inline error message:", errorResponse.chat_message); // 로그 출력 확인
+        Swal.fire({
+            icon: 'error',
+            title: '금칙어 오류',
+            text: errorResponse.chat_message
+        });
+
+        showInlineError(errorResponse.chat_message);
     });
 
 }
@@ -657,7 +697,7 @@ function getMemberInfo(){
     // accessToken을 sessionStorage에서 가져옴
     const accessToken = sessionStorage.getItem('accessToken');
     if (accessToken) {
-        // [추가!!!!] 사용자 정보를 가져오는 API 호출, 응답에서 memberId를 설정
+        // 사용자 정보 API 호출, 응답 >> memberId
         axios.get('/chat/api/info', {
             headers: {
                 Authorization: 'Bearer ' + accessToken
@@ -676,6 +716,23 @@ function getMemberInfo(){
         console.warn("accessToken이 존재하지 않습니다.");
     }
 }
+
+// 인라인 에러 메시지를 표시하는 함수
+function showInlineError(errorMessage) {
+    const errorElement = document.getElementById('inline-error');
+    if (errorElement) {
+        errorElement.textContent = errorMessage;
+        console.log("Inline error message: ", errorMessage);
+        errorElement.style.display = 'block';
+        // 5초 후 자동 숨김 처리
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 5000);
+    } else {
+        console.error("Inline error element not found!");
+    }
+}
+
 
 
 /**

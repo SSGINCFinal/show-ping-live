@@ -16,7 +16,6 @@
   <script th:inline="javascript">
     let chatRoomInfo = [[${chatRoomInfo}]];
     let streamNo = (typeof chatRoomInfo !== "undefined" && chatRoomInfo !== null) ? chatRoomInfo.streamNo : null;
-    let memberId = [[${member.memberId}]];
     let chatRoomNo = [[${chatRoomInfo.chatRoomNo}]];
   </script>
 

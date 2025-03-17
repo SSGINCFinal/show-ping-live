@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ForbiddenWordRepository extends MongoRepository<ForbiddenWord, String> {
-    // 금칙어 검색을 위한 메서드 예시
-    boolean existsBySlang(String slang);
 }

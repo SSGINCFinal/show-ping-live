@@ -5,8 +5,6 @@ import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.repository.StreamRepository;
 import com.ssginc.showpinglive.service.ChatService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -16,12 +14,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,12 +88,14 @@ public class ChatController {
             System.err.println("[ERROR] IllegalArgumentException in sendMessage: " + e.getMessage());
             ChatDto errorResponse = new ChatDto();
             errorResponse.setChatMessage("금칙어가 포함된 메시지는 전송할 수 없습니다.");
+            // 해당 사용자 채널에 메시지 전송
             if (principal != null) {
                 messagingTemplate.convertAndSendToUser(principal.getName(), "/queue/errors", errorResponse);
-                System.out.println("[DEBUG] Principal sent to user: " + principal.getName());
-                System.out.println("[DEBUG] Principal: " + principal);
+                System.out.println("[DEBUG] Error sent to user: " + principal.getName());
             } else {
+                // fallback: principal이 없으면 글로벌 에러 채널로 전송하거나 로그만 남김
                 System.err.println("Principal is null; cannot send user-specific error message.");
+                messagingTemplate.convertAndSend("/topic/errors", errorResponse);
             }
 //            messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatRoomNo(), errorResponse);
         } catch (Exception e) {
