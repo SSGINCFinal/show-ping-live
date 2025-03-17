@@ -595,6 +595,7 @@ function sendChatMessage() {
             chat_member_id: memberId,
             chat_room_no: chatRoomNo,
             chat_message: messageText,
+            chat_role: memberRole,
             chat_created_at: new Date().toLocaleString()
         };
         console.log("Sending message:", message);
@@ -622,7 +623,7 @@ function addMessageToChat(message) {
     messageTextP.classList.add("chat-text");
     messageTextP.textContent = message.chat_message;
 
-    if (memberRole && memberRole === "ROLE_ADMIN") {
+    if (message.chat_role && message.chat_role === "ROLE_ADMIN") {
         userNameSpan.textContent = "관리자 ✓";
         // 관리자 이름을 빨간색으로 표시
         userNameSpan.style.color = "red";
