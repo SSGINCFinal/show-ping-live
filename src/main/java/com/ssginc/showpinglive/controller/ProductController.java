@@ -4,6 +4,7 @@ import com.ssginc.showpinglive.dto.response.ProductDto;
 import com.ssginc.showpinglive.dto.response.ReviewDto;
 import com.ssginc.showpinglive.service.ProductService;
 import com.ssginc.showpinglive.service.implement.ReviewServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private ReviewServiceImpl reviewService;
+    private final ProductService productService;
+    private final ReviewServiceImpl reviewService;
 
     @GetMapping("/{categoryNo}")
     public Page<ProductDto> getProductsByCategory(

@@ -22,11 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
-
-//    @Value("${ncp.storage.product-url}")
-//    private String productUrl;
+    private final ProductRepository productRepository;
 
     public Page<ProductDto> getProductsByCategory(Long categoryNo, Pageable pageable) {
         Page<Product> productPage = productRepository.findByCategoryCategoryNo(categoryNo, pageable);

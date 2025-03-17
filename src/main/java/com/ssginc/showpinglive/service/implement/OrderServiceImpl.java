@@ -10,6 +10,7 @@ import com.ssginc.showpinglive.repository.OrdersRepository;
 import com.ssginc.showpinglive.repository.ProductRepository;
 import com.ssginc.showpinglive.service.OrderService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
 
@@ -25,14 +27,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
-
-    public OrderServiceImpl(OrdersRepository ordersRepository, OrderDetailRepository orderDetailRepository,
-                            MemberRepository memberRepository, ProductRepository productRepository) {
-        this.ordersRepository = ordersRepository;
-        this.orderDetailRepository = orderDetailRepository;
-        this.memberRepository = memberRepository;
-        this.productRepository = productRepository;
-    }
 
     @Override
     public List<OrdersDto> findAllOrdersByMember(Long memberNo) {
