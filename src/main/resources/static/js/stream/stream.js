@@ -17,143 +17,146 @@ const POST_CALL = 2;
 const DISABLED = 3;
 const IN_PLAY = 4;
 
-window.addEventListener('dataLoaded', function () {
-    live = document.getElementById('live-video');
-    watch = document.getElementById('live');
+document.addEventListener('DOMContentLoaded', function () {
+    window.addEventListener('dataLoaded', function () {
+        live = document.getElementById('live-video');
+        watch = document.getElementById('live');
+        console.log(watch);
 
-    getMemberInfo();
+        getMemberInfo();
 
-    // send 버튼 이벤트와 STOMP 연결 초기화
-    const sendButton = document.getElementById('send-button');
-    if (sendButton) {
-        sendButton.addEventListener('click', sendChatMessage);
-    }
+        // send 버튼 이벤트와 STOMP 연결 초기화
+        const sendButton = document.getElementById('send-button');
+        if (sendButton) {
+            sendButton.addEventListener('click', sendChatMessage);
+        }
 
-    // --- 신고 모달 관련 이벤트 ---
-    const reportForm = document.getElementById('reportForm');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const reportModal = document.getElementById('reportModal');
-    const modalOverlay = document.getElementById('modalOverlay');
+        // --- 신고 모달 관련 이벤트 ---
+        const reportForm = document.getElementById('reportForm');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const reportModal = document.getElementById('reportModal');
+        const modalOverlay = document.getElementById('modalOverlay');
 
-    if (reportForm) {
-        reportForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const accessToken = sessionStorage.getItem('accessToken');
-            const checkedReason = document.querySelector('input[name="reportReason"]:checked');
-            if (checkedReason) {
-                const reasonValue = checkedReason.value;
-                // 신고 대상 채팅 내용 (reportTargetText)
-                const reportContent = document.getElementById('reportTargetText').textContent;
-                axios.post('/report/api/register', {
-                    reportReason: reasonValue,
-                    reportContent: reportContent
-                },
-                    {
-                        headers: {
-                            Authorization: 'Bearer ' + accessToken
-                        }
-                    })
-                    .then(response => {
-                        console.log("신고 등록 완료:", response.data);
-                        Swal.fire({
-                            icon: 'success',
-                            title: '신고 접수 완료',
-                            text: '신고가 접수되었습니다.'
+        if (reportForm) {
+            reportForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const accessToken = sessionStorage.getItem('accessToken');
+                const checkedReason = document.querySelector('input[name="reportReason"]:checked');
+                if (checkedReason) {
+                    const reasonValue = checkedReason.value;
+                    // 신고 대상 채팅 내용 (reportTargetText)
+                    const reportContent = document.getElementById('reportTargetText').textContent;
+                    axios.post('/report/api/register', {
+                            reportReason: reasonValue,
+                            reportContent: reportContent
+                        },
+                        {
+                            headers: {
+                                Authorization: 'Bearer ' + accessToken
+                            }
+                        })
+                        .then(response => {
+                            console.log("신고 등록 완료:", response.data);
+                            Swal.fire({
+                                icon: 'success',
+                                title: '신고 접수 완료',
+                                text: '신고가 접수되었습니다.'
+                            });
+
+                            closeReportModal();
+                        })
+                        .catch(error => {
+                            console.error("신고 등록 중 오류 발생:", error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: '신고 등록 오류',
+                                text: '신고 등록 중 오류가 발생했습니다.'
+                            });
+
                         });
+                }
+            });
+        }
 
-                        closeReportModal();
-                    })
-                    .catch(error => {
-                        console.error("신고 등록 중 오류 발생:", error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: '신고 등록 오류',
-                            text: '신고 등록 중 오류가 발생했습니다.'
-                        });
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                Swal.fire({
+                    icon: 'info',
+                    title: '신고 취소',
+                    text: '신고를 취소했습니다.'
+                });
 
-                    });
+                closeReportModal();
+            });
+        }
+
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', () => {
+                closeReportModal();
+            });
+        }
+
+        function closeReportModal() {
+            if (reportModal) {
+                reportModal.style.display = 'none';
             }
-        });
-    }
+            if (modalOverlay) {
+                modalOverlay.style.display = 'none';
+            }
+        }
 
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-            Swal.fire({
-                icon: 'info',
-                title: '신고 취소',
-                text: '신고를 취소했습니다.'
+        // --- 채팅 영역 관련 이벤트 ---
+        const messageInput = document.getElementById('message-input');
+        const chatContainer = document.getElementById('chat-messages');
+        const scrollToLatestButton = document.getElementById('scroll-to-latest');
+        const charCount = document.getElementById('char-count');
+
+        if (chatContainer && scrollToLatestButton) {
+            chatContainer.addEventListener('scroll', function () {
+                if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
+                    scrollToLatestButton.style.display = 'block';
+                } else {
+                    scrollToLatestButton.style.display = 'none';
+                }
             });
 
-            closeReportModal();
-        });
-    }
-
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', () => {
-            closeReportModal();
-        });
-    }
-
-    function closeReportModal() {
-        if (reportModal) {
-            reportModal.style.display = 'none';
-        }
-        if (modalOverlay) {
-            modalOverlay.style.display = 'none';
-        }
-    }
-
-    // --- 채팅 영역 관련 이벤트 ---
-    const messageInput = document.getElementById('message-input');
-    const chatContainer = document.getElementById('chat-messages');
-    const scrollToLatestButton = document.getElementById('scroll-to-latest');
-    const charCount = document.getElementById('char-count');
-
-    if (chatContainer && scrollToLatestButton) {
-        chatContainer.addEventListener('scroll', function () {
-            if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
-                scrollToLatestButton.style.display = 'block';
-            } else {
+            scrollToLatestButton.addEventListener('click', function () {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
                 scrollToLatestButton.style.display = 'none';
-            }
-        });
+            });
+        }
 
-        scrollToLatestButton.addEventListener('click', function () {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            scrollToLatestButton.style.display = 'none';
-        });
-    }
+        if (messageInput) {
+            // Enter 키로 메시지 전송
+            messageInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    sendChatMessage();
+                }
+            });
 
-    if (messageInput) {
-        // Enter 키로 메시지 전송
-        messageInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                sendChatMessage();
-            }
-        });
+            // 글자 수 업데이트
+            messageInput.addEventListener('input', () => {
+                const length = messageInput.value.length;
+                if (charCount) {
+                    charCount.textContent = `${length}/200`;
+                }
+            });
+        }
 
-        // 글자 수 업데이트
-        messageInput.addEventListener('input', () => {
-            const length = messageInput.value.length;
-            if (charCount) {
-                charCount.textContent = `${length}/200`;
-            }
-        });
-    }
+        // 시청모드이면 접속시 viewer 함수 실행
+        if (watch) {
+            viewer();
+        }
 
-    // 시청모드이면 접속시 viewer 함수 실행
-    if (watch) {
-        viewer();
-    }
-
-    // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
-    if (streamInfo === false) {
-        setState(DISABLED);
-    } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
-        setState(NO_CALL);
-    }
-});
+        // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
+        if (streamInfo === false) {
+            setState(DISABLED);
+        } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
+            setState(NO_CALL);
+        }
+    });
+})
 
 window.onbeforeunload = function() {
     ws.close();
