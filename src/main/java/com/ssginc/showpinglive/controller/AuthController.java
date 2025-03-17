@@ -23,7 +23,7 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     /**
-     * ✅ 로그인 처리 (Access Token & Refresh Token 반환)
+     * 로그인 처리 (Access Token & Refresh Token 반환)
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Member member, HttpServletResponse response) {
@@ -40,16 +40,16 @@ public class AuthController {
         if (authentication != null && authentication.isAuthenticated()
                 && !(authentication.getPrincipal() instanceof String && authentication.getPrincipal().equals("anonymousUser"))) {
 
-            String username = authentication.getName(); // ✅ username 가져오기
+            String username = authentication.getName(); // username 가져오기
             System.out.println("📢 로그아웃 처리 중: " + username);
 
-            refreshTokenService.deleteRefreshToken(username); // ✅ Redis에서 Refresh Token 삭제
-            authService.logout(username, response); // ✅ Access Token 삭제 (쿠키 삭제)
+            refreshTokenService.deleteRefreshToken(username); // Redis에서 Refresh Token 삭제
+            authService.logout(username, response); // Access Token 삭제 (쿠키 삭제)
             SecurityContextHolder.clearContext();
 
-            System.out.println("✅ 로그아웃 완료!");
+            System.out.println("로그아웃 완료!");
         } else {
-            System.out.println("🚨 로그아웃 실패: 인증된 사용자 없음");
+            System.out.println("로그아웃 실패: 인증된 사용자 없음");
         }
 
         return ResponseEntity.ok(Map.of("message", "로그아웃 성공"));
@@ -57,7 +57,7 @@ public class AuthController {
 
 
     /**
-     * ✅ 현재 로그인한 사용자 정보 조회
+     * 현재 로그인한 사용자 정보 조회
      */
     @GetMapping("/user-info")
     public ResponseEntity<Map<String, String>> getUserInfo() {

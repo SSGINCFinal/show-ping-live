@@ -26,16 +26,16 @@ async function login() {
 
     try {
         const response = await api.post("login3", {memberId, memberPassword});
-        console.log("📢 서버 응답 message:", response.data.message);
-        console.log("📢 서버 응답 token:", response.data.token);
+        console.log("서버 응답 message:", response.data.message);
+        console.log("서버 응답 token:", response.data.token);
 
-        // ✅ API 응답에 'error' 키가 포함된 경우 → 로그인 실패 처리
+        // API 응답에 'error' 키가 포함된 경우 → 로그인 실패 처리
         if (response.data.error) {
             alert(response.data.error);
             return;
         }
 
-        // ✅ API 응답 메시지가 "로그인 성공!"이면 로그인 성공 처리
+        // API 응답 메시지가 "로그인 성공!"이면 로그인 성공 처리
         if (response.data.message === "성공") {
             alert("로그인 성공!");
             // CSRF 토큰 가져오는 부분이 필요하면 활성화
@@ -46,7 +46,7 @@ async function login() {
         }
     } catch (error) {
         alert("로그인 요청 중 오류 발생!");
-        console.error("🚨 로그인 오류:", error);
+        console.error("로그인 오류:", error);
 
         // 서버에서 403 응답을 받은 경우 (예: CSRF 문제)
         if (error.response && error.response.status === 403) {
