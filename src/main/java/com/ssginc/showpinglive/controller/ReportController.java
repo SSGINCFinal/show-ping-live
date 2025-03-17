@@ -1,6 +1,7 @@
 package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.dto.object.ReportDto;
+import com.ssginc.showpinglive.dto.request.ReportRegisterRequestDto;
 import com.ssginc.showpinglive.dto.response.ReportResponseDto;
 import com.ssginc.showpinglive.entity.Report;
 import com.ssginc.showpinglive.service.ReportService;
@@ -8,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +34,7 @@ public class ReportController {
      * 신고 관리 페이지 렌더링 메소드
      * <p>
      * 요청 파라미터가 ReportDto 커맨드 객체에 바인딩되며,
-     * 해당 검색 조건에 따라 신고 목록을 필터링하여 조회합니다.
+     * 해당 검색 조건에 따라 신고 목록을 필터링하여 조회.
      * 조회된 신고 목록과 ReportDto 객체를 모델에 추가하여 뷰에 전달
      *
      * @param reportDto 검색 조건을 담은 ReportDto 객체
@@ -120,6 +123,21 @@ public class ReportController {
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update failed");
             }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("api/register")
+    @ResponseBody
+    public ResponseEntity<?> registerReport(@RequestBody ReportRegisterRequestDto dto,
+                                            @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+        try {
+            Report newReport = reportService.registerReport(dto, userDetails.getUsername());
+            return ResponseEntity.ok("Report registered with id: " + newReport.getReportNo());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

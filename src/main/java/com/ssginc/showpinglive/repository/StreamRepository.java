@@ -42,6 +42,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
+        ORDER BY s.streamNo DESC
     """)
     Page<StreamResponseDto> findAllVodByPage(Pageable pageable);
 
@@ -56,7 +57,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
-        AND c.categoryNo = :categoryNo
+        AND c.categoryNo = :categoryNo ORDER BY s.streamNo DESC
     """)
     List<StreamResponseDto> findAllVodByCategory(Long categoryNo);
 
@@ -70,6 +71,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ONAIR'
+        ORDER BY s.streamNo DESC
     """)
     List<StreamResponseDto> findLive();
 

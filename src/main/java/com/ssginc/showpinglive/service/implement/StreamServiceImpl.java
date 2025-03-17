@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ssginc.showpinglive.dto.object.CreateStreamDto;
 import com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto;
 import com.ssginc.showpinglive.dto.request.RegisterStreamRequestDto;
+import com.ssginc.showpinglive.dto.response.GetStreamProductInfoResponseDto;
 import com.ssginc.showpinglive.dto.response.GetStreamRegisterInfoResponseDto;
 import com.ssginc.showpinglive.dto.response.StartStreamResponseDto;
 import com.ssginc.showpinglive.api.StorageLoader;
@@ -261,6 +262,43 @@ public class StreamServiceImpl implements StreamService {
         } else {
             return false;
         }
+    }
+
+    /**
+     * 시청하려는 방송의 상품을 정보를 가져오는 메서드
+     * @param streamNo 시청하려는 방송 번호
+     * @return 시청하려는 방송의 상품 정보
+     */
+    public GetStreamProductInfoResponseDto getStreamProductInfo(Long streamNo){
+        Stream stream = streamRepository.findById(streamNo).orElseThrow(RuntimeException::new);
+        Product product = stream.getProduct();
+
+        // 상품의 원래 가격
+        Long productPrice = product.getProductPrice();
+        // 상품에 적용된 할인율
+        Integer productSale = product.getProductSale();
+        // 상품의 할인된 가격
+        Long productSalePrice = productPrice;
+        if (productSale != 0) {
+            productSalePrice = (long) (productPrice * (1 - (double) productSale / 100));
+        }
+
+        // 포맷팅 지정
+        NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
+
+        // 원래 가격 포맷팅 적용
+        String formattedPrice = nf.format(productPrice) + "원";
+        // 할인 가격 포맷팅 적용
+        String formattedSalePrice = nf.format(productSalePrice) + "원";
+
+
+        return GetStreamProductInfoResponseDto.builder()
+                .productNo(product.getProductNo())
+                .productImg(product.getProductImg())
+                .productName(product.getProductName())
+                .productPrice(formattedPrice)
+                .productSalePrice(formattedSalePrice)
+                .build();
     }
 
 }

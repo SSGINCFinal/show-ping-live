@@ -1,5 +1,6 @@
 package com.ssginc.showpinglive.controller;
 
+import com.ssginc.showpinglive.dto.response.GetStreamProductInfoResponseDto;
 import com.ssginc.showpinglive.dto.response.GetStreamRegisterInfoResponseDto;
 import com.ssginc.showpinglive.service.StreamService;
 import com.ssginc.showpinglive.dto.response.ChatRoomResponseDto;
@@ -50,20 +51,13 @@ public class WebRtcController {
     }
 
     @GetMapping("watch/{streamNo}")
-    public String watch(@AuthenticationPrincipal UserDetails userDetails,
-                        @PathVariable Long streamNo,
-                        Model model) {
+    public String watch(@PathVariable Long streamNo, Model model) {
 
-        if (userDetails != null) {
-            Member member = memberService.findMemberById(userDetails.getUsername());
-            model.addAttribute("member", member);
-        }
-        else {
-            model.addAttribute("member", new Member());
-        }
-
+        GetStreamProductInfoResponseDto streamProductInfo = streamService.getStreamProductInfo(streamNo);
         ChatRoomResponseDto chatRoom = chatRoomService.findChatRoomByStreamNo(streamNo);
+
         model.addAttribute("chatRoomInfo", chatRoom);
+        model.addAttribute("productInfo", streamProductInfo);
 
         return "webrtc/watch";
     }

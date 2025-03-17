@@ -7,6 +7,8 @@ var webRtcRecord;
 var state;
 
 let stompClient = null;
+let memberId = null;
+let memberRole = null;
 let reconnectTimeout = 5000;
 
 const NO_CALL = 0;
@@ -15,107 +17,146 @@ const POST_CALL = 2;
 const DISABLED = 3;
 const IN_PLAY = 4;
 
-window.onload = function() {
-    live = document.getElementById('live-video');
-    watch = document.getElementById('live');
+document.addEventListener('DOMContentLoaded', function () {
+    window.addEventListener('dataLoaded', function () {
+        live = document.getElementById('live-video');
+        watch = document.getElementById('live');
+        console.log(watch);
 
-    // send 버튼 이벤트와 STOMP 연결 초기화
-    const sendButton = document.getElementById('send-button');
-    if (sendButton) {
-        sendButton.addEventListener('click', sendChatMessage);
-    }
+        getMemberInfo();
 
-    // --- 신고 모달 관련 이벤트 ---
-    const reportForm = document.getElementById('reportForm');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const reportModal = document.getElementById('reportModal');
-    const modalOverlay = document.getElementById('modalOverlay');
+        // send 버튼 이벤트와 STOMP 연결 초기화
+        const sendButton = document.getElementById('send-button');
+        if (sendButton) {
+            sendButton.addEventListener('click', sendChatMessage);
+        }
 
-    if (reportForm) {
-        reportForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const checkedReason = document.querySelector('input[name="reportReason"]:checked');
-            if (checkedReason) {
-                const reasonValue = checkedReason.value;
-                alert(`신고 사유: ${reasonValue}`);
+        // --- 신고 모달 관련 이벤트 ---
+        const reportForm = document.getElementById('reportForm');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const reportModal = document.getElementById('reportModal');
+        const modalOverlay = document.getElementById('modalOverlay');
+
+        if (reportForm) {
+            reportForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const accessToken = sessionStorage.getItem('accessToken');
+                const checkedReason = document.querySelector('input[name="reportReason"]:checked');
+                if (checkedReason) {
+                    const reasonValue = checkedReason.value;
+                    // 신고 대상 채팅 내용 (reportTargetText)
+                    const reportContent = document.getElementById('reportTargetText').textContent;
+                    axios.post('/report/api/register', {
+                            reportReason: reasonValue,
+                            reportContent: reportContent
+                        },
+                        {
+                            headers: {
+                                Authorization: 'Bearer ' + accessToken
+                            }
+                        })
+                        .then(response => {
+                            console.log("신고 등록 완료:", response.data);
+                            Swal.fire({
+                                icon: 'success',
+                                title: '신고 접수 완료',
+                                text: '신고가 접수되었습니다.'
+                            });
+
+                            closeReportModal();
+                        })
+                        .catch(error => {
+                            console.error("신고 등록 중 오류 발생:", error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: '신고 등록 오류',
+                                text: '신고 등록 중 오류가 발생했습니다.'
+                            });
+
+                        });
+                }
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                Swal.fire({
+                    icon: 'info',
+                    title: '신고 취소',
+                    text: '신고를 취소했습니다.'
+                });
+
                 closeReportModal();
-            }
-        });
-    }
-
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-            alert('신고를 취소했습니다.');
-            closeReportModal();
-        });
-    }
-
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', () => {
-            closeReportModal();
-        });
-    }
-
-    function closeReportModal() {
-        if (reportModal) {
-            reportModal.style.display = 'none';
+            });
         }
+
         if (modalOverlay) {
-            modalOverlay.style.display = 'none';
+            modalOverlay.addEventListener('click', () => {
+                closeReportModal();
+            });
         }
-    }
 
-    // --- 채팅 영역 관련 이벤트 ---
-    const messageInput = document.getElementById('message-input');
-    const chatContainer = document.getElementById('chat-messages');
-    const scrollToLatestButton = document.getElementById('scroll-to-latest');
-    const charCount = document.getElementById('char-count');
+        function closeReportModal() {
+            if (reportModal) {
+                reportModal.style.display = 'none';
+            }
+            if (modalOverlay) {
+                modalOverlay.style.display = 'none';
+            }
+        }
 
-    if (chatContainer && scrollToLatestButton) {
-        chatContainer.addEventListener('scroll', function() {
-            if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
-                scrollToLatestButton.style.display = 'block';
-            } else {
+        // --- 채팅 영역 관련 이벤트 ---
+        const messageInput = document.getElementById('message-input');
+        const chatContainer = document.getElementById('chat-messages');
+        const scrollToLatestButton = document.getElementById('scroll-to-latest');
+        const charCount = document.getElementById('char-count');
+
+        if (chatContainer && scrollToLatestButton) {
+            chatContainer.addEventListener('scroll', function () {
+                if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
+                    scrollToLatestButton.style.display = 'block';
+                } else {
+                    scrollToLatestButton.style.display = 'none';
+                }
+            });
+
+            scrollToLatestButton.addEventListener('click', function () {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
                 scrollToLatestButton.style.display = 'none';
-            }
-        });
+            });
+        }
 
-        scrollToLatestButton.addEventListener('click', function() {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            scrollToLatestButton.style.display = 'none';
-        });
-    }
+        if (messageInput) {
+            // Enter 키로 메시지 전송
+            messageInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    sendChatMessage();
+                }
+            });
 
-    if (messageInput) {
-        // Enter 키로 메시지 전송
-        messageInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                sendChatMessage();
-            }
-        });
+            // 글자 수 업데이트
+            messageInput.addEventListener('input', () => {
+                const length = messageInput.value.length;
+                if (charCount) {
+                    charCount.textContent = `${length}/200`;
+                }
+            });
+        }
 
-        // 글자 수 업데이트
-        messageInput.addEventListener('input', () => {
-            const length = messageInput.value.length;
-            if (charCount) {
-                charCount.textContent = `${length}/200`;
-            }
-        });
-    }
+        // 시청모드이면 접속시 viewer 함수 실행
+        if (watch) {
+            viewer();
+        }
 
-    // 시청모드이면 접속시 viewer 함수 실행
-    if (watch) {
-        viewer();
-    }
-
-    // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
-    if (!streamInfo) {
-        setState(DISABLED);
-    } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
-        setState(NO_CALL);
-    }
-}
+        // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
+        if (streamInfo === false) {
+            setState(DISABLED);
+        } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
+            setState(NO_CALL);
+        }
+    });
+})
 
 window.onbeforeunload = function() {
     ws.close();
@@ -153,7 +194,6 @@ function setState(nextState) {
 
 ws.onmessage = function(message) {
     let parsedMessage = JSON.parse(message.data);
-    console.info('Received message: ' + message.data);
 
     switch (parsedMessage.id) {
         case 'presenterResponse':
@@ -178,7 +218,6 @@ ws.onmessage = function(message) {
 
 rec.onmessage = function(message) {
     let parsedMessage = JSON.parse(message.data);
-    console.info('Received message: ' + message.data);
 
     switch (parsedMessage.id) {
         case 'startResponse':
@@ -196,8 +235,7 @@ rec.onmessage = function(message) {
         case 'recording':
             break;
         case 'stopped':
-            // uploadFileToNCP();
-            stopChat();
+            uploadFileToNCP();
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
@@ -313,7 +351,6 @@ function onLiveIceCandidate(candidate) {
 }
 
 function createVideo() {
-    console.log('Starting video call ...');
 
     let options = {
         localVideo : live,
@@ -322,7 +359,7 @@ function createVideo() {
     }
 
     webRtcRecord = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
-                function(error) {
+        function(error) {
             if (error)
                 return console.error(error);
             webRtcRecord.generateOffer(onRecordOffer);
@@ -330,8 +367,6 @@ function createVideo() {
 }
 
 function onRecordIceCandidate(candidate) {
-    console.log("Local candidate" + JSON.stringify(candidate));
-
     let message = {
         id : 'onIceCandidate',
         candidate : candidate
@@ -342,7 +377,6 @@ function onRecordIceCandidate(candidate) {
 function onLiveOffer(error, offerSdp) {
     if (error)
         return console.error('Error generating the offer');
-    console.info('Invoking SDP offer callback function ' + location.host);
     let message = {
         id : 'presenter',
         sdpOffer : offerSdp
@@ -353,7 +387,6 @@ function onLiveOffer(error, offerSdp) {
 function onViewOffer(error, offerSdp) {
     if (error)
         return console.error('Error generating the offer');
-    console.info('Invoking SDP offer callback function ' + location.host);
     var message = {
         id : 'viewer',
         sdpOffer : offerSdp
@@ -367,6 +400,7 @@ function onRecordOffer(error, offerSdp) {
     console.info('Invoking SDP offer callback function ' + location.host);
     let message = {
         id : 'start',
+        title: document.getElementById("broadcastTitle").value,
         sdpOffer : offerSdp,
         mode :  $('input[name="mode"]:checked').val()
     }
@@ -428,13 +462,11 @@ function dispose() {
 
 function sendLiveMessage(message) {
     let jsonMessage = JSON.stringify(message);
-    console.log('Sending message: ' + jsonMessage);
     ws.send(jsonMessage);
 }
 
 function sendRecordMessage(message) {
     let jsonMessage = JSON.stringify(message);
-    console.log('Sending message: ' + jsonMessage);
     rec.send(jsonMessage);
 }
 
@@ -458,7 +490,7 @@ function onLiveError(error) {
 }
 
 function uploadFileToNCP() {
-    let title = 'test.mp4';
+    let title = document.getElementById('broadcastTitle').value + ".mp4";
     axios.post('/stream/vod/upload', {
         title
     })
@@ -478,13 +510,22 @@ function createChatRoom() {
     })
         .then(response => {
             console.log(response.data);
-            alert(`채팅방 번호: ${response.data.chatRoomNo}`);
+            Swal.fire({
+                icon: 'info',
+                title: '채팅방 생성 완료',
+                text: `채팅방 번호: ${response.data.chatRoomNo}`
+            });
             chatRoomNo = response.data.chatRoomNo;
             connectToChatRoom();
         })
         .catch(error => {
             console.error('채팅방 생성 중 오류 발생:', error);
-            alert('채팅방 생성 중 오류가 발생했습니다.');
+            Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: '채팅방 생성 중 오류가 발생했습니다.'
+            });
+
         });
 }
 
@@ -495,7 +536,10 @@ function connectToChatRoom() {
         return;
     }
 
-    const socket = new SockJS('/ws-stomp-chat');
+    const accessToken = sessionStorage.getItem('accessToken');
+    var socket = new SockJS('/ws-stomp-chat?access_token=' + accessToken, null, {
+        transports: ['websocket', 'xhr-streaming', 'xhr-polling']
+    });
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, onConnected, onChatError);
@@ -519,10 +563,17 @@ function onConnected(frame) {
         }
     });
 
-    // STOMP 클라이언트 연결 후 에러 채널 구독
+    // STOMP 클라이언트 연결 후 사용자 전용 에러 채널 구독
     stompClient.subscribe('/user/queue/errors', function(message) {
         var errorResponse = JSON.parse(message.body);
-        alert(errorResponse.chatMessage);
+        console.log("Inline error message:", errorResponse.chat_message); // 로그 출력 확인
+        Swal.fire({
+            icon: 'error',
+            title: '금칙어 오류',
+            text: errorResponse.chat_message
+        });
+
+        showInlineError(errorResponse.chat_message);
     });
 
 }
@@ -547,6 +598,7 @@ function sendChatMessage() {
             chat_member_id: memberId,
             chat_room_no: chatRoomNo,
             chat_message: messageText,
+            chat_role: memberRole,
             chat_created_at: new Date().toLocaleString()
         };
         console.log("Sending message:", message);
@@ -564,7 +616,6 @@ function addMessageToChat(message) {
     const messageElement = document.createElement("div");
     messageElement.classList.add("message");
 
-
     // 사용자 아이디
     const userNameSpan = document.createElement("span");
     userNameSpan.classList.add("user-name");
@@ -575,25 +626,7 @@ function addMessageToChat(message) {
     messageTextP.classList.add("chat-text");
     messageTextP.textContent = message.chat_message;
 
-    // // 관리자인지 확인 (필요에 따라 조건 수정)
-    // if(message.chat_member_id === "ADMIN") {
-    //     messageElement.classList.add("ADMIN");
-    //     userNameSpan.textContent = "관리자 ✓";
-    //     // 관리자 이름을 빨간색으로 표시
-    //     userNameSpan.style.color = "red";
-    //
-    //     // 관리자 메시지라고 구분할 클래스 추가 (CSS 활용 가능)
-    //     messageElement.classList.add("admin");
-    //
-    //     // 예시: “관리자가 작성한 채팅 입니다.”로 고정
-    //     messageTextP.textContent = message.chat_message;
-    // } else {
-    //     messageElement.classList.add("USER");
-    //     userNameSpan.textContent = message.chat_member_id;
-    //     messageTextP.textContent = message.chat_message;
-    // }
-
-    if (message.chat_member_id === "admin01") {
+    if (message.chat_role && message.chat_role === "ROLE_ADMIN") {
         userNameSpan.textContent = "관리자 ✓";
         // 관리자 이름을 빨간색으로 표시
         userNameSpan.style.color = "red";
@@ -604,21 +637,15 @@ function addMessageToChat(message) {
         userNameSpan.textContent = message.chat_member_id;
         messageTextP.textContent = message.chat_message;
 
-        // (추가) 아이디 클릭 시 신고 모달 오픈
+        // 아이디 클릭 시 신고 모달 오픈
         userNameSpan.addEventListener('click', () => {
             openReportModal(message.chat_member_id, message.chat_message);
         });
     }
 
-    // 채팅 시간 (문자열 그대로 사용하거나, 포맷팅 가능)
-    // const chatTimeSpan = document.createElement("span");
-    // chatTimeSpan.classList.add("chat-time");
-    // chatTimeSpan.textContent = message.chat_created_at;
-
     // 요소 조합
     messageElement.appendChild(userNameSpan);
     messageElement.appendChild(messageTextP);
-    // messageElement.appendChild(chatTimeSpan);
 
     // 채팅 메시지 컨테이너에 추가
     chatMessagesContainer.appendChild(messageElement);
@@ -660,7 +687,7 @@ function stopChat() {
             console.log('Disconnected from WebSocket');
         });
     }
-}7
+}
 
 function clearErrorMessage() {
     const errorElement = document.getElementById('error-message');
@@ -669,6 +696,47 @@ function clearErrorMessage() {
         errorElement.style.display = 'none';
     }
 }
+
+function getMemberInfo(){
+    // accessToken을 sessionStorage에서 가져옴
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (accessToken) {
+        // 사용자 정보 API 호출, 응답 >> memberId
+        axios.get('/chat/api/info', {
+            headers: {
+                Authorization: 'Bearer ' + accessToken
+            }
+        })
+            .then(response => {
+                memberId = response.data.memberId; // API에서 memberId를 반환
+                memberRole = response.data.role;
+                console.log("[DEBUG] Retrieved memberId:", memberId);
+                console.log("[DEBUG] Retrieved memberRole:", memberRole);
+            })
+            .catch(error => {
+                console.error("사용자 정보를 불러오는 중 오류:", error);
+            });
+    } else {
+        console.warn("accessToken이 존재하지 않습니다.");
+    }
+}
+
+// 인라인 에러 메시지를 표시하는 함수
+function showInlineError(errorMessage) {
+    const errorElement = document.getElementById('inline-error');
+    if (errorElement) {
+        errorElement.textContent = errorMessage;
+        console.log("Inline error message: ", errorMessage);
+        errorElement.style.display = 'block';
+        // 5초 후 자동 숨김 처리
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 5000);
+    } else {
+        console.error("Inline error element not found!");
+    }
+}
+
 
 
 /**

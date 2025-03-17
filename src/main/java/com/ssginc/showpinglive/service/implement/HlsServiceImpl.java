@@ -112,7 +112,7 @@ public class HlsServiceImpl implements HlsService {
      * @return HLS 파일 (확장자: m3u8)
      */
     @Override
-    public Mono<Resource> getHLSV2(String title) {
+    public Mono<?> getHLSV2Flux(String title) {
         return Mono.fromCallable(() -> {
             String fileName = title + ".m3u8";
             return storageLoader.getHLS(fileName);
@@ -127,12 +127,35 @@ public class HlsServiceImpl implements HlsService {
      * @return TS 파일 (확장자: ts)
      */
     @Override
-    public Mono<?> getTsSegmentV2(String title, String segment) {
+    public Mono<?> getTsSegmentV2Flux(String title, String segment) {
         return Mono.fromCallable(() -> {
             String fileName = title + segment + ".ts";
             return storageLoader.getHLS(fileName);
         }).subscribeOn(Schedulers.boundedElastic())
                 .onErrorResume(FileNotFoundException.class, e -> Mono.empty());
+    }
+
+    /**
+     * NCP Storage에 저장된 HLS를 불러오는 메서드 (동기 방식)
+     * @param title 파일 제목
+     * @return HLS 파일 (확장자: m3u8) 또는 파일을 찾을 수 없으면 null
+     */
+    @Override
+    public Resource getHLSV2(String title) {
+        String fileName = title + ".m3u8";
+        return storageLoader.getHLS(fileName);
+    }
+
+    /**
+     * 영상 제목과 segment 번호로 NCP Storage에 저장된 TS 파일을 받아오는 메서드 (동기 방식)
+     * @param title 영상 제목
+     * @param segment 세그먼트 번호
+     * @return TS 파일 (확장자: ts) 또는 파일을 찾을 수 없으면 null
+     */
+    @Override
+    public Resource getTsSegmentV2(String title, String segment) {
+        String fileName = title + segment + ".ts";
+        return storageLoader.getHLS(fileName);
     }
 
 }
