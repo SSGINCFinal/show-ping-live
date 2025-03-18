@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                     // <img> 태그 생성 및 속성 설정
                     const img = document.createElement('img');
-                    img.src = '/img/product_img/' + product.productImg;
+                    img.src = product.productImg;
                     img.alt = '상품 이미지';
 
                     // 상품 정보 컨테이너 생성
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     // 최종 모습
                     // <ul class="product-list">
                     //     <li class="product-item" id="productNo">
-                    //         <img src="/img/product_img/~~~~" alt="상품 이미지" />
+                    //         <img src="https://~~~~" alt="상품 이미지" />
                     //         <div class="product-info">
                     //             <div class="product-name">상품명</div>
                     //             <div class="price-container">

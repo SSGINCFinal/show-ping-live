@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('dataLoaded', function () {
         live = document.getElementById('live-video');
         watch = document.getElementById('live');
-        console.log(watch);
 
         getMemberInfo();
 
@@ -290,7 +289,7 @@ function startLive() {
             document.getElementById("broadcastDesc").value = data.streamDescription;
 
             productElement.innerHTML = `
-                <img src="/img/product_img/${data.productImg}" alt="상품 이미지" class="product-img">
+                <img src="${data.productImg}" alt="상품 이미지" class="product-img">
                 <div class="product-info" id="${data.productNo}">
                     <p class="product-name">${data.productName}</p>
                     <div class="product-price-container">
