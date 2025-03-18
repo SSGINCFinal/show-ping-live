@@ -29,7 +29,7 @@ function loadLive() {
                 const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
                 liveDiv.innerHTML = `
-                    <img src="/img/product_img/${live.productImg}" alt="${live.productName}" />
+                    <img src="${live.productImg}" alt="${live.productName}" />
                     <p id="date">${formattedDate}</p>
                     <p id="title">${live.streamTitle}</p>
                     <p id="price">${formattedPrice}원</p>
@@ -74,7 +74,7 @@ function loadVod(pageNo) {
                 const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
                 vodDiv.innerHTML = `
-                    <img src="/img/product_img/${vod.productImg}" alt="${vod.productName}" />
+                    <img src="${vod.productImg}" alt="${vod.productName}" />
                     <p id="date">${formattedDate}</p>
                     <p id="title">${vod.streamTitle}</p>
                     <p id="price">${formattedPrice}원</p>
