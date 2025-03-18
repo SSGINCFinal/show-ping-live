@@ -1,13 +1,18 @@
 const videoElement = document.getElementById('vod');
 const track = videoElement.addTextTrack("subtitles", "Korean", "ko");
 
-function addWatch(memberNo, streamNo) {
+function addWatch(streamNo) {
+    const accessToken = sessionStorage.getItem('accessToken');
     const watchTime = new Date();
     
-    axios.post('/watch/insert', {
-        memberNo: memberNo,
+    axios.post('/watch/insert',
+    {
         streamNo: streamNo,
         watchTime: watchTime
+    }, {
+        headers: {
+            "Authorization": "Bearer " + accessToken
+        }
     });
 }
 

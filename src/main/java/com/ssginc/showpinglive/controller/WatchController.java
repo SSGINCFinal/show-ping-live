@@ -96,8 +96,13 @@ public class WatchController {
      * @return 응답 결과
      */
     @PostMapping("/insert")
-    public ResponseEntity<?> insertWatchHistory(@RequestBody WatchRequestDto watchRequestDto) {
-        Watch watch = watchService.insertWatchHistory(watchRequestDto);
+    public ResponseEntity<?> insertWatchHistory(@AuthenticationPrincipal UserDetails userDetails, @RequestBody WatchRequestDto watchRequestDto) {
+        Long memberNo = null;
+        if (userDetails != null) {
+            Member member = memberService.findMemberById(userDetails.getUsername());
+            memberNo = member.getMemberNo();
+        }
+        Watch watch = watchService.insertWatchHistory(watchRequestDto, memberNo);
         return ResponseEntity.ok(watch);
     }
 

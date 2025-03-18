@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class WatchRequestDto {
 
-    private Long memberNo;
     private Long streamNo;
     private LocalDateTime watchTime;
 

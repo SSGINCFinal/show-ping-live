@@ -8,10 +8,9 @@
 
   <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function () {
-      var memberNo = [[${member.memberNo}]];
       var streamNo = [[${vodDto.streamNo}]];
       var title = [[${vodDto.streamTitle}]];
-      addWatch(memberNo, streamNo);
+      addWatch(streamNo);
       fetchSubtitle(title);
       streamVideo(title);
     });
