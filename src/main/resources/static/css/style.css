@@ -26,8 +26,6 @@ main {
 /* 네비게이션 바 스타일 */
 .navbar {
     color: black;
-    position: sticky;
-    top: 0;
 }
 
 .navbar-container {

@@ -6,14 +6,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (accessToken) {
         // ✅ 로그인 상태: 사용자 정보 요청하여 표시
-        fetch("/api/auth/user-info", {
+        fetch("/api/carts/info", {
             method: "GET",
             headers: { Authorization: `Bearer ${accessToken}` }
         })
             .then(response => response.json())
             .then(data => {
-                if (data.username) {
-                    document.getElementById("user-greeting").innerText = `환영합니다, ${data.username}님`;
+                if (data.memberName) {
+                    document.getElementById("user-greeting").innerText = `${data.memberName} 님`;
                     if (userMenu) userMenu.style.display = "block";
                     if (loginButton) loginButton.style.display = "none";
                 }
