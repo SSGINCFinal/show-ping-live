@@ -156,6 +156,20 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.awaitility:awaitility:4.3.0'
+
+    ////////////////////////////////////////////////////////////////////////////
+    //************************************************************************
+    //소셜 로그인 설정 추가
+    //************************************************************************
+    // 추가: Auth0 Java JWT
+    implementation 'com.auth0:java-jwt:4.2.1'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'net.pwall.json:jsonutil:5.0'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    ////////////////////////////////////////////////////////////////////////////
 }
 
 tasks.named('bootBuildImage') {

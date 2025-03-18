@@ -14,13 +14,15 @@
   <script th:src="@{https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js}"></script>
 
   <script th:inline="javascript">
+    let streamInfo = false;
     let chatRoomInfo = [[${chatRoomInfo}]];
     let streamNo = (typeof chatRoomInfo !== "undefined" && chatRoomInfo !== null) ? chatRoomInfo.streamNo : null;
     let chatRoomNo = [[${chatRoomInfo.chatRoomNo}]];
   </script>
-
+  
   <script th:src="@{/js/kurento-utils.js}"></script>
   <script th:src="@{/js/stream/stream.js}"></script>
+  <script th:src="@{/js/stream/watch.js}"></script>
 
   <div class="main-contents">
     <div class="content-container">

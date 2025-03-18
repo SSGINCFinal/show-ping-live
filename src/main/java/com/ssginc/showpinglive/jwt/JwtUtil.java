@@ -26,7 +26,7 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ Access Token 생성
+     * Access Token 생성
      */
     public String generateAccessToken(String memberId, String role) {
         return Jwts.builder()
@@ -39,7 +39,7 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ Refresh Token 생성
+     * Refresh Token 생성
      */
     public String generateRefreshToken(String memberId) {
         return Jwts.builder()
@@ -51,40 +51,40 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ JWT에서 사용자 ID 추출
+     * JWT에서 사용자 ID 추출
      */
     public String getUsernameFromToken(String token) {
         return parseClaims(token).getSubject();
     }
 
     /**
-     * ✅ JWT에서 역할(Role) 추출
+     * JWT에서 역할(Role) 추출
      */
     public String getRoleFromToken(String token) {
         return (String) parseClaims(token).get("role");
     }
 
     /**
-     * ✅ 토큰 유효성 검증
+     * 토큰 유효성 검증
      */
     public boolean validateToken(String token) {
         try {
             parseClaims(token);
             return true;
         } catch (ExpiredJwtException e) {
-            System.out.println("❌ JWT 만료됨");
+            System.out.println("JWT 만료됨");
         } catch (MalformedJwtException e) {
-            System.out.println("❌ 잘못된 JWT 형식");
+            System.out.println("잘못된 JWT 형식");
         } catch (SignatureException e) {
-            System.out.println("❌ JWT 서명 검증 실패");
+            System.out.println("JWT 서명 검증 실패");
         } catch (Exception e) {
-            System.out.println("❌ JWT 검증 실패");
+            System.out.println("JWT 검증 실패");
         }
         return false;
     }
 
     /**
-     * ✅ JWT 만료 여부 확인
+     * JWT 만료 여부 확인
      */
     public boolean isTokenExpired(String token) {
         try {
@@ -95,7 +95,7 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ JWT Claims 파싱
+     * JWT Claims 파싱
      */
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
