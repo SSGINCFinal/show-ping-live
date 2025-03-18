@@ -8,11 +8,13 @@ document.addEventListener("DOMContentLoaded", function () {
     loadWatchHistory(accessToken);
 });
 
-function loadWatchHistory() {
+function loadWatchHistory(accessToken) {
+    const header = {
+        'Authorization': 'Bearer ' + accessToken
+    };
+
     axios.get(`/watch/history/list`, {
-        headers: {
-            accessToken: 'Bearer ' + accessToken
-        }
+        headers: header
     })
         .then(response => {
             const historyItems = response.data['historyList'];
@@ -27,7 +29,7 @@ function loadWatchHistory() {
                 const row = `
                     <tr>
                         <td class="product-order">
-                            <img class="product-img" src="/img/product_img/${item.productImg}" alt="${item.productName}">
+                            <img class="product-img" src="${item.productImg}" alt="${item.productName}">
                         </td>
                         <td class="stream-title" data-stream-title="${item.streamTitle}">
                             ${item.streamTitle}
