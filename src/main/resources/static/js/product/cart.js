@@ -60,8 +60,7 @@ function loadCartItems(memberNo) {
                         </td>
                         <td class="product-order">
                             <img class="product-img" src="${item.productImg}" alt="${item.productName}">
-                            <!-- Wrap product name in a clickable element -->
-                            <div style="width: 300px" class="product-name" data-product-no="${item.productNo}">${item.productName}</div>
+                            <div style="width: 300px">${item.productName}</div>
                         </td>
                         <td>
                             <input type="number" class="quantity-input" 
@@ -80,16 +79,6 @@ function loadCartItems(memberNo) {
             });
 
             setupEventListeners(); // 체크박스 및 수량 변경 이벤트 설정
-
-            // Add click event listener to product name for redirecting to the product detail page
-            const productNames = document.querySelectorAll('.product-name');
-            productNames.forEach(productName => {
-                productName.addEventListener('click', function () {
-                    const productNo = productName.getAttribute('data-product-no');
-                    window.location.href = `/product/detail/${productNo}`;
-                });
-            });
-
         })
         .catch(error => {
             console.error("장바구니 데이터를 불러오는 중 오류 발생:", error);
@@ -216,7 +205,6 @@ document.getElementById("checkout-btn").addEventListener("click", function (even
         return;
     }
 
-    console.log("선택된 상품:", selectedItems); // 콘솔에서 productNo 포함 여부 확인
     sessionStorage.setItem("selectedItems", JSON.stringify(selectedItems));
 
     window.location.href = "/payment";

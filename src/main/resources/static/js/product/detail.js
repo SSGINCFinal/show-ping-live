@@ -5,10 +5,12 @@ document.addEventListener("DOMContentLoaded", function () {
     loadProductReview(productNo);
 });
 
+let product = null
+
 function loadProductDetail(productNo) {
     axios.get(`/api/products/detail/${productNo}`)
         .then(response => {
-            const product = response.data;
+            product = response.data;
             const productSale = product.productSale;  // productSale 값을 가져옵니다.
             const productDetail = document.getElementById('product-detail-page');
 
@@ -41,7 +43,7 @@ function loadProductDetail(productNo) {
                             </div>
                             <div class="purchase-buttons">
                                 <button id="add-to-cart-btn">장바구니</button>
-                                <button>바로 결제</button>
+                                <button id="direct-btn">바로 결제</button>
                             </div>
                         </div>
                     </div>
@@ -127,6 +129,7 @@ function setupEventListeners(productNo) {
     const decreaseBtn = document.getElementById("decrease-btn");
     const increaseBtn = document.getElementById("increase-btn");
     const addToCartBtn = document.getElementById("add-to-cart-btn");
+    const directBtn = document.getElementById("direct-btn");
 
     let quantity = 1;  // 기본 수량
 
@@ -195,5 +198,21 @@ function setupEventListeners(productNo) {
                 window.location.href = "/login";  // 로그인 페이지로 이동
             }
         }
+    });
+
+    directBtn.addEventListener("click", function () {
+        console.log("클릭됨")
+        const selectedItem = {
+            productNo: product.productNo,
+            name: product.productName,
+            quantity: quantity,
+            totalPrice: product.discountedPrice * quantity
+        };
+
+        // sessionStorage에 상품 정보 저장
+        sessionStorage.setItem("selectedItems", JSON.stringify([selectedItem]));
+
+        // 결제 페이지로 이동
+        window.location.href = "/payment";
     });
 }
