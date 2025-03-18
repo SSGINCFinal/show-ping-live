@@ -314,7 +314,7 @@ function startLive() {
             document.getElementById("discountRate").value = data.productSale;
 
             if (!webRtcPeer) {
-                showSpinner(live);
+                // showSpinner(live);
 
                 let options = {
                     localVideo: live,
@@ -336,7 +336,7 @@ function startLive() {
 
 function viewer() {
     if (!webRtcPeer) {
-        showSpinner(watch);
+        // showSpinner(watch);
 
         var options = {
             remoteVideo : watch,
@@ -482,20 +482,20 @@ function sendRecordMessage(message) {
     rec.send(jsonMessage);
 }
 
-function showSpinner() {
-    for (let i = 0; i < arguments.length; i++) {
-        arguments[i].poster = '/img/transparent-1px.png';
-        arguments[i].style.background = 'center transparent url("./img/spinner.gif") no-repeat';
-    }
-}
+// function showSpinner() {
+//     for (let i = 0; i < arguments.length; i++) {
+//         arguments[i].poster = '/img/transparent-1px.png';
+//         arguments[i].style.background = 'center transparent url("/img/spinner.gif") no-repeat';
+//     }
+// }
 
-function hideSpinner() {
-    for (let i = 0; i < arguments.length; i++) {
-        arguments[i].src = '';
-        arguments[i].poster = '/img/webrtc.png';
-        arguments[i].style.background = '';
-    }
-}
+// function hideSpinner() {
+//     for (let i = 0; i < arguments.length; i++) {
+//         arguments[i].src = '';
+//         arguments[i].poster = '/img/webrtc.png';
+//         arguments[i].style.background = '';
+//     }
+// }
 
 function onLiveError(error) {
     console.error(error);

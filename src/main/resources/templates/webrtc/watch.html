@@ -4,6 +4,7 @@
       layout:decorate="layout.html">
 <div layout:fragment="content">
   <link rel="stylesheet" th:href="@{/css/watch/stream.css}">
+  <link rel="stylesheet" th:href="@{/css/stream/stream.css}">
   <link rel="stylesheet" th:href="@{/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.css}">
   <link rel="shortcut icon" th:href="@{/img/kurento.png}" type="image/png" />
   <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
@@ -83,6 +84,9 @@
         </div>
       </div>
     </div>
+
+    <!-- 모달 오버레이 (배경 흐림 효과용) -->
+    <div class="modal-overlay" id="modalOverlay"></div>
 
     <div class="report-modal" id="reportModal">
       <h2>채팅 신고</h2>

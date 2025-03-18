@@ -42,13 +42,16 @@
 .chat-container {
     position: relative;
     width: 300px;
+    min-width: 300px;
     height: 480px;
     border: 1px solid #ddd;
     border-radius: 5px;
     overflow: hidden;
-    font-family: Arial, sans-serif;
+    font-family: 'Noto Sans', 'Noto Sans KR', sans-serif;
+    line-height: 1.4;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
 }
 
 .product-container {
@@ -279,6 +282,7 @@ div.dragged {
     flex-grow: 1;
     /*height: calc(100% - 140px); !* 전체 높이에서 입력 영역(예: 50px)과 공지 영역(예: 50px) 등을 뺀 높이 *!*/
     overflow-y: auto;
+    overflow-wrap: break-word;
     padding: 10px;
     /*background-color: #f9f9f9;*/
     margin-bottom: 10px;
@@ -387,7 +391,6 @@ div.dragged {
 .report-modal {
     display: none; /* 초기에는 숨김 */
     width: 320px;
-    margin: 50px auto; /* 화면 중앙 정렬 */
     background-color: #ffffff;
     border-radius: 10px;
     padding: 20px;
@@ -405,8 +408,8 @@ div.dragged {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.4);
     z-index: 9998;
 }
