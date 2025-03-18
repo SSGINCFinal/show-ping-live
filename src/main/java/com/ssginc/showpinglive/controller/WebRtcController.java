@@ -56,8 +56,21 @@ public class WebRtcController {
         GetStreamProductInfoResponseDto streamProductInfo = streamService.getStreamProductInfo(streamNo);
         ChatRoomResponseDto chatRoom = chatRoomService.findChatRoomByStreamNo(streamNo);
 
+        // 가격 문자열에서 숫자와 소수점만 남김 (쉼표, 원 등의 문자는 제거)
+        String rawPrice = streamProductInfo.getProductPrice().replaceAll("[^\\d.]", "");
+        String rawSale = streamProductInfo.getProductSalePrice().replaceAll("[^\\d.]", "");
+
+        int price = Integer.parseInt(rawPrice);
+        int sale = Integer.parseInt(rawSale);
+
+        // 할인 금액: (상품 가격 - 할인가격)
+        int discountAmount = price - sale;
+        // 할인율: ((할인 금액 / 상품 가격) * 100)
+        int discountRate = (price > 0) ? (discountAmount * 100) / price : 0;
+
         model.addAttribute("chatRoomInfo", chatRoom);
         model.addAttribute("productInfo", streamProductInfo);
+        model.addAttribute("discountRate", discountRate);
 
         return "webrtc/watch";
     }

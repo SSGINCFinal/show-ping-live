@@ -6,7 +6,10 @@
   <link rel="stylesheet" th:href="@{/css/watch/stream.css}">
   <link rel="stylesheet" th:href="@{/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.css}">
   <link rel="shortcut icon" th:href="@{/img/kurento.png}" type="image/png" />
+  <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
 
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script th:src="@{/webjars/jquery/3.7.1/dist/jquery.js}"></script>
   <script th:src="@{/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.min.js}"></script>
   <script th:src="@{/webjars/webrtc-adapter/7.4.0/release/adapter.js}"></script>
@@ -35,7 +38,9 @@
       <div class="chat-container">
         <!-- 공지 영역 -->
         <div class="announcement">
-          공지 | Live 방송 중에만 초특가 <strong>45% 세일 !!</strong>
+          공지 | Live 방송 중에만 초특가 <strong th:text="${discountRate} + '%'"></strong>
+
+          <strong>세일!!</strong>
         </div>
 
         <div class="chat-messages" id="chat-messages">
