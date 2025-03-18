@@ -29,25 +29,19 @@
                         <li class="menu-item dropdown">
                             <ul class="dropdown-menu">
                                 <!-- 카테고리 리스트 동적 추가 -->
-                                <li>
-                                </li>
+                                <li></li>
                             </ul>
                         </li>
                     </ul>
                 </li>
                 <li class="menu-item dropdown">
-                    <a>라이브</a>
-                    <!-- 드롭다운 메뉴 -->
-                    <ul class="dropdown-menu">
-                        <li><a th:href="@{/webrtc/webrtc}">송출</a></li>
-                        <li><a th:href="@{/stream/list}">라이브</a></li>
-                    </ul>
+                    <a th:href="@{/stream/list}">라이브</a>
                 </li>
                 <li class="menu-item dropdown">
-                    <a th:href="@{/watch/history}">시청 내역</a>
+                    <a href="/tv-schedule">TV 편성표</a>
                 </li>
                 <li class="menu-item dropdown">
-                    <a href="/#">이벤트</a>
+                    <a href="/success">주문 내역</a>
                 </li>
             </ul>
         </nav>
@@ -71,17 +65,16 @@
         </div>
     </div>
 </header>
+
 <!-- 페이지 내용 -->
 <div class="main-content">
-    <main layout:fragment="content">
-    </main>
+    <main layout:fragment="content"></main>
 </div>
 
 <button id="scrollToTop" class="scroll-to-top">▲</button>
 
 <!-- 공통 푸터 -->
 <footer class="footer">
-    <!-- Footer 하단 -->
     <div class="footer-bottom">
         <p>&copy; 2025 신세계 I&C. All rights reserved.</p>
         <div class="social-icons">

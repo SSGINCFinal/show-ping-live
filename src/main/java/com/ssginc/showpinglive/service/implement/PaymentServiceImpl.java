@@ -2,6 +2,7 @@ package com.ssginc.showpinglive.service.implement;
 
 import com.ssginc.showpinglive.service.PaymentService;
 import com.ssginc.showpinglive.service.PortOneService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -9,13 +10,11 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
+
     private final PortOneService portOneService;
     private final RestTemplate restTemplate = new RestTemplate();
-
-    public PaymentServiceImpl(PortOneService portOneService) {
-        this.portOneService = portOneService;
-    }
 
     @Override
     public String verifyPayment(String impUid) {
