@@ -73,7 +73,8 @@
             <span class="current-view-price" th:text="${productInfo.productSalePrice}"></span>
             <span class="original-view-price" th:text="${productInfo.productPrice}"></span>
           </div>
-          <button class="buy-button">구매하기</button>
+          <button class="buy-button"
+          th:onclick="|location.href='@{/product/detail/{productNo}(productNo=${productInfo.productNo})}'|">구매하기</button>
         </div>
       </div>
     </div>
