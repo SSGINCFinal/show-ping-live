@@ -155,6 +155,19 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {    // 기존에 등록된 방송 정보가 있다면 방송 시작 버튼 활성화, 방송 종료 버튼 비활성화
             setState(NO_CALL);
         }
+
+        // 할인율 input 요소
+        const discountRateInput = document.getElementById('discountRate');
+        if (discountRateInput) {
+            // 할인율 변경 시 이벤트 리스너 등록
+            discountRateInput.addEventListener('input', updateAnnouncementDiscount);
+        }
+
+        // 업데이트 버튼을 눌러야 적용된다면, update-btn 클릭 이벤트에 바인딩
+        const updateBtn = document.querySelector('.update-btn');
+        if (updateBtn) {
+            updateBtn.addEventListener('click', updateAnnouncementDiscount);
+        }
     });
 })
 
@@ -585,6 +598,23 @@ function sendChatMessage() {
     const charCount = document.getElementById('char-count');
     console.log("Attempting to send message:", messageText);
 
+    // 로그인 여부 체크. memberId가 null이면 로그인하지 않은 것으로 간주)
+    if (!memberId) {
+        Swal.fire({
+            title: '로그인 필요',
+            text: '로그인 후 입력 가능합니다. 로그인 화면으로 이동하시겠습니까?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '네, 이동합니다.',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/login'; // 로그인 페이지 URL로 변경
+            }
+        });
+        return;
+    }
+
     if (!stompClient || !stompClient.connected) {
         console.warn('WebSocket이 연결되어 있지 않습니다. 재연결 시도 후 다시 전송해 주세요.');
         return;
@@ -737,7 +767,22 @@ function showInlineError(errorMessage) {
     }
 }
 
+/**
+ * 공지 영역, 할인율과 할인가 업데이트
+ */
+function updateAnnouncementDiscount() {
+    // 할인율, 상품 원가 가져오기
+    const discountRate = parseFloat(document.getElementById('discountRate').value) || 0;
 
+    // 3) 공지 영역 갱신
+    const announcementEl = document.querySelector('.announcement');
+    if (announcementEl) {
+        announcementEl.innerHTML = `
+            공지 | Live 방송 중에만 초특가 
+            <strong>${discountRate}% 세일!! </strong>
+        `;
+    }
+}
 
 /**
  * Lightbox utility (to display media pipeline image in a modal dialog)
