@@ -27,7 +27,7 @@
             document.querySelector(".product-origin-price").textContent = data.productPrice;
 
             // 기등록된 상품 할인율
-            document.getElementById("discountRate").textContent = data.productSale;
+            document.getElementById("discountRate").value = data.productSale;
         } else {
             document.getElementById("broadcastTitle").value = "";
             document.getElementById("broadcastDesc").value = "";

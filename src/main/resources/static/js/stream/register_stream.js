@@ -16,10 +16,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const productNo = productDiv ? productDiv.id : null;
 
         // productSale : id가 discountRate인 input 태그의 value 값
-        const productSale = document.getElementById("discountRate").value;
+        const productSale = parseInt(document.getElementById("discountRate").value, 10);
 
         if (!streamTitle || !productNo) {
-            alert("방송 제목 입력과 상품 선택은 필수입니다.")
+            Swal.fire({
+                icon: 'info',
+                title: "입력 오류",
+                text: "방송 제목 입력과 상품 선택은 필수입니다."
+            });
+            return;
+        }
+
+        if (productSale > 100 || productSale < 0) {
+            Swal.fire({
+                icon: 'info',
+                title: "입력 오류",
+                text: "할인율은 100% 이하로 입력해주세요."
+            });
             return;
         }
 
@@ -41,7 +54,12 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: header
             })
             .then((response) => {
-                console.log("성공", response);
+                Swal.fire({
+                    icon: 'success',
+                    title: "방송 정보 업데이트 완료",
+                    text: "업데이트가 완료되었습니다."
+                });
+                
                 streamNo = response.data.streamNo;
 
                 $('#start').attr('disabled', false);
