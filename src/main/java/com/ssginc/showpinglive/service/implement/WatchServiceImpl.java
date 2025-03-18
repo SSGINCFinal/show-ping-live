@@ -38,10 +38,11 @@ public class WatchServiceImpl implements WatchService {
     /**
      * 시청 내역 등록 서비스 layer 메소드
      * @param watchRequestDto 시청내역 등록을 위한 요청 DTO
+     * @param memberNo 시청한 회원 번호
      * @return 추가된 시청내역 객체
      */
     @Override
-    public Watch insertWatchHistory(WatchRequestDto watchRequestDto) {
+    public Watch insertWatchHistory(WatchRequestDto watchRequestDto, Long memberNo) {
         // 영상 엔티티 객체 생성 (빌더 패턴)
         Stream stream = Stream.builder()
                 .streamNo(watchRequestDto.getStreamNo())
@@ -52,9 +53,9 @@ public class WatchServiceImpl implements WatchService {
         Member member = null;
 
         // 로그인한 사용자가 존재한 경우
-        if (watchRequestDto.getMemberNo() != null) {
+        if (memberNo != null) {
             member = Member.builder()
-                    .memberNo(watchRequestDto.getMemberNo())
+                    .memberNo(memberNo)
                     .build();
         }
 
