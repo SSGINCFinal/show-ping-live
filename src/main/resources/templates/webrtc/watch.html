@@ -64,8 +64,7 @@
         </div>
         <!-- 상품 이미지 영역 -->
         <div class="product-image">
-          <!-- 실제 이미지를 사용하실 경우 src 속성을 변경하세요 -->
-          <img th:src="@{'/img/product_img/' + ${productInfo.productImg}}" alt="상품 이미지" th:if="${productInfo != null}">
+          <img th:src="${productInfo.productImg}" alt="상품 이미지" th:if="${productInfo != null}">
         </div>
         <!-- 상품 정보 영역 (하단) -->
         <div class="product-details" th:if="${productInfo != null}">
@@ -74,7 +73,8 @@
             <span class="current-view-price" th:text="${productInfo.productSalePrice}"></span>
             <span class="original-view-price" th:text="${productInfo.productPrice}"></span>
           </div>
-          <button class="buy-button">구매하기</button>
+          <button class="buy-button"
+          th:onclick="|location.href='@{/product/detail/{productNo}(productNo=${productInfo.productNo})}'|">구매하기</button>
         </div>
       </div>
     </div>

@@ -21,13 +21,13 @@
             document.getElementById("broadcastDesc").value = data.streamDescription;
 
             // 기등록된 방송 상품
-            document.querySelector(".product-img").src = "/img/product_img/" + data.productImg;
+            document.querySelector(".product-img").src = data.productImg;
             document.querySelector(".product-info").id = data.productNo;
             document.querySelector(".product-name").textContent = data.productName;
             document.querySelector(".product-origin-price").textContent = data.productPrice;
 
             // 기등록된 상품 할인율
-            document.getElementById("discountRate").textContent = data.productSale;
+            document.getElementById("discountRate").value = data.productSale;
         } else {
             document.getElementById("broadcastTitle").value = "";
             document.getElementById("broadcastDesc").value = "";
