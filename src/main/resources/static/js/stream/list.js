@@ -20,8 +20,10 @@ function loadLive() {
                 const discountRate = live.productSale;
                 const streamStartTime = live.streamStartTime;
 
-                const discountedPrice = productPrice * ((100 - discountRate) / 100);
-                const formattedPrice = discountedPrice.toLocaleString('ko-KR');
+                const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
+
+                const formattedOriginPrice = productPrice.toLocaleString('ko-KR');
+                const formattedDiscountedPrice = discountedPrice.toLocaleString('ko-KR');
 
                 const date = new Date(streamStartTime);
 
@@ -29,10 +31,15 @@ function loadLive() {
                 const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
                 liveDiv.innerHTML = `
-                    <img src="${live.productImg}" alt="${live.productName}" />
+                    <div class="product-img-container">
+                        <img id="product-sale-icon" src="/img/icon/sale.png" alt="product-sale" class="sale-icon" style="width: 50px" />
+                        <img src="${live.productImg}" alt="${live.productName}" />
+                    </div>
                     <p id="date">${formattedDate}</p>
                     <p id="title">${live.streamTitle}</p>
-                    <p id="price">${formattedPrice}원</p>
+                    <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
+                    <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${live.productSale} %</p>
+                    <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
                 `;
 
                 // 라이브 클릭 시 시청 및 상세 페이지로 이동
@@ -65,8 +72,10 @@ function loadVod(pageNo) {
                 const discountRate = vod.productSale;
                 const streamStartTime = vod.streamStartTime;
 
-                const discountedPrice = productPrice * ((100 - discountRate) / 100);
-                const formattedPrice = discountedPrice.toLocaleString('ko-KR');
+                const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
+
+                const formattedOriginPrice = productPrice.toLocaleString('ko-KR');
+                const formattedDiscountedPrice = discountedPrice.toLocaleString('ko-KR');
 
                 const date = new Date(streamStartTime);
 
@@ -74,11 +83,26 @@ function loadVod(pageNo) {
                 const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
                 vodDiv.innerHTML = `
-                    <img src="${vod.productImg}" alt="${vod.productName}" />
+                    <div class="product-img-container">
+                        <img id="product-sale-icon" src="/img/icon/sale.png" alt="product-sale" class="sale-icon" style="width: 50px" />
+                        <img src="${vod.productImg}" alt="${vod.productName}" />
+                    </div>
                     <p id="date">${formattedDate}</p>
                     <p id="title">${vod.streamTitle}</p>
-                    <p id="price">${formattedPrice}원</p>
+                    <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
+                    <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${vod.productSale} %</p>
+                    <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
                 `;
+
+                if (discountRate === 0) {
+                    vodDiv.querySelector(".product-sale").style.display = "none";
+                    vodDiv.querySelector("#product-sale-icon").style.display = "none";
+                    vodDiv.querySelector("#product-sale-percent").style.display = "none";
+                } else {
+                    vodDiv.querySelector(".product-sale").style.display = "block";
+                    vodDiv.querySelector("#product-sale-icon").style.display = "block";
+                    vodDiv.querySelector("#product-sale-percent").style.display = "block";
+                }
 
                 // VOD 클릭 시 상세 및 시청 페이지로 이동
                 vodDiv.addEventListener('click', () => {
