@@ -282,3 +282,7 @@ main {
 .social-icons a:hover {
     color: black; /* 아이콘 호버 시 색상 변경 */
 }
+
+.item-name {
+    width: 300px;
+}

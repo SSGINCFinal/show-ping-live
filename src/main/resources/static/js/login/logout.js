@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (loginButton) loginButton.style.display = "block";
     }
 
-    if (logoutButton) {5
+    if (logoutButton) {
         console.log("로그아웃 버튼이 제대로 선택됨")
         logoutButton.addEventListener("click", function (event) {
             event.preventDefault(); // 기본 링크 동작 방지
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         sessionStorage.removeItem("refreshToken"); // Refresh Token 삭제
                         sessionStorage.removeItem("memberId");
                         console.log("세션 토큰 삭제 완료");
-                        window.location.href = "/login"; // 로그인 페이지로 이동
+                        window.location.href = "/"; // 로그인 페이지로 이동
                     } else {
                         console.error("로그아웃 실패: ", response.statusText);
                     }

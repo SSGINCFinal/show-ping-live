@@ -52,8 +52,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             const itemElement = document.createElement("div");
             itemElement.classList.add("order-item");
             itemElement.innerHTML = `
-                <span>${item.name} x ${item.quantity}</span> 
-                <strong>${item.totalPrice.toLocaleString()} 원</strong>
+                <a class="item-name">${item.name} x ${item.quantity}</a> 
+                <a class="item-price">${item.totalPrice.toLocaleString()} 원</a>
             `;
             orderItemsContainer.appendChild(itemElement);
             totalPrice += item.totalPrice;

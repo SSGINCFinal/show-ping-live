@@ -60,7 +60,8 @@ function loadCartItems(memberNo) {
                         </td>
                         <td class="product-order">
                             <img class="product-img" src="${item.productImg}" alt="${item.productName}">
-                            ${item.productName}
+                            <!-- Wrap product name in a clickable element -->
+                            <div style="width: 300px" class="product-name" data-product-no="${item.productNo}">${item.productName}</div>
                         </td>
                         <td>
                             <input type="number" class="quantity-input" 
@@ -79,6 +80,16 @@ function loadCartItems(memberNo) {
             });
 
             setupEventListeners(); // 체크박스 및 수량 변경 이벤트 설정
+
+            // Add click event listener to product name for redirecting to the product detail page
+            const productNames = document.querySelectorAll('.product-name');
+            productNames.forEach(productName => {
+                productName.addEventListener('click', function () {
+                    const productNo = productName.getAttribute('data-product-no');
+                    window.location.href = `/product/detail/${productNo}`;
+                });
+            });
+
         })
         .catch(error => {
             console.error("장바구니 데이터를 불러오는 중 오류 발생:", error);
@@ -187,7 +198,7 @@ document.getElementById("checkout-btn").addEventListener("click", function (even
 
     checkboxes.forEach(checkbox => {
         const row = checkbox.closest("tr");
-        const productNo = row.querySelector(".quantity-input").getAttribute("data-product-no"); // ✅ productNo 가져오기
+        const productNo = row.querySelector(".quantity-input").getAttribute("data-product-no"); // productNo 가져오기
         const productName = row.querySelector(".product-order").textContent.trim();
         const productPrice = parseInt(row.querySelector(".product-price").getAttribute("data-price"));
         const quantity = parseInt(row.querySelector(".quantity-input").value);
@@ -205,8 +216,12 @@ document.getElementById("checkout-btn").addEventListener("click", function (even
         return;
     }
 
-    console.log("선택된 상품:", selectedItems); // ✅ 콘솔에서 productNo 포함 여부 확인
+    console.log("선택된 상품:", selectedItems); // 콘솔에서 productNo 포함 여부 확인
     sessionStorage.setItem("selectedItems", JSON.stringify(selectedItems));
 
     window.location.href = "/payment";
+});
+
+row.addEventListener('click', () => {
+    window.location.href = `/product/detail/${product.productNo}`;
 });
