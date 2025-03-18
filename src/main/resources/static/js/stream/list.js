@@ -42,6 +42,16 @@ function loadLive() {
                     <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
                 `;
 
+                if (discountRate === 0) {
+                    liveDiv.querySelector(".product-sale").style.display = "none";
+                    liveDiv.querySelector("#product-sale-icon").style.display = "none";
+                    liveDiv.querySelector("#product-sale-percent").style.display = "none";
+                } else {
+                    liveDiv.querySelector(".product-sale").style.display = "block";
+                    liveDiv.querySelector("#product-sale-icon").style.display = "block";
+                    liveDiv.querySelector("#product-sale-percent").style.display = "block";
+                }
+
                 // 라이브 클릭 시 시청 및 상세 페이지로 이동
                 liveDiv.addEventListener('click', () => {
                     window.location.href = `/webrtc/watch/${live.streamNo}`;
