@@ -23,13 +23,14 @@
         <nav class="navbar-menu">
             <ul class="menu-list">
                 <li class="menu-item dropdown">
-                    <a>카테고리</a>
+                    <a>쇼핑몰</a>
                     <!-- 드롭다운 메뉴 -->
                     <ul class="dropdown-menu">
                         <li class="menu-item dropdown">
                             <ul class="dropdown-menu">
                                 <!-- 카테고리 리스트 동적 추가 -->
-                                <li></li>
+                                <li>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -38,7 +39,7 @@
                     <a th:href="@{/stream/list}">라이브</a>
                 </li>
                 <li class="menu-item dropdown">
-                    <a href="/tv-schedule">TV 편성표</a>
+                    <a th:href="@{/watch/history}">시청 내역</a>
                 </li>
                 <li class="menu-item dropdown">
                     <a href="/success">주문 내역</a>
@@ -54,13 +55,13 @@
                 </a>
             </div>
 
-            <!-- ✅ 로그인 상태 -->
+            <!-- 로그인 상태 -->
             <div id="user-menu" class="user-menu" style="display: none;">
                 <span id="user-greeting"></span>
                 <button class="logout-button">로그아웃</button>
             </div>
 
-            <!-- ✅ 비로그인 상태 -->
+            <!-- 비로그인 상태 -->
             <a href="/login" id="login-button" class="login-button">로그인</a>
         </div>
     </div>
@@ -75,14 +76,28 @@
 
 <!-- 공통 푸터 -->
 <footer class="footer">
-    <div class="footer-bottom">
-        <p>&copy; 2025 신세계 I&C. All rights reserved.</p>
-        <div class="social-icons">
-            <a href="/#">Facebook</a>
-            <a href="/#">Twitter</a>
-            <a href="/#">LinkedIn</a>
+    <div class="footer-container">
+        <!-- 회사 정보 섹션 -->
+        <div class="footer-column">
+            <p><strong>주식회사 쇼핑라이브</strong></p>
+            <p>서울 강남구 삼성동 151-7 SAC아트센터</p>
+            <p>호스팅 서비스: (주)신세계 아이앤씨</p>
+        </div>
+
+        <!-- 고객센터 섹션 -->
+        <div class="footer-column">
+            <p><strong>고객센터</strong></p>
+            <p>0000-0000 (운영시간 365일 24시간)</p>
+            <p><a href="showPingAdmin@showping.duckdns.com">showPingAdmin@showping.duckdns.com</a></p>
         </div>
     </div>
+
+    <!-- 하단 섹션 -->
+    <div class="footer-bottom">
+        <p>COPYRIGHT© SHOWPING LIVE SHOPPING INC. ALL RIGHTS RESERVED.</p>
+    </div>
 </footer>
+
+
 </body>
 </html>

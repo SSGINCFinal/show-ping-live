@@ -16,7 +16,7 @@ main {
 }
 
 .main-content {
-    max-width: 1300px;
+    max-width: 90%;
     min-height: 600px;
     margin: auto;
     background-color: white;
@@ -32,7 +32,7 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1300px;
+    max-width: 90%;
     margin: auto;
     border: 1px solid gainsboro;
     background-color: white;
@@ -215,70 +215,55 @@ main {
 
 /* Footer 스타일 */
 .footer {
-    background-color: #E7F1F9;
+    background-color: #e3efff;
     color: black;
-    padding: 40px 20px;
+    padding: 20px;
     font-family: Arial, sans-serif;
     font-size: 14px;
+    text-align: center; /* 텍스트 중앙 정렬 */
 }
 
 .footer-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* 가운데 정렬 */
+    align-items: flex-start;
     flex-wrap: wrap;
-    max-width: 1200px;
-    margin: 0 auto;
     gap: 20px;
+    max-width: 1200px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 중앙 정렬 */
 }
 
-.footer-column h4 {
-    margin-bottom: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #38A7FF;
+.footer-column {
+    flex: 1;
+    min-width: auto;
+    text-align: left; /* 내부 텍스트 왼쪽 정렬 */
 }
 
-.footer-column ul {
-    list-style: none;
-    padding: 0;
+.footer-column p {
+    margin: 5px 0;
 }
 
-.footer-column ul li {
-    margin-bottom: 10px;
-}
-
-.footer-column ul li a {
-    color: black;
+.footer-column a {
     text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-column ul li a:hover {
     color: #38A7FF;
+    font-weight: bold;
 }
 
-/* 하단 섹션 */
+.footer-column a:hover {
+    text-decoration: underline;
+}
+
 .footer-bottom {
-    margin-top: 40px;
+    margin-top: 30px;
     text-align: center;
     border-top: 1px solid #444;
-    padding-top: 20px;
-}
-
-.footer-bottom p {
-    margin: 10px 0;
+    padding-top: 10px;
     font-size: 12px;
-    color: black;
 }
 
-.social-icons a {
-    margin: 0 10px;
-    color: #38A7FF;
-    text-decoration: none;
-    font-size: 16px;
-    transition: color 0.3s;
-}
+/* 아이콘 */
 
+/* Icon 스타일 */
 .social-icons a:hover {
     color: black; /* 아이콘 호버 시 색상 변경 */
 }

@@ -6,8 +6,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     const token = sessionStorage.getItem("accessToken");
 
     if (!token) {
-        console.error("로그인이 필요합니다.");
-        alert("로그인이 필요합니다.");
         window.location.href = "/login"; // 로그인 페이지로 이동
         return; // 토큰이 없으면 함수 종료
     }
@@ -63,7 +61,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     } catch (error) {
         console.error("사용자 정보를 불러오는 중 오류 발생:", error);
-        alert("로그인이 필요합니다.");
         window.location.href = "/login";
     }
 });
@@ -120,9 +117,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     name,
                     email,
                     phone,
+                    address
                 },
                 customData: {
-                    userInfo: { name, phone, email },
+                    userInfo: { name, phone, email, address },
                 },
             });
 

@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (!token) {
         console.error("로그인이 필요합니다.");
-        alert("로그인이 필요합니다.");
         window.location.href = "/login"; // 로그인 페이지로 이동
         return; // 토큰이 없으면 함수 종료
     }
@@ -25,7 +24,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         memberNo = response.data.memberNo; // 로그인된 사용자 정보에서 memberNo 추출
 
         if (!memberNo) {
-            alert("사용자 정보가 없습니다.");
             return;
         }
 
@@ -34,7 +32,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     } catch (error) {
         console.error("사용자 정보를 불러오는 중 오류 발생:", error);
-        alert("로그인이 필요합니다.");
         window.location.href = "/login"; // 로그인 페이지로 리디렉션
     }
 });
@@ -60,14 +57,14 @@ function loadCartItems(memberNo) {
                         </td>
                         <td class="product-order">
                             <img class="product-img" src="${item.productImg}" alt="${item.productName}">
-                            <div style="width: 300px">${item.productName}</div>
+                            <div>${item.productName}</div>
                         </td>
                         <td>
                             <input type="number" class="quantity-input" 
                                    data-product-no="${item.productNo}" 
                                    data-unit-price="${item.discountedPrice}" 
                                    value="${item.cartProductQuantity}" 
-                                   min="1" style="width: 40px;">
+                                   min="1">
                         </td>
                         <td class="product-price" style="width: 200px;" data-price="${item.discountedPrice * item.cartProductQuantity}">
                             ${(item.discountedPrice * item.cartProductQuantity).toLocaleString('ko-KR')}원

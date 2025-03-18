@@ -286,6 +286,11 @@ th {
     align-items: center;
     justify-content: space-around;
 }
+
+.product-order div{
+    width: 300px;
+}
+
 .product-img {
     width: 80px;
     height: auto;
@@ -404,6 +409,10 @@ th {
     height: auto;
     border-radius: 5px;
     margin-right: 10px;
+}
+
+.quantity-input {
+    width: 40px;
 }
 
 .payment-summary .subtotal {
