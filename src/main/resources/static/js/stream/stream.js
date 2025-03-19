@@ -247,6 +247,7 @@ rec.onmessage = function(message) {
         case 'recording':
             break;
         case 'stopped':
+            stopChat();
             uploadFileToNCP();
             break;
         default:
@@ -412,7 +413,7 @@ function onRecordOffer(error, offerSdp) {
     console.info('Invoking SDP offer callback function ' + location.host);
     let message = {
         id : 'start',
-        title: document.getElementById("broadcastTitle").value,
+        title: 'stream(' + streamNo + ')',
         sdpOffer : offerSdp,
         mode :  $('input[name="mode"]:checked').val()
     }
@@ -502,17 +503,21 @@ function onLiveError(error) {
 }
 
 function uploadFileToNCP() {
-    let title = document.getElementById('broadcastTitle').value + ".mp4";
+    let title = 'stream(' + streamNo + ')';
+    let fileName = title + ".mp4";
     axios.post('/stream/vod/upload', {
-        title
+        title: fileName
     })
-        .then(response => {
-            console.log("응답 데이터: ", response.data)
-        })
+        .then(() => axios.post('/batch/hls/create', {
+            fileTitle: title
+        }))
+        .then(() => axios.post('/batch/subtitle/create', {
+            fileTitle: title
+        }))
+        .then(() => console.log('업로드 정상적으로 실행 중...'))
         .catch(error => {
             console.log("에러 발생: ", error);
         });
-    stopChat();
 }
 
 function createChatRoom() {
