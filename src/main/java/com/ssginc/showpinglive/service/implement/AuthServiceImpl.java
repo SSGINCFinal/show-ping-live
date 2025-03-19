@@ -9,6 +9,8 @@ import com.ssginc.showpinglive.service.AuthService;
 import com.ssginc.showpinglive.service.RefreshTokenService;
 import com.ssginc.showpinglive.util.EncryptionUtil;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
+import com.warrenstrange.googleauth.GoogleAuthenticatorConfig;
+import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +39,14 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
-    private final GoogleAuthenticator googleAuthenticator;
+
+
+    // ✅ GoogleAuthenticator 설정 (허용 시간 범위 1개만)
+    private final IGoogleAuthenticator googleAuthenticator = new GoogleAuthenticator(
+            new GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder()
+                    .setWindowSize(1) // 🔥 현재 OTP만 허용 (이전/다음 30초 OTP 차단)
+                    .build()
+    );
 
     /**
      * 로그인 처리 메서드 (컨트롤러에서 호출)
