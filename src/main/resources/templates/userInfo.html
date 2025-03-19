@@ -46,7 +46,7 @@
                     <a class="nav-link" href="/">홈</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link btn btn-danger text-white px-3" href="/logout">로그아웃</a>
+                    <a class="nav-link btn btn-danger text-white px-3" th:href="@{/logout}">로그아웃</a>
                 </li>
             </ul>
         </div>
@@ -71,8 +71,8 @@
                 <p class="text-success"><span sec:authentication="authorities"></span></p>
             </div>
 
-            <a href="/" class="btn btn-primary w-100">홈으로</a>
-            <a href="/logout" class="btn btn-logout w-100 mt-2">로그아웃</a>
+            <a th:href="@{/}" class="btn btn-primary w-100">홈으로</a>
+            <a th:href="@{/logout}" class="btn btn-logout w-100 mt-2">로그아웃</a>
         </div>
     </div>
 </div>
