@@ -4,13 +4,15 @@
       layout:decorate="layout.html">
 
 <head>
-    <link rel="stylesheet" href="/css/product/product.css">
+    <link rel="stylesheet" th:href="@{/css/product/product.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
+    <script th:src="@{https://cdn.jsdelivr.net/npm/sweetalert2@11}"></script>
     <script th:inline="javascript">
-        const storeId = /*[[${storeId}]]*/ 'defaultStoreId';  // Thymeleaf에서 전달받은 storeId 사용
-        const channelKey = /*[[${channelKey}]]*/ 'defaultChannelKey';  // Thymeleaf에서 전달받은 channelKey 사용
+        const storeId = /*[[${storeId}]]*/ 'defaultStoreId';
+        const channelKey = /*[[${channelKey}]]*/ 'defaultChannelKey';
     </script>
-    <script defer src="/js/product/payment.js"></script>
-    <script src="https://cdn.portone.io/v2/browser-sdk.js" async defer></script>
+    <script defer th:src="@{/js/product/payment.js}"></script>
+    <script th:src="@{https://cdn.portone.io/v2/browser-sdk.js}" async defer></script>
 </head>
 
 <div layout:fragment="content">
@@ -43,7 +45,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 </html>
