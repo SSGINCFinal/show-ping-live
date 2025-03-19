@@ -506,7 +506,7 @@ th {
 }
 
 .status.complete {
-    background-color: #28a745;
+    background-color: #007bff;
     color: #fff;
 }
 
@@ -617,4 +617,83 @@ th {
     width: 20px;
     height: 20px;
     margin-right: 2px;
+}
+
+/* 날짜 검색 바 스타일 */
+#date-search-bar {
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center; /* 수평 가운데 정렬 */
+    border-bottom: 1px solid #ccc;
+}
+
+#date-search-bar label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+#date-search-bar input[type="date"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#date-search-bar button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+#date-search-bar button:hover {
+    background-color: #0056b3;
+}
+
+/* 주문 목록 스타일 */
+#order-list .order-box {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+#order-list .order-box h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+#order-list .order-box p {
+    margin: 5px 0;
+}
+
+#order-list .order-box .toggle-details {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#order-list .order-box .toggle-details:hover {
+    background-color: #007bff;
+}
+
+#order-list .order-box .order-details {
+    margin-top: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+
+#order-list .order-box .order-details ul {
+    list-style: disc;
+    margin-left: 20px;
 }

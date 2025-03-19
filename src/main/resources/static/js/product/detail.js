@@ -222,7 +222,28 @@ function setupEventListeners(productNo) {
     });
 
     directBtn.addEventListener("click", function () {
-        console.log("클릭됨")
+        const token = sessionStorage.getItem("accessToken");
+
+        if (!token) {
+            Swal.fire({
+                title: '로그인 필요',
+                text: '장바구니를 사용하려면 로그인해야 합니다. 로그인 하시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '로그인',
+                cancelButtonText: '취소'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // 사용자가 '로그인' 버튼을 클릭했을 때
+                    window.location.href = "/login";  // 로그인 페이지로 이동
+                } else {
+                    // 사용자가 '취소' 버튼을 클릭했을 때
+                    console.log("사용자가 로그인하지 않기로 했습니다.");
+                }
+            });
+            return;
+        }
+
         const selectedItem = {
             productNo: product.productNo,
             name: product.productName,
