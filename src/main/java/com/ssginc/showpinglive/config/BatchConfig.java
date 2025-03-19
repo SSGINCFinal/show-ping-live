@@ -15,10 +15,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 
+/**
+ * @author dckat
+ * 배치 작업 구성하는 클래스
+ * <p>
+ */
 @Configuration
 @EnableBatchProcessing
 public class BatchConfig {
 
+    /**
+     * 지정된 JobRepository와 Step을 사용하여 HLS 저장 작업(Job)을 생성하는 메서드
+     * @param jobRepository  JobRepository 객체
+     * @param saveHlsStep    HLS 저장 Step
+     * @return 생성된 HLS 저장 Job
+     */
     @Bean
     public Job saveHlsJob(JobRepository jobRepository, Step saveHlsStep) {
         return new JobBuilder("saveHlsJob", jobRepository)
@@ -27,6 +38,14 @@ public class BatchConfig {
                 .build();
     }
 
+    /**
+     * 지정된 JobRepository, PlatformTransactionManager, 그리고 HlsService를 사용하여
+     * HLS 저장 Step을 생성하는 메서드
+     * @param jobRepository  JobRepository 객체
+     * @param tx             PlatformTransactionManager 객체
+     * @param hlsService     HlsService 객체
+     * @return 생성된 HLS 저장 Step
+     */
     @Bean
     public Step saveHlsStep(JobRepository jobRepository,
                             PlatformTransactionManager tx,
@@ -43,6 +62,12 @@ public class BatchConfig {
                 .build();
     }
 
+    /**
+     * 지정된 JobRepository와 Step을 사용하여 자막 생성 작업(Job)을 생성하는 메서드
+     * @param jobRepository       JobRepository 객체
+     * @param createSubtitleStep  자막 생성 Step
+     * @return 생성된 자막 생성 Job
+     */
     @Bean
     public Job createSubtitleJob(JobRepository jobRepository, Step createSubtitleStep) {
         return new JobBuilder("createSubtitleJob", jobRepository)
@@ -51,6 +76,14 @@ public class BatchConfig {
                 .build();
     }
 
+    /**
+     * 지정된 JobRepository, PlatformTransactionManager, 그리고 SubtitleService를 사용하여
+     * 자막 생성 Step을 생성하는 메서드
+     * @param jobRepository    JobRepository 객체
+     * @param tx               PlatformTransactionManager 객체
+     * @param subtitleService  SubtitleService 객체
+     * @return 생성된 자막 생성 Step
+     */
     @Bean
     public Step createSubtitleStep(JobRepository jobRepository,
                                    PlatformTransactionManager tx,

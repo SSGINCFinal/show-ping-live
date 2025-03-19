@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+/**
+ * @author dckat
+ * 배치 작업을 처리하는 컨트롤러 클래스
+ * <p>
+ */
 @RestController
 @RequestMapping("/batch")
 @RequiredArgsConstructor
@@ -22,10 +28,14 @@ public class BatchController {
     private final Job saveHlsJob;
     private final Job createSubtitleJob;
 
+    /**
+     * HLS 저장 작업을 실행하는 컨트롤러 메서드
+     * @param fileRequestDto 파일 요청 DTO (파일 제목 포함)
+     * @return 작업 실행 ID를 포함한 ResponseEntity
+     */
     @PostMapping("/hls/create")
     public ResponseEntity<String> saveHLS(@RequestBody FileRequestDto fileRequestDto) throws Exception {
         String title = fileRequestDto.getFileTitle();
-        System.out.println(title);
         JobParameters params = new JobParametersBuilder()
                 .addString("title", title)
                 .addLong("timestamp", System.currentTimeMillis())
@@ -36,6 +46,11 @@ public class BatchController {
                 .body("saveHlsJob 실행 ID=" + exec.getId());
     }
 
+    /**
+     * 자막 생성 작업을 실행하는 컨트롤러 메서드
+     * @param fileRequestDto 파일 요청 DTO (파일 제목 포함)
+     * @return 작업 실행 ID를 포함한 ResponseEntity
+     */
     @PostMapping("/subtitle/create")
     public ResponseEntity<String> createSubtitle(@RequestBody FileRequestDto fileRequestDto) throws Exception {
         String title = fileRequestDto.getFileTitle();
