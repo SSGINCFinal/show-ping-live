@@ -17,6 +17,7 @@ function loadProductDetail(productNo) {
             const formattedPrice = product.productPrice.toLocaleString('ko-KR'); // 가격 콤마 포맷팅
             const formattedFinalPrice = product.discountedPrice.toLocaleString('ko-KR');
 
+            console.log(product)
 
             // 상품 상세 정보를 동적으로 삽입
             productDetail.innerHTML = `
@@ -25,15 +26,14 @@ function loadProductDetail(productNo) {
 
                     <div class="product-info">
                         <h1>${product.productName}</h1>
+                        <div class="product-price" id="product-sale" style="font-size: 25px">
+                            <p style="text-decoration: line-through">${formattedPrice}원</p>
+                            <p style="color: red">${product.productSale} %</p>
+                        </div>
                         
-                    <div class="product-price" id="product-sale" style="font-size: 25px">
-                        <p style="text-decoration: line-through">${formattedPrice}원</p>
-                        <p style="color: red">${product.productSale} %</p>
-                    </div>
-                    
-                    <div class="product-price-final" id="product-price-final">
-                        <p>${formattedFinalPrice}원</p>
-                    </div>
+                        <div class="product-price-final" id="product-price-final">
+                            <p>${formattedFinalPrice}원</p>
+                        </div>
 
                         <div class="purchase-section">
                             <div class="quantity-control">
@@ -79,11 +79,11 @@ function loadProductReview(productNo) {
             // 리뷰가 비어있는지 확인
             if (reviews.length === 0) {
                 productReviews.innerHTML = `
-        <div class="product-reviews">
-            <h2>상품 리뷰 ☆☆☆☆☆</h2>
-            <p>아직 등록된 리뷰가 없습니다.</p>
-        </div>
-    `;
+                    <div class="product-reviews">
+                        <h2>상품 리뷰 ${generateStars(0)}</h2>
+                        <p>아직 등록된 리뷰가 없습니다.</p>
+                    </div>
+                `;
             } else {
                 // ★ 평균 별점 계산
                 const totalRating = reviews.reduce((sum, review) => sum + review.reviewRating, 0);
@@ -94,29 +94,24 @@ function loadProductReview(productNo) {
 
                 reviews.forEach((review, index) => {
                     reviewListHtml += `
-            <div class="review">
-                <h3>${review.memberName}님 ${'★'.repeat(review.reviewRating)} (${review.reviewRating}/5)</h3>
-                <p>${review.reviewComment}</p>
-                <small>작성일: ${new Date(review.reviewCreateAt).toLocaleDateString()}</small>
-                <div class="review-image">
-<!--                    <img src="/img/${review.reviewUrl}.jpg" alt="리뷰 이미지 ${index + 1}" />-->
-                </div>
-            </div>
-        `;
+                        <div class="review">
+                            <h3>${review.memberName}님 ${generateStars(review.reviewRating)} (${review.reviewRating}/5)</h3>
+                            <p>${review.reviewComment}</p>
+                            <small>작성일: ${new Date(review.reviewCreateAt).toLocaleDateString()}</small>
+                            <div class="review-image">
+                                <!-- <img src="/img/${review.reviewUrl}.jpg" alt="리뷰 이미지 ${index + 1}" /> -->
+                            </div>
+                        </div>
+                    `;
                 });
 
-                // 전체 리뷰 섹션 생성
+                // 전체 리뷰 섹션 생성 (평균 별점에 generateStars 함수 적용)
                 productReviews.innerHTML = `
-        <div class="product-reviews">
-            <h3>상품 리뷰 ${'★'.repeat(Math.round(averageRating))} (${averageRating}/5)</h3>
-<!--            <div class="review-carousel">-->
-
-<!--            </div>-->
-
-            <!-- 동적으로 삽입된 리뷰 목록 -->
-            ${reviewListHtml}
-        </div>
-    `;
+                    <div class="product-reviews">
+                        <h3>상품 리뷰 ${generateStars(parseFloat(averageRating))} (${averageRating}/5)</h3>
+                        ${reviewListHtml}
+                    </div>
+                `;
             }
         })
         .catch(error => {
@@ -227,7 +222,28 @@ function setupEventListeners(productNo) {
     });
 
     directBtn.addEventListener("click", function () {
-        console.log("클릭됨")
+        const token = sessionStorage.getItem("accessToken");
+
+        if (!token) {
+            Swal.fire({
+                title: '로그인 필요',
+                text: '장바구니를 사용하려면 로그인해야 합니다. 로그인 하시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '로그인',
+                cancelButtonText: '취소'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // 사용자가 '로그인' 버튼을 클릭했을 때
+                    window.location.href = "/login";  // 로그인 페이지로 이동
+                } else {
+                    // 사용자가 '취소' 버튼을 클릭했을 때
+                    console.log("사용자가 로그인하지 않기로 했습니다.");
+                }
+            });
+            return;
+        }
+
         const selectedItem = {
             productNo: product.productNo,
             name: product.productName,
@@ -241,4 +257,20 @@ function setupEventListeners(productNo) {
         // 결제 페이지로 이동
         window.location.href = "/payment";
     });
+}
+
+// 별점 생성 함수
+function generateStars(reviewAverage) {
+    let starsHTML = '';
+    for (let i = 0; i < 5; i++) {
+        if (i < Math.floor(reviewAverage)) {
+            starsHTML += '<img src="/img/icon/fillStar.png" alt="filled star" style="width: 20px; height: 20px;">';
+        } else if (i < Math.ceil(reviewAverage) && reviewAverage % 1 !== 0) {
+            starsHTML += '<img src="/img/icon/halfStar.png" alt="empty star" style="width: 20px; height: 20px;">';
+        }
+        else {
+            starsHTML += '<img src="/img/icon/emptyStar.png" alt="empty star" style="width: 20px; height: 20px;">';
+        }
+    }
+    return starsHTML;
 }

@@ -11,7 +11,18 @@
 
 <div layout:fragment="content">
 
-  <!-- 주문 목록 -->
+  <!-- 날짜 검색 바 -->
+  <div id="date-search-bar">
+    <label for="start-date">시작 일자: </label>
+    <input type="date" id="start-date" />
+
+    <label for="end-date">종료 일자: </label>
+    <input type="date" id="end-date" />
+
+    <button id="search-button">검색</button>
+  </div>
+
+  <!-- 주문 목록 표시 영역 -->
   <div id="order-list"></div>
 </div>
 
