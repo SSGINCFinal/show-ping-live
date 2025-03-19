@@ -17,12 +17,12 @@ function addWatch(streamNo) {
 }
 
 // 자막을 불러오는 메서드
-function fetchSubtitle(streamNo) {
+function fetchSubtitle(title) {
     // 최초에는 자막모드를 비활성화
     track.mode = "disabled";
 
     // axios 활용 자막정보 가져오기
-    axios.get(`/stream/subtitle/${streamNo}`)
+    axios.get(`/stream/subtitle/${title}.json`)
         .then(response => response.data)
         .then(data => {
             // segment 별로 TextTrack 추가
@@ -44,10 +44,10 @@ function msToSeconds(ms) {
     return ms / 1000;
 }
 
-async function streamVideo(streamNo) {
+async function streamVideo(title) {
     if (Hls.isSupported()) {
         var hls = new Hls();
-        hls.loadSource(`/hls/v2/${streamNo}`);
+        hls.loadSource(`/hls/v2/flux/${title}.m3u8`);
         hls.attachMedia(videoElement);
     }
     else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {

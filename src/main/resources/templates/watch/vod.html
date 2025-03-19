@@ -9,9 +9,10 @@
   <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function () {
       let streamNo = [[${vodDto.streamNo}]];
+      let title = 'stream(' + streamNo + ')'
       addWatch(streamNo);
-      fetchSubtitle(streamNo);
-      streamVideo(streamNo);
+      fetchSubtitle(title);
+      streamVideo(title);
     });
   </script>
 
