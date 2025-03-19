@@ -7,6 +7,7 @@ import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.service.AuthService;
 import com.ssginc.showpinglive.service.RefreshTokenService;
+import com.ssginc.showpinglive.util.EncryptionUtil;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -39,11 +40,11 @@ public class AuthServiceImpl implements AuthService {
     private final GoogleAuthenticator googleAuthenticator;
 
     /**
-     * ✅ 로그인 처리 메서드 (컨트롤러에서 호출)
+     * 로그인 처리 메서드 (컨트롤러에서 호출)
      */
     @Override
     public ResponseEntity<?> login(Member member, HttpServletResponse response) {
-        System.out.println("📢 로그인 요청: " + member.getMemberId());
+        System.out.println("로그인 요청: " + member.getMemberId());
 
         String memberId = member.getMemberId();
         String memberPassword = member.getMemberPassword();
@@ -54,52 +55,54 @@ public class AuthServiceImpl implements AuthService {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(memberId, memberPassword));
         } catch (BadCredentialsException e) {
-            System.out.println("❌ 로그인 실패: 잘못된 ID 또는 비밀번호");
+            System.out.println("로그인 실패: 잘못된 ID 또는 비밀번호");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "아이디 또는 비밀번호가 올바르지 않습니다."));
         }
 
-        // ✅ SecurityContext에 사용자 정보 저장 (중요)
+        // SecurityContext에 사용자 정보 저장 (중요)
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("✅ SecurityContext에 사용자 설정 완료: " + authentication.getName());
+        System.out.println("SecurityContext에 사용자 설정 완료: " + authentication.getName());
 
         // 사용자 정보 조회
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         if (userDetails == null) {
-            System.out.println("❌ 로그인 실패: 사용자 정보 없음");
+            System.out.println("로그인 실패: 사용자 정보 없음");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "사용자 정보를 찾을 수 없습니다."));
         }
 
         // 역할(Role) 가져오기
         String role = userDetails.getAuthorities().isEmpty() ? "ROLE_USER" : userDetails.getAuthorities().iterator().next().getAuthority();
 
-        // ✅ 관리자(`ROLE_ADMIN`)이면 2차 인증 필요
+        // 관리자(`ROLE_ADMIN`)이면 2차 인증 필요
         if ("ROLE_ADMIN".equals(role)) {
             System.out.println("🔹 관리자 계정 로그인 → 2FA 필요");
 
-            // ✅ JWT 발급 (이 단계에서는 2FA 미완료 상태)
+            // JWT 발급 (이 단계에서는 2FA 미완료 상태)
             String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), role);
             String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
             refreshTokenService.saveRefreshToken(memberId, refreshToken);
 
-            System.out.println("✅ 생성된 JWT Access Token: " + accessToken);
-            System.out.println("✅ 생성된 JWT Refresh Token: " + refreshToken);
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            System.out.println("생성된 JWT Access Token: " + accessToken);
+            System.out.println("생성된 JWT Refresh Token: " + refreshToken);
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
             return ResponseEntity.ok(Map.of(
-                    "status", "2FA_REQUIRED",  // ✅ 프론트엔드에서 OTP 입력 요청
-                    "accessToken", accessToken, // ✅ 2FA 후 최종 사용
-                    "refreshToken", refreshToken // ✅ Redis 저장
+                    "status", "2FA_REQUIRED",  // 프론트엔드에서 OTP 입력 요청
+                    "accessToken", accessToken, // 2FA 후 최종 사용
+                    "refreshToken", refreshToken // Redis 저장
             ));
         }
 
-        // ✅ 일반 사용자(`ROLE_USER`)는 2FA 없이 바로 로그인 성공
-        System.out.println("✅ 일반 사용자 로그인 성공!");
+        // 일반 사용자(`ROLE_USER`)는 2FA 없이 바로 로그인 성공
+        System.out.println("일반 사용자 로그인 성공!");
 
         String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), role);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
 
         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println("✅ 생성된 JWT Access Token: " + accessToken);
-        System.out.println("✅ 생성된 JWT Refresh Token: " + refreshToken);
+        System.out.println("생성된 JWT Access Token: " + accessToken);
+        System.out.println("생성된 JWT Refresh Token: " + refreshToken);
         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
         refreshTokenService.saveRefreshToken(memberId, refreshToken);
@@ -185,40 +188,50 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + memberId));
     }
 
-    @Override
-    public ResponseEntity<Map<String, String>> verifyTOTP(String memberId, int totpCode) {
-        Member member = memberRepository.findByMemberId(memberId).orElse(null);
+    public ResponseEntity<Map<String, String>> verifyTOTP(String adminId, int totpCode) {
+        try {
+            Member admin = memberRepository.findByMemberId(adminId).orElse(null);
+            if (admin == null || admin.getOtpSecretKey() == null) {
+                return ResponseEntity.status(400).body(Map.of("status", "ERROR", "message", "Admin not found or TOTP not set"));
+            }
 
-        if (member == null) {
-            System.out.println("❌ 회원을 찾을 수 없음!");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "사용자를 찾을 수 없습니다."));
-        }
+            // ✅ OTP Secret Key 복호화
+            String decryptedSecretKey = EncryptionUtil.decrypt(admin.getOtpSecretKey());
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            System.out.println("복호화된 OTP 키: " + decryptedSecretKey);
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
-        // ✅ 일반 사용자(`ROLE_USER`)는 2FA 검증 없이 바로 로그인 성공 처리
-        if (!"ROLE_ADMIN".equals(member.getMemberRole().name())) {
-            return ResponseEntity.ok(Map.of("status", "LOGIN_SUCCESS"));
-        }
+            // ✅ GoogleAuthenticator를 사용하여 OTP 검증
+            boolean isCodeValid = googleAuthenticator.authorize(decryptedSecretKey, totpCode);
 
-        // ✅ OTP 검증
-        boolean isTotpValid = googleAuthenticator.authorize(member.getOtpSecretKey(), totpCode);
-        if (isTotpValid) {
-            System.out.println("✅ 관리자 2차 인증 성공!");
-            return ResponseEntity.ok(Map.of("status", "LOGIN_SUCCESS"));
-        } else {
-            System.out.println("❌ TOTP 인증 실패!");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "TOTP_FAILED"));
+            if (isCodeValid) {
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                System.out.println("OTP 인증 성공!");
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                return ResponseEntity.ok(Map.of("status", "LOGIN_SUCCESS"));
+            } else {
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                System.out.println("OTP 인증 실패!");
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                return ResponseEntity.status(401).body(Map.of("status", "ERROR", "message", "Invalid OTP code"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("[SERVER ERROR] OTP 검증 중 오류 발생");
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("status", "ERROR", "message", "서버 오류 발생: " + e.getMessage()));
         }
     }
 
     /**
-     * ✅ 사용자 비밀번호 검증 메서드
+     * 사용자 비밀번호 검증 메서드
      */
     @Override
     public boolean verifyPassword(String memberId, String password) {
         Optional<Member> optionalMember = memberRepository.findByMemberId(memberId);
 
         if (optionalMember.isEmpty()) {
-            System.out.println("❌ 사용자 없음: " + memberId);
+            System.out.println("사용자 없음: " + memberId);
             return false;
         }
 
@@ -226,9 +239,9 @@ public class AuthServiceImpl implements AuthService {
         boolean isMatch = passwordEncoder.matches(password, member.getMemberPassword());
 
         if (isMatch) {
-            System.out.println("✅ 비밀번호 일치! 로그인 가능: " + memberId);
+            System.out.println("비밀번호 일치! 로그인 가능: " + memberId);
         } else {
-            System.out.println("❌ 비밀번호 불일치: " + memberId);
+            System.out.println("비밀번호 불일치: " + memberId);
         }
 
         return isMatch;

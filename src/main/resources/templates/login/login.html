@@ -28,7 +28,10 @@
     <!-- 2FA (TOTP) 입력 폼 (초기 상태: 숨김) -->
     <div id="totp-form" style="display: none;">
         <h2>2단계 인증</h2>
-        <p>Google Authenticator 앱에서 생성된 6자리 코드를 입력하세요.</p>
+        <p>Google Authenticator 앱에서 스캔한 후, 생성된 6자리 코드를 입력하세요.</p>
+
+        <img id="qrCodeImage" src="" alt="QR Code" width="250px" height="250px">
+
         <input type="text" id="totpCode" placeholder="6자리 코드 입력" required>
         <button type="button" onclick="verifyTOTP(event)">인증</button>
     </div>

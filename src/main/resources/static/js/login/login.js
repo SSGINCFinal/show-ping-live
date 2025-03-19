@@ -30,6 +30,25 @@ function naverLogin() {
     window.location.href = "/oauth/naver";
 }
 
+// QR 코드 가져오는 함수 추가 (에러 해결)
+async function fetchQrCode(adminId) {
+    try {
+        const response = await axios.get(`/api/admin/totp-setup/${adminId}`);
+        if (response.data.status === "SUCCESS") {
+            const qrCodeUrl = response.data.qrCodeUrl;
+
+            // ✅ QR 코드 이미지 업데이트
+            document.getElementById("qrCodeImage").src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrCodeUrl)}`;
+            document.getElementById("totp-form").style.display = "block"; // QR 코드 폼 표시
+        } else {
+            alert("QR 코드 불러오기 실패: " + response.data.message);
+        }
+    } catch (error) {
+        console.error("QR 코드 로드 오류:", error);
+        alert("QR 코드 로드 중 오류 발생!")
+    }
+}
+
 async function login(event) {  // event 파라미터 추가
     event.preventDefault();
 
@@ -51,11 +70,11 @@ async function login(event) {  // event 파라미터 추가
             console.log("2FA 인증이 필요합니다! TOTP 입력창을 표시합니다.");
             sessionStorage.setItem("accessToken", response.data.accessToken);
             sessionStorage.setItem("memberId", memberId); // 사용자 ID 저장 (TOTP 검증에 필요)
+            fetchQrCode(memberId); // QR 코드 불러오기
             document.querySelector(".login-form").style.display = "none";
             document.getElementById("totp-form").style.display = "block";
         } else if (response.data.status === "LOGIN_SUCCESS") {
-            console.log("일반 사용자 로그인 성공!");
-
+            console.log("로그인 성공!");
             // Access Token 저장
             if (response.data.accessToken) {
                 sessionStorage.setItem("accessToken", response.data.accessToken);

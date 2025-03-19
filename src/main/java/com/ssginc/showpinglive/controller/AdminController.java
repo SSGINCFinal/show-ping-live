@@ -6,6 +6,9 @@ import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.service.AuthService;
 import com.ssginc.showpinglive.service.MemberService;
 import com.ssginc.showpinglive.service.RefreshTokenService;
+import com.ssginc.showpinglive.util.EncryptionUtil;
+import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
+import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,16 +31,36 @@ public class AdminController {
      */
     @GetMapping("/totp-setup/{adminId}")
     public ResponseEntity<Map<String, String>> getTotpSetup(@PathVariable String adminId) {
-        Member admin = memberRepository.findByMemberId(adminId).orElse(null);
-        if (admin == null || admin.getOtpSecretKey() == null) {
-            return ResponseEntity.status(400).body(Map.of("status", "ERROR", "message", "Admin not found or TOTP not set"));
-        }
+        try {
+            Member admin = memberRepository.findByMemberId(adminId).orElse(null);
+            if (admin == null) {
+                System.out.println("❌ [ERROR] 관리자 계정이 존재하지 않음: " + adminId);
+                return ResponseEntity.status(400).body(Map.of("status", "ERROR", "message", "Admin not found"));
+            }
 
-        // Secret Key를 반환하여 사용자가 직접 입력 가능하도록 설정
-        return ResponseEntity.ok(Map.of(
-                "status", "SUCCESS",
-                "secretKey", admin.getOtpSecretKey() // ✅ QR 코드 대신 Secret Key 반환
-        ));
+            if (admin.getOtpSecretKey() == null) {
+                System.out.println("❌ [ERROR] 관리자 OTP 키가 설정되지 않음: " + adminId);
+                return ResponseEntity.status(400).body(Map.of("status", "ERROR", "message", "TOTP not set"));
+            }
+
+            // ✅ OTP Secret Key 복호화
+            String decryptedSecretKey = EncryptionUtil.decrypt(admin.getOtpSecretKey());
+            System.out.println("🔑 복호화된 OTP 키: " + decryptedSecretKey);
+
+            String issuer = "ShowPing";
+            String qrCodeUrl = "otpauth://totp/" + issuer + ":" + admin.getMemberId() +
+                    "?secret=" + decryptedSecretKey + "&issuer=" + issuer;
+            System.out.println("✅ QR Code URL 생성 완료: " + qrCodeUrl);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "SUCCESS",
+                    "qrCodeUrl", qrCodeUrl
+            ));
+        } catch (Exception e) {
+            System.out.println("❌ [SERVER ERROR] QR 코드 생성 중 오류 발생");
+            e.printStackTrace(); // ✅ 콘솔에 전체 에러 메시지 출력
+            return ResponseEntity.status(500).body(Map.of("status", "ERROR", "message", "서버 오류 발생: " + e.getMessage()));
+        }
     }
 
     /**
