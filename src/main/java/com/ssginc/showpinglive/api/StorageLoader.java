@@ -61,12 +61,9 @@ public class StorageLoader {
      * @return 자막 json 파일
      */
     public Resource getSubtitle(String fileName) {
-        try {
-            S3Object s3Object = amazonS3Client.getObject(new GetObjectRequest(bucketName, fileName));
-            return new InputStreamResource(s3Object.getObjectContent());
-        } catch (AmazonS3Exception e) {
-            throw new RuntimeException("Amazon 서비스 예외 발생: " + e.getMessage(), e);
-        }
+        String remoteKey = "text/" + fileName;
+        S3Object s3Object = amazonS3Client.getObject(new GetObjectRequest(bucketName, remoteKey));
+        return new InputStreamResource(s3Object.getObjectContent());
     }
 
     /**
