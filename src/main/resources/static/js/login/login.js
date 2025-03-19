@@ -92,10 +92,6 @@ function kakaoLogin() {
     window.location.href = "/oauth/kakao";
 }
 
-function naverLogin() {
-    window.location.href = "/oauth/naver";
-}
-
 // QR 코드 가져오는 함수 추가 (에러 해결)
 async function fetchQrCode(adminId) {
     try {
