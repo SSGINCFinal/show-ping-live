@@ -28,19 +28,15 @@
     <!-- 2FA (TOTP) 입력 폼 (초기 상태: 숨김) -->
     <div id="totp-form" style="display: none;">
         <h2>2단계 인증</h2>
-        <p>Google Authenticator 앱에서 스캔한 후, 생성된 6자리 코드를 입력하세요.</p>
+        <p>아래 QR 코드를 Google Authenticator로 스캔한 후, 생성된 6자리 코드를 입력하세요.</p>
 
-        <img id="qrCodeImage" src="" alt="QR Code" width="250px" height="250px">
+        <img id="qrCodeImage" src="" alt="QR Code" width="200px" height="200px">
 
         <input type="text" id="totpCode" placeholder="6자리 코드 입력" required>
         <button type="button" onclick="verifyTOTP(event)">인증</button>
     </div>
 
     <div class="social-login">
-        <button class="naver-login" onclick="naverLogin()">
-            <img src="/img/naver.png" alt="네이버 로고" class="social-icon">
-            네이버 로그인
-        </button>
         <button class="kakao-login" onclick="kakaoLogin()">
             <img src="/img/kakao.png" alt="카카오 로고" class="social-icon">
             카카오 로그인

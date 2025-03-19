@@ -17,6 +17,13 @@ window.onload = function () {
             }
         });
     }
+
+    // ✅ 뒤로 가기 방지: 2FA 중 뒤로 가기를 누르면 로그인 페이지로 이동
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = function () {
+        alert("2차 인증이 완료될 때까지 이 페이지를 벗어날 수 없습니다.");
+        window.location.href = "/login";
+    };
 };
 
 function kakaoLogin() {
