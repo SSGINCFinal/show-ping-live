@@ -114,7 +114,7 @@ public class StreamServiceImpl implements StreamService {
         String filePath = VIDEO_PATH + title;
         File file = new File(filePath);
         String fileName = file.getName();
-        return storageLoader.uploadFile(file, fileName);
+        return storageLoader.uploadMp4File(file, fileName);
     }
 
     /**

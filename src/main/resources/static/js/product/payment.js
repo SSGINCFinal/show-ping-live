@@ -116,11 +116,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 customer: {
                     name,
                     email,
-                    phone,
-                    address
+                    phone
                 },
                 customData: {
-                    userInfo: { name, phone, email, address },
+                    userInfo: { name, phone, email },
                 },
             });
 

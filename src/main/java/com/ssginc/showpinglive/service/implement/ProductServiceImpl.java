@@ -25,28 +25,49 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     public Page<ProductDto> getProductsByCategory(Long categoryNo, Pageable pageable) {
-        Page<Product> productPage = productRepository.findByCategoryCategoryNo(categoryNo, pageable);
+        // 상품 목록과 해당 상품의 평균 리뷰 평점 및 리뷰 개수를 가져오는 쿼리 호출
+        Page<Object[]> productPage = productRepository.findByCategoryCategoryNo(categoryNo, pageable);
 
         List<ProductDto> productDtoList = productPage.getContent().stream()
-                .map(product -> new ProductDto(
-                        product.getProductNo(),
-                        product.getProductName(),
-                        product.getProductPrice(),
-                        product.getProductQuantity(),
-                        product.getProductImg(),
-                        product.getProductDescript(),
-                        product.getProductSale(),
-                        product.getProductPrice() - (product.getProductPrice() * product.getProductSale() / 100)
-                ))
+                .map(productData -> {
+                    Product product = (Product) productData[0]; // 첫 번째 요소는 Product 객체
+                    Double reviewAverage = (Double) productData[1]; // 두 번째 요소는 평균 리뷰 평점
+                    Long reviewCount = (Long) productData[2]; // 세 번째 요소는 리뷰 개수
+
+                    return new ProductDto(
+                            product.getProductNo(),
+                            product.getProductName(),
+                            product.getProductPrice(),
+                            product.getProductQuantity(),
+                            product.getProductImg(),
+                            product.getProductDescript(),
+                            product.getProductSale(),
+                            product.getProductPrice() - (product.getProductPrice() * product.getProductSale() / 100),
+                            reviewCount,
+                            reviewAverage != null ? reviewAverage : 0.0
+                    );
+                })
                 .collect(Collectors.toList());
 
         return new PageImpl<>(productDtoList, pageable, productPage.getTotalElements());
     }
 
+    // 상품 상세 조회 (ID로)
+    @Override
     public ProductDto getProductById(Long productId) {
+        // 상품 ID로 해당 상품을 조회
         Optional<Product> productOpt = productRepository.findById(productId);
         if (productOpt.isPresent()) {
             Product product = productOpt.get();
+            // 평균 별점 계산
+            Double reviewAverage = product.getReviews().stream()
+                    .mapToDouble(review -> review.getReviewRating())
+                    .average()
+                    .orElse(0.0);  // 리뷰가 없으면 0.0으로 설정
+
+            // 리뷰 개수 계산
+            Long reviewCount = (long) product.getReviews().size();
+
             return new ProductDto(
                     product.getProductNo(),
                     product.getProductName(),
@@ -55,7 +76,9 @@ public class ProductServiceImpl implements ProductService {
                     product.getProductImg(),
                     product.getProductDescript(),
                     product.getProductSale(),
-                    product.getProductPrice() - (product.getProductPrice() * product.getProductSale() / 100)
+                    product.getProductPrice() - (product.getProductPrice() * product.getProductSale() / 100),
+                    reviewCount,
+                    reviewAverage
             );
         } else {
             throw new RuntimeException("상품을 찾을 수 없습니다: " + productId);

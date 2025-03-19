@@ -5,10 +5,10 @@ import com.ssginc.showpinglive.dto.response.ReviewDto;
 import com.ssginc.showpinglive.service.ProductService;
 import com.ssginc.showpinglive.service.implement.ReviewServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,10 +24,11 @@ public class ProductController {
     @GetMapping("/{categoryNo}")
     public Page<ProductDto> getProductsByCategory(
             @PathVariable Long categoryNo,
-            @RequestParam(defaultValue = "0") int page, // 현재 페이지 번호
-            @RequestParam(defaultValue = "8") int size // 한 번에 가져올 상품 개수
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String sort) {
+
+        Pageable pageable = PageRequest.of(page, size, getSort(sort)); // sort에 따른 정렬 방식 설정
         return productService.getProductsByCategory(categoryNo, pageable);
     }
 
@@ -39,6 +40,25 @@ public class ProductController {
     @GetMapping("/reviews/{productNo}")
     public List<ReviewDto> getProductReviews(@PathVariable Long productNo) {
         return reviewService.getReviewsByProductNo(productNo);
+    }
+
+    private Sort getSort(String sortOption) {
+        switch (sortOption) {
+            case "quantity-desc":
+                return Sort.by(Sort.Order.desc("productQuantity"));
+            case "quantity-asc":
+                return Sort.by(Sort.Order.asc("productQuantity"));
+            case "price-desc":
+                return Sort.by(Sort.Order.desc("productPrice"));
+            case "price-asc":
+                return Sort.by(Sort.Order.asc("productPrice"));
+            case "sale-desc":
+                return Sort.by(Sort.Order.desc("productSale"));
+            case "sale-asc":
+                return Sort.by(Sort.Order.asc("productSale"));
+            default:
+                return Sort.by(Sort.Order.desc("productQuantity"));
+        }
     }
 
 }
