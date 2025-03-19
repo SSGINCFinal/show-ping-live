@@ -57,17 +57,6 @@ public class HlsController {
     }
 
     /**
-     * 영상 제목과 segment 번호로 TS 파일을 받아오는 컨트롤러 메서드
-     * @param title 영상 제목
-     * @return TS 파일이 있는 응답객체 (확장자: ts)
-     */
-    @PostMapping(value = "/v2/create")
-    public ResponseEntity<?> saveHLS(@RequestBody String title) throws IOException, InterruptedException {
-        String result = hlsService.saveHLS(title);
-        return ResponseEntity.ok(result);
-    }
-
-    /**
      * 영상 제목과 segment 번호로 HLS 파일을 NCP Storage에서 받아오는 컨트롤러 메서드
      * @param title 영상 제목
      * @return TS 파일이 있는 응답객체 (확장자: ts)

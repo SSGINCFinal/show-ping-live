@@ -120,18 +120,6 @@ public class StreamController {
     }
 
     /**
-     * 영상 제목으로 자막 생성하는 컨트롤러 메서드
-     * @param title 영상 제목
-     * @return 자막 생성 여부 응답 객체
-     */
-    @PostMapping("/subtitle/create")
-    public ResponseEntity<?> createSubtitle(@RequestBody String title) {
-        subtitleService.createSubtitle(title);
-        return ResponseEntity.ok()
-                .body("자막 생성 성공");
-    }
-
-    /**
      * 파일 제목으로 자막 정보 파일을 가져오는 메서드
      * @param title 파일 제목
      * @return 자막 생성 여부 응답 객체
