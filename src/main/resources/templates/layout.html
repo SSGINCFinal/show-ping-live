@@ -3,12 +3,12 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
-    <title>공통 레이아웃</title>
+    <title>ShowPing</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script defer src="/js/scripts.js"></script>
+    <script defer th:src="@{/js/scripts.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <script defer src="/js/login/logout.js"></script>
+    <script defer th:src="@{/js/login/logout.js}"></script>
 </head>
 <body>
 <!-- 공통 헤더 -->
@@ -41,28 +41,37 @@
                 <li class="menu-item dropdown">
                     <a th:href="@{/watch/history}">시청 내역</a>
                 </li>
-                <li class="menu-item dropdown">
-                    <a href="/success">주문 내역</a>
-                </li>
             </ul>
         </nav>
 
         <!-- 검색 및 사용자 메뉴 -->
         <div class="navbar-right">
-            <div class="cart-bar">
-                <a href="/cart">
-                    <img src="/img/icon/cart.png" style="height: 30px">
+            <div class="icon-bar">
+                <a th:href="@{/cart}">
+                    <img th:src="@{/img/icon/cart.png}" style="height: 30px">
                 </a>
             </div>
 
-            <!-- 로그인 상태 -->
-            <div id="user-menu" class="user-menu" style="display: none;">
-                <span id="user-greeting"></span>
-                <button class="logout-button">로그아웃</button>
+            <div class="icon-bar">
+                <a th:href="@{/success}">
+                    <img th:src="@{img/icon/user.png}" style="height: 30px">
+                </a>
             </div>
 
-            <!-- 비로그인 상태 -->
-            <a href="/login" id="login-button" class="login-button">로그인</a>
+            <div class="icon-bar">
+                <div id="user-menu" class="user-menu" style="display: none;">
+                    <button class="logout-button" id="user-greeting">
+                        <img th:src="@{img/icon/logout.png}" style="height: 50px">
+                    </button>
+                </div>
+            </div>
+
+            <div class="icon-bar">
+                <a th:href="@{/login}" id="login-button">
+                    <img th:src="@{/img/icon/login.png}" style="height: 50px">
+                </a>
+            </div>
+
         </div>
     </div>
 </header>
@@ -79,24 +88,28 @@
     <div class="footer-container">
         <!-- 회사 정보 섹션 -->
         <div class="footer-column">
-            <p><strong>주식회사 쇼핑라이브</strong></p>
-            <p>서울 강남구 삼성동 151-7 SAC아트센터</p>
+            <p><strong>주식회사 신세계라이브쇼핑</strong></p>
+            <p>대표이사: 이석구 | 서울특별시 성동구 야차산로 17, 10층(성수동1가)</p>
+            <p>사업자등록번호: 502-86-28395</p>
+            <p>통신판매업 신고번호: 2015-서울성동-01053호</p>
             <p>호스팅 서비스: (주)신세계 아이앤씨</p>
         </div>
 
         <!-- 고객센터 섹션 -->
         <div class="footer-column">
             <p><strong>고객센터</strong></p>
-            <p>0000-0000 (운영시간 365일 24시간)</p>
-            <p><a href="showPingAdmin@showping.duckdns.com">showPingAdmin@showping.duckdns.com</a></p>
+            <p>1800-0850 (운영시간 365일 24시간)</p>
+            <p><a href="mailto:csr_tv@shinsegae.com">csr_tv@shinsegae.com</a></p>
         </div>
+
     </div>
 
     <!-- 하단 섹션 -->
     <div class="footer-bottom">
-        <p>COPYRIGHT© SHOWPING LIVE SHOPPING INC. ALL RIGHTS RESERVED.</p>
+        <p>COPYRIGHT© SHINSEGAE LIVE SHOPPING INC. ALL RIGHTS RESERVED.</p>
     </div>
 </footer>
+
 
 
 </body>
