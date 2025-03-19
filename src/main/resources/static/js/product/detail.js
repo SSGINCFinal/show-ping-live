@@ -5,10 +5,12 @@ document.addEventListener("DOMContentLoaded", function () {
     loadProductReview(productNo);
 });
 
+let product = null
+
 function loadProductDetail(productNo) {
     axios.get(`/api/products/detail/${productNo}`)
         .then(response => {
-            const product = response.data;
+            product = response.data;
             const productSale = product.productSale;  // productSale 값을 가져옵니다.
             const productDetail = document.getElementById('product-detail-page');
 
@@ -41,7 +43,7 @@ function loadProductDetail(productNo) {
                             </div>
                             <div class="purchase-buttons">
                                 <button id="add-to-cart-btn">장바구니</button>
-                                <button>바로 결제</button>
+                                <button id="direct-btn">바로 결제</button>
                             </div>
                         </div>
                     </div>
@@ -127,6 +129,7 @@ function setupEventListeners(productNo) {
     const decreaseBtn = document.getElementById("decrease-btn");
     const increaseBtn = document.getElementById("increase-btn");
     const addToCartBtn = document.getElementById("add-to-cart-btn");
+    const directBtn = document.getElementById("direct-btn");
 
     let quantity = 1;  // 기본 수량
 
@@ -151,11 +154,23 @@ function setupEventListeners(productNo) {
             const token = sessionStorage.getItem("accessToken");
 
             if (!token) {
-                // 로그인하지 않은 경우 로그인 페이지로 리디렉션
-                if (confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?")) {
-                    window.location.href = "/login";
-                }
-                return; // 로그인하지 않았다면 함수 종료
+                Swal.fire({
+                    title: '로그인 필요',
+                    text: '장바구니를 사용하려면 로그인해야 합니다. 로그인 하시겠습니까?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '로그인',
+                    cancelButtonText: '취소'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // 사용자가 '로그인' 버튼을 클릭했을 때
+                        window.location.href = "/login";  // 로그인 페이지로 이동
+                    } else {
+                        // 사용자가 '취소' 버튼을 클릭했을 때
+                        console.log("사용자가 로그인하지 않기로 했습니다.");
+                    }
+                });
+                return;
             }
 
             // JWT 토큰을 Authorization 헤더에 포함시켜 API 호출
@@ -182,9 +197,23 @@ function setupEventListeners(productNo) {
             })
                 .then(response => {
                     quantityInput.value = 1;  // 수량 초기화
-                    if (confirm("장바구니에 상품이 추가되었습니다. 장바구니로 이동하시겠습니까?")) {
-                        window.location.href = "/cart";  // 장바구니 페이지로 이동
-                    }
+                    Swal.fire({
+                        title: '장바구니에 추가되었습니다.',
+                        text: '장바구니로 이동하시겠습니까?',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: '이동',
+                        cancelButtonText: '취소'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // 사용자가 '이동' 버튼을 클릭했을 때
+                            window.location.href = "/cart";  // 장바구니 페이지로 이동
+                        } else {
+                            // 사용자가 '취소' 버튼을 클릭했을 때
+                            console.log("사용자가 상품페이지에 머물기로 했습니다.");
+                        }
+                    });
+                    return;
                 })
                 .catch(error => {
                     alert("장바구니 추가 실패: " + (error.response?.data || "알 수 없는 오류"));
@@ -195,5 +224,21 @@ function setupEventListeners(productNo) {
                 window.location.href = "/login";  // 로그인 페이지로 이동
             }
         }
+    });
+
+    directBtn.addEventListener("click", function () {
+        console.log("클릭됨")
+        const selectedItem = {
+            productNo: product.productNo,
+            name: product.productName,
+            quantity: quantity,
+            totalPrice: product.discountedPrice * quantity
+        };
+
+        // sessionStorage에 상품 정보 저장
+        sessionStorage.setItem("selectedItems", JSON.stringify([selectedItem]));
+
+        // 결제 페이지로 이동
+        window.location.href = "/payment";
     });
 }
