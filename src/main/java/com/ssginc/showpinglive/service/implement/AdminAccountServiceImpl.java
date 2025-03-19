@@ -5,6 +5,7 @@ import com.ssginc.showpinglive.entity.MemberRole;
 import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.service.AdminAccountService;
 import com.ssginc.showpinglive.service.MailService;
+import com.ssginc.showpinglive.util.EncryptionUtil;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
@@ -44,6 +45,9 @@ public class AdminAccountServiceImpl implements AdminAccountService {
             GoogleAuthenticatorKey key = googleAuthenticator.createCredentials();
             String secretKey = key.getKey();
 
+            String encryptedSecretKey = EncryptionUtil.encrypt(secretKey);
+
+
             // 관리자 계정 생성
             Member admin = Member.builder()
                     .memberId(adminId)
@@ -53,12 +57,12 @@ public class AdminAccountServiceImpl implements AdminAccountService {
                     .memberRole(MemberRole.ROLE_ADMIN)
                     .memberAddress("Admin Address")
                     .streamKey(UUID.randomUUID().toString()) // 스트림 키 자동 생성
-                    .otpSecretKey(secretKey)
+                    .otpSecretKey(encryptedSecretKey)
                     .build();
 
             memberRepository.save(admin);
             System.out.println("관리자 계정 생성 완료!: " + adminId);
-            System.out.println("관리자 계정 비밀키:" + secretKey);
+            System.out.println("암호화된 OTP Secret Key:" + encryptedSecretKey);
 
             // TOTP 등록 이메일 전송
             sendTOTPRegistrationMail(admin, key);
