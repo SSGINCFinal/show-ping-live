@@ -4,10 +4,10 @@
       layout:decorate="layout.html">
 
 <head>
-    <link rel="stylesheet" href="/css/product/product.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="/js/product/detail.js"></script>
+    <link rel="stylesheet" th:href="@{/css/product/product.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
+    <script th:src="@{https://cdn.jsdelivr.net/npm/sweetalert2@11}"></script>
+    <script defer th:src="@{/js/product/detail.js}"></script>
 </head>
 
 <div layout:fragment="content">

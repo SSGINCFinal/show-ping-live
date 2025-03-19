@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 if (data.memberName) {
-                    document.getElementById("user-greeting").innerText = `${data.memberName} 님`;
                     if (userMenu) userMenu.style.display = "block";
                     if (loginButton) loginButton.style.display = "none";
                 }

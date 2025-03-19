@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     const token = sessionStorage.getItem("accessToken");
 
     if (!token) {
-        console.error("로그인이 필요합니다.");
         window.location.href = "/login"; // 로그인 페이지로 이동
         return; // 토큰이 없으면 함수 종료
     }

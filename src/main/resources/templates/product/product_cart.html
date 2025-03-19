@@ -4,8 +4,8 @@
       layout:decorate="layout.html">
 
 <head>
-    <link rel="stylesheet" href="/css/product/product.css">
-    <script defer src="/js/product/cart.js"></script>
+    <link rel="stylesheet" th:href="@{/css/product/product.css}">
+    <script defer th:src="@{/js/product/cart.js}"></script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -15,7 +15,7 @@
                 <thead>
                 <tr>
                     <th><input type="checkbox" class="product-checkbox-all"></th>
-                    <th>상품명</th>
+                    <th>상품</th>
                     <th>수량</th>
                     <th>가격</th>
                     <th></th>

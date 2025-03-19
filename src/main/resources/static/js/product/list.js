@@ -1,22 +1,40 @@
-let currentPage = 0; // 현재 페이지 번호
-const itemsPerPage = 8; // 한 번에 로드할 상품 개수
-const categoryNo = window.location.pathname.split('/').pop(); // URL에서 categoryNo 추출
+let currentPage = 0;
+const itemsPerPage = 8;
+const categoryNo = window.location.pathname.split('/').pop();
+let sortOption = "quantity-desc"; // 기본 정렬 기준
 
 document.addEventListener("DOMContentLoaded", function () {
     loadProducts();
+    setupSortButtons();
 });
 
-// "더보기" 버튼 클릭 시 추가 상품 요청
 document.getElementById('load-more').addEventListener('click', loadProducts);
 
+// 정렬 버튼 클릭 시
+function setupSortButtons() {
+    const buttons = document.querySelectorAll('.sort-btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            // 클릭된 버튼에 'selected' 클래스를 추가하고 나머지 버튼에서 제거
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+
+            // 정렬 기준 업데이트
+            sortOption = button.id.replace('sort-', ''); // 예: 'price-asc', 'price-desc' 등
+            currentPage = 0;
+            document.getElementById('product-grid').innerHTML = ''; // 기존 상품 리스트 비우기
+            loadProducts();
+        });
+    });
+}
+
 function loadProducts() {
-    axios.get(`/api/products/${categoryNo}?page=${currentPage}&size=${itemsPerPage}`)
+    axios.get(`/api/products/${categoryNo}?page=${currentPage}&size=${itemsPerPage}&sort=${sortOption}`)
         .then(response => {
-            const products = response.data.content; // Page 객체의 content 값 (상품 리스트)
+            const products = response.data.content;
             renderProducts(products);
             currentPage++;
 
-            // 모든 상품이 로드되었으면 '더보기' 버튼 숨김
             if (response.data.last) {
                 document.getElementById('load-more').style.display = 'none';
             } else {
@@ -34,14 +52,13 @@ function renderProducts(products) {
     products.forEach(product => {
         const productDiv = document.createElement('div');
         productDiv.classList.add('product-item');
-        const formattedPrice = product.productPrice.toLocaleString('ko-KR'); // 가격 콤마 포맷팅
+        const formattedPrice = product.productPrice.toLocaleString('ko-KR');
         const formattedFinalPrice = product.discountedPrice.toLocaleString('ko-KR');
         const productSale = product.productSale;
 
-        // productName이 15글자 이상이면 나머지는 '...'으로 처리
         let productName = product.productName;
-        if (productName.length > 30) {
-            productName = productName.substring(0, 30) + '...';
+        if (productName.length > 28) {
+            productName = productName.substring(0, 28) + '...';
         }
 
         productDiv.innerHTML = `
@@ -55,7 +72,6 @@ function renderProducts(products) {
             <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedFinalPrice}원</p>
         `;
 
-        // productSale이 0일 경우 product-sale과 sale 아이콘을 숨기고 product-price-final만 보이기
         if (productSale === 0) {
             productDiv.querySelector(".product-sale").style.display = "none";
             productDiv.querySelector("#product-sale-icon").style.display = "none";
