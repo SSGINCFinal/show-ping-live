@@ -38,14 +38,18 @@ function renderProducts(products) {
         const formattedFinalPrice = product.discountedPrice.toLocaleString('ko-KR');
         const productSale = product.productSale;
 
-        console.log(productSale);
+        // productName이 15글자 이상이면 나머지는 '...'으로 처리
+        let productName = product.productName;
+        if (productName.length > 30) {
+            productName = productName.substring(0, 30) + '...';
+        }
 
         productDiv.innerHTML = `
             <div class="product-img-container">
                 <img id="product-sale-icon" src="/img/icon/sale.png" alt="product-sale" class="sale-icon" style="width: 50px" />
-                <img src="${product.productImg}" alt="${product.productName}" class="product-img" />
+                <img src="${product.productImg}" alt="${productName}" class="product-img" />
             </div>
-            <p class="product-name">${product.productName}</p>
+            <p class="product-name">${productName}</p>
             <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedPrice}원</p>
             <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${product.productSale} %</p>
             <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedFinalPrice}원</p>

@@ -12,7 +12,7 @@
 }
 
 .history-items {
-    width: 80%;
+    width: 90%;
 }
 
 table {
@@ -40,4 +40,20 @@ td {
     border-radius: 6px;
     border: none;
     color: white;
+}
+
+.stream-title {
+    width: 300px;
+}
+
+.product-name {
+    width: 400px;
+}
+
+.product-price {
+    width: 100px;
+}
+
+.watch-time {
+    width: 150px;
 }

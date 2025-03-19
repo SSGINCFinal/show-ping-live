@@ -10,6 +10,6 @@ public interface WatchService {
 
     List<WatchResponseDto> getWatchHistoryByMemberNo(Long memberNo);
 
-    Watch insertWatchHistory(WatchRequestDto watchRequestDto);
+    Watch insertWatchHistory(WatchRequestDto watchRequestDto, Long memberNo);
 
 }

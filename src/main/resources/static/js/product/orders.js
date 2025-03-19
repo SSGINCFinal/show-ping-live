@@ -44,12 +44,26 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // 각 주문을 리스트에 추가
         orders.forEach(order => {
+            let orderStatusText = "";
+            switch (order.ordersStatus) {
+                case "READY":
+                    orderStatusText = "상품 준비 중";  // READY 상태에 대한 한글 표시
+                    break;
+                case "TRANSIT":
+                    orderStatusText = "배송 중";  // TRANSIT 상태에 대한 한글 표시
+                    break;
+                case "COMPLETE":
+                    orderStatusText = "배송 완료";  // COMPLETE 상태에 대한 한글 표시
+                    break;
+                default:
+                    orderStatusText = order.ordersStatus;  // 그 외의 상태는 그대로 출력
+            }
             // 주문 정보 추가
             const orderDiv = document.createElement("div");
             orderDiv.classList.add("order-box");
             orderDiv.innerHTML = `
                 <h3>주문 번호: ${order.ordersNo}</h3>
-                <p><strong>주문 상태:</strong> ${order.ordersStatus}</p>
+                <p><strong>주문 상태:</strong> ${orderStatusText}</p>
                 <p><strong>총 결제 금액:</strong> ${order.ordersTotalPrice.toLocaleString()} 원</p>
                 <p><strong>주문 일시:</strong> ${new Date(order.ordersDate).toLocaleString()}</p>
                 <button class="toggle-details" data-order-no="${order.ordersNo}">상세 보기</button>
@@ -78,7 +92,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const orderDetailResponse = await axios.get(`/api/orders/${orderNo}/details`);
                     const orderDetails = orderDetailResponse.data;
 
-                    console.log(orderDetails)
 
                     const orderItemsList = document.getElementById(`order-items-${orderNo}`);
                     orderItemsList.innerHTML = ""; // 기존 리스트 초기화
