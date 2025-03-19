@@ -16,4 +16,6 @@ public class ProductDto {
     private String productDescript;
     private Integer productSale;
     private Long discountedPrice;
+    private Long reviewCount;
+    private Double reviewAverage;
 }
