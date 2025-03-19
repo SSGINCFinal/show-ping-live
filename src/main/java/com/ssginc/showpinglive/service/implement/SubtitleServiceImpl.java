@@ -54,7 +54,7 @@ public class SubtitleServiceImpl implements SubtitleService {
         }
 
         // 생성된 json 파일을 NCP Storage 업로드
-        storageLoader.uploadSubtitleFile(jsonFile, fileName);
+        storageLoader.uploadSubtitleFile(jsonFile);
         jsonFile.delete();
     }
 

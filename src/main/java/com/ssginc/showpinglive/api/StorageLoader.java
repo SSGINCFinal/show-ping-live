@@ -80,12 +80,9 @@ public class StorageLoader {
     /**
      * 자막 파일을 NCP에 저장하는 메서드
      * @param file     저장할 자막 파일
-     * @param fileName 자막 파일명
-     * @return 업로드된 파일 링크
      */
-    public String uploadSubtitleFile(File file, String fileName) {
+    public void uploadSubtitleFile(File file) {
         String remoteKey = "text/" + file.getName();
         amazonS3Client.putObject(new PutObjectRequest(bucketName, remoteKey, file));
-        return "text/" + fileName + ".json";
     }
 }
