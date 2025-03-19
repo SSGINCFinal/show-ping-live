@@ -19,6 +19,10 @@ document.querySelectorAll('.toggle-password').forEach(button => {
     });
 });
 
+function redirectToHome() {
+    window.location.href = "/";
+}
+
 // 이메일 인증 코드 확인 버튼 이벤트
 document.querySelector('.verify-code-btn').addEventListener('click', function () {
     const email = document.getElementById('email').value.trim();

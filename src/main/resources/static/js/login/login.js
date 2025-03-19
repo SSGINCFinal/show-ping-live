@@ -26,6 +26,65 @@ window.onload = function () {
     };
 };
 
+document.addEventListener("DOMContentLoaded", function () {
+    const logoutButton = document.querySelector(".logout-button");
+    const logo = document.querySelector(".logo");
+    const showPingText = document.querySelector("h1");
+
+    function performLogout() {
+        console.log("로그아웃 요청 실행");
+
+        fetch("/api/auth/logout", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${sessionStorage.getItem("accessToken")}`,
+                "Content-Type": "application/json"
+            },
+        })
+            .then(response => {
+                console.log("로그아웃 요청 완료, 응답 상태 코드:", response.status);
+                if (response.ok) {
+                    sessionStorage.removeItem("accessToken");
+                    sessionStorage.removeItem("refreshToken");
+                    sessionStorage.removeItem("memberId");
+                    console.log("세션 토큰 삭제 완료");
+                    window.location.href = "/"; // 메인 페이지로 이동
+                } else {
+                    console.error("로그아웃 실패: ", response.statusText);
+                }
+            })
+            .catch(error => console.error("로그아웃 오류:", error));
+    }
+
+    if (logoutButton) {
+        console.log("로그아웃 버튼이 활성화됨");
+        logoutButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            performLogout(); // ✅ 로그아웃 실행
+        });
+    } else {
+        console.log("로그아웃 버튼을 찾을 수 없음");
+    }
+
+    // ✅ 로고 클릭 시 로그아웃
+    if (logo) {
+        logo.style.cursor = "pointer";
+        logo.addEventListener("click", function () {
+            console.log("로고 클릭 → 로그아웃 실행");
+            performLogout();
+        });
+    }
+
+    // ✅ ShowPing! 클릭 시 로그아웃
+    if (showPingText) {
+        showPingText.style.cursor = "pointer";
+        showPingText.addEventListener("click", function () {
+            console.log("ShowPing! 클릭 → 로그아웃 실행");
+            performLogout();
+        });
+    }
+});
+
 function kakaoLogin() {
     // 카카오 로그인 페이지로 리다이렉트
     // (백엔드에서 카카오 인증 URL로 다시 리다이렉트 시키거나,
