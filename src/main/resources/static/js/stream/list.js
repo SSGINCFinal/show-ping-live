@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-    loadLive();                 // 단일 라이브 방송 불러오기
+    loadLive();                // 라이브 방송 불러오기
+    loadStandBy(0);            // 준비중 방송 불러오기
     loadVod(0);        // 최초 1페이지의 VOD 목록 불러오기
 });
 
 function loadLive() {
     axios.get('/stream/live')
         .then(response => {
-            console.log(response.data);
             const live = response.data['live'];
             const liveGrid = document.getElementById('live-grid');
             liveGrid.innerHTML = '';
@@ -18,6 +18,7 @@ function loadLive() {
                 liveDiv.classList.add('item');
                 const productPrice = live.productPrice;
                 const discountRate = live.productSale;
+                const streamStatus = live.streamStatus;
                 const streamStartTime = live.streamStartTime;
 
                 const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
@@ -31,11 +32,10 @@ function loadLive() {
                 const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
                 liveDiv.innerHTML = `
-                    <div class="product-img-container">
-                        <img id="product-sale-icon" src="/img/icon/sale.png" alt="product-sale" class="sale-icon" style="width: 50px" />
+                    <div class="stream-img-container">
+                        <img id="live-icon" src="/img/icon/live.png" alt="product-live" class="live-icon" style="width: 50px" />
                         <img src="${live.productImg}" alt="${live.productName}" />
                     </div>
-                    <p id="date">${formattedDate}</p>
                     <p id="title">${live.streamTitle}</p>
                     <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
                     <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${live.productSale} %</p>
@@ -44,12 +44,16 @@ function loadLive() {
 
                 if (discountRate === 0) {
                     liveDiv.querySelector(".product-sale").style.display = "none";
-                    liveDiv.querySelector("#product-sale-icon").style.display = "none";
                     liveDiv.querySelector("#product-sale-percent").style.display = "none";
                 } else {
                     liveDiv.querySelector(".product-sale").style.display = "block";
-                    liveDiv.querySelector("#product-sale-icon").style.display = "block";
                     liveDiv.querySelector("#product-sale-percent").style.display = "block";
+                }
+
+                if (streamStatus === 'ONAIR') {
+                    liveDiv.querySelector("#live-icon").style.display = "block";
+                } else {
+                    liveDiv.querySelector("#live-icon").style.display = "none";
                 }
 
                 // 라이브 클릭 시 시청 및 상세 페이지로 이동
@@ -60,8 +64,63 @@ function loadLive() {
             }
         })
         .catch(error => {
-            console.error("라이브 목록을 불러오는 중 오류 발생:", error);
+            console.error("라이브 목록을 불러오는 중 오류 발생: ", error);
         });
+}
+
+function loadStandBy(pageNo) {
+    axios.get('/stream/standby/list', {
+        params: {
+            pageNo: pageNo
+        }
+    })
+        .then(response => {
+            const pageInfo = response.data['pageInfo'];
+            const standByContent = pageInfo['content'];
+            const liveGrid = document.getElementById('live-grid');
+
+            standByContent.forEach(standBy => {
+                const standByDiv = document.createElement('div');
+                standByDiv.classList.add('item');
+                const productPrice = standBy.productPrice;
+                const discountRate = standBy.productSale;
+                const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
+
+                const formattedOriginPrice = productPrice.toLocaleString('ko-KR');
+                const formattedDiscountedPrice = discountedPrice.toLocaleString('ko-KR');
+
+                standByDiv.innerHTML = `
+                            <div class="stream-img-container">
+                                <img src="${standBy.productImg}" alt="${standBy.productName}" />
+                            </div>
+                            <p id="title">${standBy.streamTitle}</p>
+                            <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
+                            <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${standBy.productSale} %</p>
+                            <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
+                        `;
+
+                if (discountRate === 0) {
+                    standByDiv.querySelector(".product-sale").style.display = "none";
+                    standByDiv.querySelector("#product-sale-percent").style.display = "none";
+                } else {
+                    standByDiv.querySelector(".product-sale").style.display = "block";
+                    standByDiv.querySelector("#product-sale-percent").style.display = "block";
+                }
+
+                // VOD 클릭 시 상세 및 시청 페이지로 이동
+                standByDiv.addEventListener('click', () => {
+
+                });
+
+                liveGrid.appendChild(standByDiv);
+            });
+
+            renderPageContent(pageInfo, 'live-page-container');
+
+        })
+        .catch(error => {
+            console.error("준비중인 라이브 목록을 불러오는 중 오류 발생: ", error);
+        })
 }
 
 function loadVod(pageNo) {
@@ -93,8 +152,7 @@ function loadVod(pageNo) {
                 const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
                 vodDiv.innerHTML = `
-                    <div class="product-img-container">
-                        <img id="product-sale-icon" src="/img/icon/sale.png" alt="product-sale" class="sale-icon" style="width: 50px" />
+                    <div class="stream-img-container">
                         <img src="${vod.productImg}" alt="${vod.productName}" />
                     </div>
                     <p id="date">${formattedDate}</p>
@@ -106,11 +164,9 @@ function loadVod(pageNo) {
 
                 if (discountRate === 0) {
                     vodDiv.querySelector(".product-sale").style.display = "none";
-                    vodDiv.querySelector("#product-sale-icon").style.display = "none";
                     vodDiv.querySelector("#product-sale-percent").style.display = "none";
                 } else {
                     vodDiv.querySelector(".product-sale").style.display = "block";
-                    vodDiv.querySelector("#product-sale-icon").style.display = "block";
                     vodDiv.querySelector("#product-sale-percent").style.display = "block";
                 }
 
@@ -122,25 +178,34 @@ function loadVod(pageNo) {
                 vodGrid.appendChild(vodDiv);
             });
 
-            // 페이지 버튼 영역 생성
-            const pageContainer = document.getElementById('page-container');
-            pageContainer.innerHTML = '';
-            const totalPages = pageInfo['totalPages'];
-            const pageNumber = pageInfo['number'];
-
-            if (pageNumber !== totalPages - 1) {
-                const pageDiv = document.createElement('div');
-                pageDiv.classList.add('page-item');
-                pageDiv.innerHTML = `<button class="load-more">더보기</button>`
-
-                // 페이지 번호 클릭시 해당 페이지의 VOD 목록을 가져옴
-                pageDiv.addEventListener('click', () => {
-                    loadVod(pageNumber + 1);
-                });
-                pageContainer.appendChild(pageDiv);
-            }
+            renderPageContent(pageInfo, 'vod-page-container');
         })
         .catch(error => {
             console.error("VOD 목록을 불러오는 중 오류 발생:", error);
         });
+}
+
+function renderPageContent(pageInfo, containerName) {
+    // 페이지 버튼 영역 생성
+    const pageContainer = document.getElementById(containerName);
+    pageContainer.innerHTML = '';
+    const totalPages = pageInfo['totalPages'];
+    const pageNumber = pageInfo['number'];
+
+    if (pageNumber !== totalPages - 1) {
+        const pageDiv = document.createElement('div');
+        pageDiv.classList.add('page-item');
+        pageDiv.innerHTML = `<button class="load-more">더보기</button>`
+
+        // 페이지 번호 클릭시 해당 페이지의 VOD 목록을 가져옴
+        pageDiv.addEventListener('click', () => {
+            if (containerName === 'vod-page-container') {
+                loadVod(pageNumber + 1);
+            }
+            else if (containerName === 'live-page-container') {
+                loadStandBy(pageNumber + 1);
+            }
+        });
+        pageContainer.appendChild(pageDiv);
+    }
 }
