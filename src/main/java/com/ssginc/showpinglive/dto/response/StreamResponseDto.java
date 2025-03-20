@@ -19,6 +19,7 @@ public class StreamResponseDto {
 
     private Long streamNo;                  // 영상 번호
     private String streamTitle;             // 영상 제목
+    private String streamDescription;       // 영상 설명
     private StreamStatus streamStatus;      // 방송 상태
     private Long categoryNo;                // 카테고리 번호
     private String categoryName;            // 카테고리 이름
