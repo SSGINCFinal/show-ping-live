@@ -109,12 +109,56 @@
     height: 50px;
     font-size: 16px;
     font-weight: bold;
-    color: #007bff; /* 파란색 */
-    background-color: #e3efff;
+    color: black;
+    background-color: white;
     border-radius: 8px;
     border: none;
 }
 
 .load-more:hover {
-    color: #2B4C94; /* 더 어두운 파란색 */
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);; /* 더 어두운 파란색 */
+}
+
+.filter-options {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.filter-title {
+    font-size: 18px;
+    color: #f07c8c; /* 원하는 색상으로 변경 (예: 핑크) */
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.filter-btn.selected {
+    color: #f07c8c;
+    border-color: #f07c8c;
+    font-weight: bold;
+}
+
+hr {
+    border: 1px solid gainsboro;
 }

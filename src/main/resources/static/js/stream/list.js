@@ -1,8 +1,37 @@
 document.addEventListener("DOMContentLoaded", function () {
-    loadLive();                // 라이브 방송 불러오기
-    loadStandBy(0);            // 준비중 방송 불러오기
-    loadVod(0);        // 최초 1페이지의 VOD 목록 불러오기
+    setupFilterButtons();                      // 필터링 버튼 셋팅
+    loadLive();                                // 라이브 방송 불러오기
+    loadStandBy(0, 'none');     // 준비중 방송 불러오기
+    loadVod(0);                        // 최초 1페이지의 VOD 목록 불러오기
 });
+
+// 정렬 버튼 클릭 시
+function setupFilterButtons() {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            // 클릭된 버튼에 'selected' 클래스를 추가하고 나머지 버튼에서 제거
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+
+            const liveGrid = document.getElementById('live-grid');
+            liveGrid.innerHTML = '';
+        });
+    });
+}
+
+function filterAll() {
+    loadLive();
+    loadStandBy(0, 'none');
+}
+
+function filterLive() {
+    loadLive();
+}
+
+function filterStandBy() {
+    loadStandBy(0, 'filtered');
+}
 
 function loadLive() {
     axios.get('/stream/live')
@@ -68,10 +97,11 @@ function loadLive() {
         });
 }
 
-function loadStandBy(pageNo) {
+function loadStandBy(pageNo, option) {
     axios.get('/stream/standby/list', {
         params: {
-            pageNo: pageNo
+            pageNo: pageNo,
+            option: option
         }
     })
         .then(response => {
@@ -109,13 +139,17 @@ function loadStandBy(pageNo) {
 
                 // VOD 클릭 시 상세 및 시청 페이지로 이동
                 standByDiv.addEventListener('click', () => {
-
+                    Swal.fire({
+                        icon: 'error',
+                        title: '시청 불가',
+                        text: '준비중인 라이브입니다'
+                    });
                 });
 
                 liveGrid.appendChild(standByDiv);
             });
 
-            renderPageContent(pageInfo, 'live-page-container');
+            renderPageContent(pageInfo, 'live-page-container', option);
 
         })
         .catch(error => {
@@ -185,7 +219,7 @@ function loadVod(pageNo) {
         });
 }
 
-function renderPageContent(pageInfo, containerName) {
+function renderPageContent(pageInfo, containerName, option) {
     // 페이지 버튼 영역 생성
     const pageContainer = document.getElementById(containerName);
     pageContainer.innerHTML = '';
@@ -203,7 +237,7 @@ function renderPageContent(pageInfo, containerName) {
                 loadVod(pageNumber + 1);
             }
             else if (containerName === 'live-page-container') {
-                loadStandBy(pageNumber + 1);
+                loadStandBy(pageNumber + 1, option);
             }
         });
         pageContainer.appendChild(pageDiv);
