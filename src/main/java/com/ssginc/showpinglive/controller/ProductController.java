@@ -45,9 +45,7 @@ public class ProductController {
     private Sort getSort(String sortOption) {
         switch (sortOption) {
             case "quantity-desc":
-                return Sort.by(Sort.Order.desc("productQuantity"));
-            case "quantity-asc":
-                return Sort.by(Sort.Order.asc("productQuantity"));
+                return Sort.by(Sort.Order.desc("productSaleQuantity"));
             case "price-desc":
                 return Sort.by(Sort.Order.desc("productPrice"));
             case "price-asc":
@@ -57,8 +55,7 @@ public class ProductController {
             case "sale-asc":
                 return Sort.by(Sort.Order.asc("productSale"));
             default:
-                return Sort.by(Sort.Order.desc("productQuantity"));
+                return Sort.by(Sort.Order.desc("productSaleQuantity"));
         }
     }
-
 }

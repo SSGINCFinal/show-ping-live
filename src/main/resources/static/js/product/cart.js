@@ -44,6 +44,18 @@ function loadCartItems(memberNo) {
 
             tableBody.innerHTML = ""; // 기존 데이터 초기화
 
+            if(!cartItems || cartItems.length == 0){
+                tableBody.innerHTML = "<tr>\n" +
+                    "                    <td>\n" +
+                    "                        \n" +
+                    "                    </td>\n" +
+                    "                    <td>\n" +
+                    "                        <p className='no-orders'>최근 주문 내역이 없습니다.</p>\n" +
+                    "                    </td>\n" +
+                    "                </tr>";
+                return;
+            }
+
             cartItems.forEach(item => {
                 const formattedPrice = item.productPrice.toLocaleString('ko-KR') + "원"; // 가격 포맷
                 const row = `

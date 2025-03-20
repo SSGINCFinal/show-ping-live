@@ -14,6 +14,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p, AVG(r.reviewRating) AS reviewAverage, COUNT(r) AS reviewCount " +
             "FROM Product p " +
             "LEFT JOIN p.reviews r " +
-            "WHERE p.category.categoryNo = :categoryNo " +
+            "WHERE (:categoryNo = 0 OR p.category.categoryNo = :categoryNo) " +
             "GROUP BY p.productNo")
-    Page<Object[]> findByCategoryCategoryNo(@Param("categoryNo") Long categoryNo, Pageable pageable);}
+    Page<Object[]> findByCategoryCategoryNo(@Param("categoryNo") Long categoryNo, Pageable pageable);
+
+}

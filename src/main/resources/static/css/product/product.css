@@ -162,7 +162,7 @@
 }
 
 .purchase-buttons button:hover {
-    background-color: #E7F1F9;
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);
 }
 
 /* 상품 스펙 정보 */
@@ -298,7 +298,7 @@ th {
 
 .sale-icon {
     position: absolute;
-    right: 10px; /* 오른쪽에서 10px 만큼 띄우기 */
+    left: 90px; /* 왼쪽에서 90px */
 }
 
 .remove-btn {
@@ -547,29 +547,29 @@ th {
 
 .load-more-btn {
     display: block;
-    margin: 20px auto; /* 가운데 정렬 */
+    margin: 20px auto;
     padding: 10px 20px;
     font-size: 16px;
     font-weight: bold;
-    color: #007bff; /* 파란색 */
-    background-color: #e3efff;
-    border: none;
+    color: black;
+    background-color: white;
+    border: 1px solid #222;
     cursor: pointer;
     outline: none;
     text-align: center;
-    width: fit-content; /* 텍스트 길이에 맞게 조정 */
+    width: fit-content;
     border-radius: 8px;
     transition: color 0.3s ease-in-out;
 }
 
 .load-more-btn:hover {
-    color: #2B4C94; /* 더 어두운 파란색 */
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);
 }
 
 .sort-options {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     padding: 10px 20px;
     border-bottom: 1px solid #e0e0e0;
 }

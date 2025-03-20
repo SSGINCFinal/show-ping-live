@@ -65,8 +65,6 @@ function renderProducts(products) {
             return imageUrl; // 이미 .jpg가 아니면 그대로 반환
         }
 
-        console.log(productImg);
-
         let productName = product.productName;
         if (productName.length > 25) {
             productName = productName.substring(0, 25) + '...';

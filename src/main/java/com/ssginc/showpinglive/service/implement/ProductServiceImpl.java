@@ -44,7 +44,8 @@ public class ProductServiceImpl implements ProductService {
                             product.getProductSale(),
                             product.getProductPrice() - (product.getProductPrice() * product.getProductSale() / 100),
                             reviewCount,
-                            reviewAverage != null ? reviewAverage : 0.0
+                            reviewAverage != null ? reviewAverage : 0.0,
+                            product.getProductSaleQuantity()
                     );
                 })
                 .collect(Collectors.toList());
@@ -78,7 +79,8 @@ public class ProductServiceImpl implements ProductService {
                     product.getProductSale(),
                     product.getProductPrice() - (product.getProductPrice() * product.getProductSale() / 100),
                     reviewCount,
-                    reviewAverage
+                    reviewAverage,
+                    product.getProductSaleQuantity()
             );
         } else {
             throw new RuntimeException("상품을 찾을 수 없습니다: " + productId);
