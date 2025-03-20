@@ -7,7 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // 정렬 버튼 클릭 시
 function setupFilterButtons() {
-    const buttons = document.querySelectorAll('.filter-btn');
+    setupLiveFilterButtons();
+    setupVodFilterButtons();
+}
+
+function setupLiveFilterButtons() {
+    const buttons = document.querySelectorAll('.live-filter-btn');
     buttons.forEach(button => {
         button.addEventListener('click', function () {
             // 클릭된 버튼에 'selected' 클래스를 추가하고 나머지 버튼에서 제거
@@ -18,6 +23,54 @@ function setupFilterButtons() {
             liveGrid.innerHTML = '';
         });
     });
+}
+
+function setupVodFilterButtons() {
+    axios.get('/api/categories')
+        .then((response) => {
+            const filterButtons = document.getElementById('vod-buttons');
+            const categories = response.data;
+
+            const allButton = document.createElement("button");
+
+            allButton.className = "vod-filter-btn";
+            allButton.id = `filter-all`;
+            allButton.textContent = '전체';
+
+            allButton.addEventListener('click', function() {
+                loadVod(0);
+            });
+            filterButtons.appendChild(allButton);
+
+            categories.forEach(category => {
+                // 새 버튼 요소 생성
+                const button = document.createElement("button");
+
+                // 클래스와 id, 그리고 버튼 텍스트 설정
+                button.className = "vod-filter-btn";
+                button.id = `filter-${category.categoryNo}`;
+                button.textContent = category.categoryName;
+
+                button.addEventListener('click', function() {
+                    loadVodByCategory(parseInt(category.categoryNo), 0);
+                });
+
+                filterButtons.appendChild(button);
+            });
+
+            const buttons = document.querySelectorAll('.vod-filter-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // 클릭된 버튼에 'selected' 클래스를 추가하고 나머지 버튼에서 제거
+                    buttons.forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+
+                    const vodGrid = document.getElementById('vod-grid');
+                    vodGrid.innerHTML = '';
+                });
+            })
+        });
+
 }
 
 function filterAll() {
@@ -242,4 +295,66 @@ function renderPageContent(pageInfo, containerName, option) {
         });
         pageContainer.appendChild(pageDiv);
     }
+}
+
+function loadVodByCategory(categoryNo, pageNo) {
+    axios.get(`/stream/vod/category`, {
+        params: {
+            categoryNo: categoryNo,
+            pageNo: pageNo,
+        }
+    }).then(response => {
+        const pageInfo = response.data['pageInfo'];
+        const vodContent = pageInfo['content'];
+        const vodGrid = document.getElementById('vod-grid');
+
+        vodGrid.innerHTML = '';
+        vodContent.forEach(vod => {
+            const vodDiv = document.createElement('div');
+            vodDiv.classList.add('item');
+            const productPrice = vod.productPrice;
+            const discountRate = vod.productSale;
+            const streamStartTime = vod.streamStartTime;
+
+            const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
+
+            const formattedOriginPrice = productPrice.toLocaleString('ko-KR');
+            const formattedDiscountedPrice = discountedPrice.toLocaleString('ko-KR');
+
+            const date = new Date(streamStartTime);
+
+            // 년, 월, 일을 추출하여 포맷
+            const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+
+            vodDiv.innerHTML = `
+                    <div class="stream-img-container">
+                        <img src="${vod.productImg}" alt="${vod.productName}" />
+                    </div>
+                    <p id="date">${formattedDate}</p>
+                    <p id="title">${vod.streamTitle}</p>
+                    <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
+                    <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${vod.productSale} %</p>
+                    <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
+                `;
+
+            if (discountRate === 0) {
+                vodDiv.querySelector(".product-sale").style.display = "none";
+                vodDiv.querySelector("#product-sale-percent").style.display = "none";
+            } else {
+                vodDiv.querySelector(".product-sale").style.display = "block";
+                vodDiv.querySelector("#product-sale-percent").style.display = "block";
+            }
+
+            // VOD 클릭 시 상세 및 시청 페이지로 이동
+            vodDiv.addEventListener('click', () => {
+                window.location.href = `/watch/vod/${vod.streamNo}`;
+            });
+
+            vodGrid.appendChild(vodDiv);
+        });
+        renderPageContent(pageInfo, 'vod-page-container');
+    })
+        .catch(error => {
+            console.error("VOD 목록을 불러오는 중 오류 발생:", error);
+        });
 }
