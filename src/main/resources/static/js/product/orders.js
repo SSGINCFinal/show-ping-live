@@ -1,5 +1,5 @@
 let memberNo = null;
-let orders = []; // 주문 목록을 전역 변수로 저장
+let orders = []; // 주문 목록을 전역 변수에 저장
 
 document.addEventListener("DOMContentLoaded", async function () {
     const token = sessionStorage.getItem("accessToken");
@@ -9,52 +9,73 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     try {
-        // 로그인 사용자 정보
+        // 로그인 사용자 정보 조회
         const response = await axios.get("/api/carts/info", {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: {Authorization: `Bearer ${token}`}
         });
         memberNo = response.data.memberNo;
-
         if (!memberNo) {
             alert("사용자 정보가 없습니다.");
             return;
         }
 
-        // 회원의 전체 주문 목록 가져오기
+        // 회원 전체 주문 목록 가져오기
         const orderResponse = await axios.get(`/api/orders/member/${memberNo}`);
         orders = orderResponse.data;  // 전역 변수에 저장
 
-        // 처음 로딩 시, 전체 주문 목록 그리기
+        // 주문 상세 정보를 미리 가져와 각 주문에 저장 (추후 검색 시 추가 API 호출 없이 사용)
+        await Promise.all(orders.map(async (order) => {
+            try {
+                const detailResponse = await axios.get(`/api/orders/${order.ordersNo}/details`);
+                order.orderDetails = detailResponse.data;
+            } catch (error) {
+                console.error(`주문 ${order.ordersNo} 상세 정보 조회 실패:`, error);
+                order.orderDetails = []; // 실패 시 빈 배열로 처리
+            }
+        }));
+
+        // 초기 로딩 시 전체 주문 목록 렌더링
         renderOrders(orders);
 
-        // "검색" 버튼 클릭 이벤트
+        // 단일 검색 버튼 이벤트 (날짜, 상품명 동시에 검색)
         const searchButton = document.getElementById("search-button");
         searchButton.addEventListener("click", function () {
             const startDateVal = document.getElementById("start-date").value; // "YYYY-MM-DD" 형식
-            const endDateVal   = document.getElementById("end-date").value;   // "YYYY-MM-DD" 형식
+            const endDateVal = document.getElementById("end-date").value;   // "YYYY-MM-DD" 형식
+            const productSearchVal = document.getElementById("product-name").value.trim();
 
-            // 날짜 값이 둘 다 입력되지 않은 경우 전체 목록 다시 표시
-            if (!startDateVal && !endDateVal) {
-                renderOrders(orders);
-                return;
-            }
-
-            // 날짜 필터링
             const filtered = orders.filter(order => {
-                const orderDate = new Date(order.ordersDate); // 주문 일시
-                // orderDate를 비교하기 위해 startDate, endDate도 Date 객체로 변환
-                const startDate = startDateVal ? new Date(startDateVal) : null;
-                const endDate = endDateVal ? new Date(endDateVal) : null;
+                // 날짜 필터링: 주문 일시가 입력한 날짜 범위 내에 있는지 확인
+                const orderDate = new Date(order.ordersDate);
 
-                // 주문 날짜가 startDate 이후이고 endDate 이전(또는 같은)인지 체크
-                // startDate가 없으면 무조건 통과, endDate가 없으면 무조건 통과
-                if (startDate && orderDate < startDate) return false;
-                if (endDate && orderDate > endDate) return false;
+                if (startDateVal && orderDate < new Date(startDateVal)) return false;
+
+                if (endDateVal) {
+                    const endDate = new Date(endDateVal);
+                    endDate.setHours(23, 59, 59, 999);
+                    if (orderDate > endDate) return false;
+                }
+
+                // 상품명 검색: 입력한 문자열이 주문 상세 정보에 포함되어 있는지 (대소문자 무시)
+                if (productSearchVal) {
+                    if (!order.orderDetails ||
+                        !order.orderDetails.some(item => item.productName.toLowerCase().includes(productSearchVal.toLowerCase()))) {
+                        return false;
+                    }
+                }
                 return true;
             });
 
-            // 필터링된 목록을 다시 렌더링
             renderOrders(filtered);
+        });
+
+        // 초기화 버튼: 입력 필드 모두 초기화하고 전체 주문 목록 표시
+        const resetButton = document.getElementById("reset-button");
+        resetButton.addEventListener("click", function () {
+            document.getElementById("start-date").value = "";
+            document.getElementById("end-date").value = "";
+            document.getElementById("product-name").value = "";
+            renderOrders(orders);
         });
 
     } catch (error) {
@@ -63,16 +84,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 });
 
-/**
- * 주문 목록을 받아 화면에 그려주는 함수
- * (기존 코드에서 order 목록을 그리던 로직을 함수로 분리)
- */
 function renderOrders(orderList) {
     const orderContainer = document.getElementById("order-list");
     orderContainer.innerHTML = ""; // 기존 내용 초기화
 
     if (!orderList || orderList.length === 0) {
-        orderContainer.innerHTML = "<p>최근 주문 내역이 없습니다.</p>";
+        orderContainer.innerHTML = "<p class='no-orders'>최근 주문 내역이 없습니다.</p>";
         return;
     }
 
@@ -95,8 +112,10 @@ function renderOrders(orderList) {
         const orderDiv = document.createElement("div");
         orderDiv.classList.add("order-box");
         orderDiv.innerHTML = `
-            <h3>주문 번호: ${order.ordersNo}</h3>
-            <p><strong>주문 상태:</strong> ${orderStatusText}</p>
+            <div class="order-header">
+                <h3>주문 번호: ${order.ordersNo}</h3>
+                <span class="status ${order.ordersStatus.toLowerCase()}">${orderStatusText}</span>
+            </div>
             <p><strong>총 결제 금액:</strong> ${order.ordersTotalPrice.toLocaleString()} 원</p>
             <p><strong>주문 일시:</strong> ${new Date(order.ordersDate).toLocaleString()}</p>
             <button class="toggle-details" data-order-no="${order.ordersNo}">상세 보기</button>
@@ -107,7 +126,7 @@ function renderOrders(orderList) {
         orderContainer.appendChild(orderDiv);
     });
 
-    // 상세보기 버튼 이벤트 (기존 코드 재활용)
+// 상세보기 버튼 이벤트 (기존 코드 재활용)
     document.querySelectorAll(".toggle-details").forEach(button => {
         button.addEventListener("click", async function () {
             const orderNo = this.getAttribute("data-order-no");
@@ -143,19 +162,11 @@ function renderOrders(orderList) {
     });
 }
 
+// (예시) 연도별 검색 버튼 이벤트 처리
 document.querySelectorAll(".year-btn").forEach(button => {
-    button.addEventListener("click", function() {
+    button.addEventListener("click", function () {
         const year = parseInt(this.getAttribute("data-year"));
-
-        // 클라이언트 필터링 방식
-        const filtered = orders.filter(order => {
-            const orderYear = new Date(order.ordersDate).getFullYear();
-            return orderYear === year;
-        });
+        const filtered = orders.filter(order => new Date(order.ordersDate).getFullYear() === year);
         renderOrders(filtered);
-
-        // 또는 서버 API를 호출해 해당 연도 주문만 가져오는 방식
-        // const orderResponse = await axios.get(`/api/orders/member/${memberNo}?year=${year}`);
-        // renderOrders(orderResponse.data);
     });
 });

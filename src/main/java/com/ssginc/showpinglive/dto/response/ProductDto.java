@@ -18,4 +18,5 @@ public class ProductDto {
     private Long discountedPrice;
     private Long reviewCount;
     private Double reviewAverage;
+    private Long productSaleQuantity;
 }

@@ -10,6 +10,15 @@ function loadCategories() {
 
             dropdownMenu.innerHTML = ''; // 초기화
 
+            const listItem = document.createElement('li' );
+            const link = document.createElement('a');
+            link.href = `/category/0`;
+            link.textContent = `전체`;
+            listItem.appendChild(link);
+            dropdownMenu.appendChild(listItem);
+
+            dropdownMenu.append()
+
             categories.forEach(category => {
                 const listItem = document.createElement('li' );
                 const link = document.createElement('a');
@@ -45,4 +54,3 @@ scrollToTopButton.addEventListener("click", () => {
         behavior: "smooth" // 부드럽게 스크롤
     });
 });
-
