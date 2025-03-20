@@ -18,12 +18,18 @@ window.onload = function () {
         });
     }
 
-    // ✅ 뒤로 가기 방지: 2FA 중 뒤로 가기를 누르면 로그인 페이지로 이동
+    // ✅ 뒤로 가기 방지: 2FA 폼이 표시된 경우에만 작동
+    function preventBackNavigation() {
+        const totpForm = document.getElementById("totp-form");
+        if (totpForm && totpForm.style.display !== "none") {
+            // 2FA 폼이 표시된 경우만 뒤로가기 방지
+            alert("2차 인증이 완료될 때까지 이 페이지를 벗어날 수 없습니다.");
+            history.go(1);
+        }
+    }
+
     window.history.pushState(null, "", window.location.href);
-    window.onpopstate = function () {
-        alert("2차 인증이 완료될 때까지 이 페이지를 벗어날 수 없습니다.");
-        window.location.href = "/login";
-    };
+    window.addEventListener("popstate", preventBackNavigation);
 };
 
 document.addEventListener("DOMContentLoaded", function () {
