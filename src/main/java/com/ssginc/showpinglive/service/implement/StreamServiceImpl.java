@@ -312,8 +312,8 @@ public class StreamServiceImpl implements StreamService {
     }
 
     @Override
-    public Page<StreamResponseDto> getAllLivesByPage(Pageable pageable) {
-        return streamRepository.findLives(pageable);
+    public Page<StreamResponseDto> getAllBroadCastByPage(Pageable pageable) {
+        return streamRepository.findAllBroadCastByPage(pageable);
     }
 
 }

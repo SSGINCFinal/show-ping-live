@@ -42,6 +42,6 @@ public interface StreamService {
 
     Page<StreamResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
 
-    Page<StreamResponseDto> getAllLivesByPage(Pageable pageable);
+    Page<StreamResponseDto> getAllBroadCastByPage(Pageable pageable);
 
 }

@@ -68,9 +68,9 @@ public class StreamController {
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/broadcast")
-    public ResponseEntity<?> getLives(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+    public ResponseEntity<?> getBroadCast(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 4);
-        Page<StreamResponseDto> pageInfo = streamService.getAllLivesByPage(pageable);
+        Page<StreamResponseDto> pageInfo = streamService.getAllBroadCastByPage(pageable);
 
         // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();

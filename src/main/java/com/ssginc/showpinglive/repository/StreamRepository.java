@@ -87,7 +87,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ONAIR' OR s.streamStatus = 'STANDBY'
         ORDER BY s.streamNo DESC, s.streamStatus ASC
     """)
-    Page<StreamResponseDto> findLives(Pageable pageable);
+    Page<StreamResponseDto> findAllBroadCastByPage(Pageable pageable);
 
     /**
      * 준비중인 라이브 목록과 페이지 정보를 반환해주는 쿼리 메서드
