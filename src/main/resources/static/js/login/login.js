@@ -133,7 +133,7 @@ async function verifyTOTP(event) {
         }
     } catch (error) {
         console.error("TOTP 인증 실패:", error.response ? error.response.data : error);
-        alert("서버 오류 발생! 다시 시도해주세요.");
+        alert("인증번호를 다시 확인해주세요.");
     }
 }
 

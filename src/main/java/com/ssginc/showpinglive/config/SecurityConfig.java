@@ -30,7 +30,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("https://showping.duckdns.org"));
+                    config.setAllowedOrigins(List.of("http://localhost:8080"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
                     config.setAllowCredentials(true);
@@ -39,16 +39,21 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 X (JWT 방식)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "webrtc/watch", "/css/**", "/js/**", "/images/**",
-                                "/assets/**", "/oauth/**", "/api/register", "/api/auth/login", "/api/auth/logout", "api/auth/user-info").permitAll()
-                        .requestMatchers("/admin/**", "/report/report", "webrtc/webrtc", "stream/stream").hasRole("ADMIN") //admin, chat/chat 주소 접근은 ADMIN role만 접근 가능
-                        .requestMatchers("/user/**", "watch/history").hasAnyRole("USER", "ADMIN") //user 주소 접근은 ADMIN/USER role중 어떤 것이든 접근 가능
-                        .anyRequest().permitAll() //모두 허용하고, admin과 user로 시작하는 사이트와 /chat/chat만 로그인 필요
+                        .requestMatchers("/", "/login", "webrtc/watch", "/css/**", "/js/**", "/img/**","/api/admin/login",
+                                "/assets/**", "/product/detail/**", "/api/register", "/api/auth/login", "/api/auth/logout",
+                                "/api/categories","/category/**", "/api/products/**",
+                                "/api/auth/user-info", "/stream/list", "/watch/history", "/login/signup", "/check-duplicate"
+                                ,"/signup/send-code", "/signup/verify-code", "/check-email-duplicate", "/signup/verify-code"
+                                ,"/register", "/api/admin/verify-totp", "/api/admin/totp-setup/**"
+                        ).permitAll()
+                        .requestMatchers("/admin/**", "/report/report", "/webrtc/webrtc").hasRole("ADMIN")//admin, chat/chat 주소 접근은 ADMIN role만 접근 가능
+                        .requestMatchers("/user/**", "/api/carts/**","/payment/**", "/api/payments/**","/api/orders/**", "/watch/history", "/api/carts").hasAnyRole("USER", "ADMIN") //user 주소 접근은 ADMIN/USER role중 어떤 것이든 접근 가능
+                        .anyRequest().authenticated() //인증이 필요
                 )
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.disable())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // ✅ JWT 필터 적용
-
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // JWT 필터 적용
+        System.out.println("securityConfig 적용 완료");
         return http.build();
     }
 
