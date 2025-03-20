@@ -40,6 +40,10 @@ public class Product {
     private Long productQuantity;
 
     @ColumnDefault("0")
+    @Column(name = "product_sale_quantity")
+    private Long productSaleQuantity;
+
+    @ColumnDefault("0")
     @Column(name = "product_sale")
     private Integer productSale;
 

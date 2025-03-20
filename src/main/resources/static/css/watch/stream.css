@@ -42,13 +42,16 @@
 .chat-container {
     position: relative;
     width: 300px;
+    min-width: 300px;
     height: 480px;
     border: 1px solid #ddd;
     border-radius: 5px;
     overflow: hidden;
-    font-family: Arial, sans-serif;
+    font-family: 'Noto Sans', 'Noto Sans KR', sans-serif;
+    line-height: 1.4;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
 }
 
 .product-container {
@@ -59,19 +62,6 @@
     width: 100%; /* 부모 요소 너비에 맞춤 */
     height: 100%; /* 부모 요소 높이에 맞춤 */
     object-fit: fill; /* 비율을 유지하면서 div에 꽉 차게 조정 */
-}
-
-#chat {
-    width: 300px;
-    height: 480px;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    display: flex;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    justify-content : center;
-    align-items : center;
 }
 
 #product {
@@ -270,6 +260,8 @@ div.dragged {
     font-weight: bold;
     padding: 10px;
     text-align: center;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center;     /* 세로 중앙 정렬 */
     font-size: 14px;
     border-bottom: 1px solid #ddd;
 }
@@ -279,6 +271,7 @@ div.dragged {
     flex-grow: 1;
     /*height: calc(100% - 140px); !* 전체 높이에서 입력 영역(예: 50px)과 공지 영역(예: 50px) 등을 뺀 높이 *!*/
     overflow-y: auto;
+    overflow-wrap: break-word;
     padding: 10px;
     /*background-color: #f9f9f9;*/
     margin-bottom: 10px;
@@ -286,20 +279,21 @@ div.dragged {
     padding-bottom: 40px;
 }
 
-.chat-message .message {
+.chat-messages .message {
     color: #555; /* 메시지 텍스트 색상 */
+    margin-bottom: 8px;
 }
 
-.chat-message .username {
+.chat-messages .username {
     font-weight: bold;
     margin-right: 5px;
 }
 
-.chat-message.admin .username {
+.chat-messages.admin .username {
     color: #ff6666; /* 관리자 메시지 색상 */
 }
 
-.chat-message.user .username {
+.chat-messages.user .username {
     color: #333; /* 일반 사용자 메시지 색상 */
 }
 
@@ -322,7 +316,13 @@ div.dragged {
 
 /* Input Section */
 .input-container {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%); /* 수평 중앙 정렬 보정 */
+    width: 100%;
     display: flex;
+    background-color: #fff;
     border-top: #f9f9f9;
     padding: 10px;
 }
@@ -352,42 +352,9 @@ div.dragged {
     border: 1px solid #ddd; /* (선택) 영역 구분을 위한 스타일 */
 }
 
-/* 입력 영역: 항상 하단 중앙 고정 */
-.input-container {
-    position: absolute; /* 부모 .chat-container 기준 */
-    bottom: 0; /* 하단에 붙임 */
-    left: 50%; /* 수평 중앙 */
-    transform: translateX(-50%); /* 수평 중앙 정렬 보정 */
-    width: 100%; /* 예시, 필요에 따라 조정 */
-    display: flex;
-    background-color: #fff;
-    /*padding: 10px;*/
-    /*box-shadow: 0 -1px 5px rgba(0,0,0,0.1);*/
-}
-
-/*!* 메시지 입력 필드와 전송 버튼 *!*/
-/*#message-input {*/
-/*    flex: 1;*/
-/*    padding: 5px;*/
-/*    border: 1px solid #ccc;*/
-/*    !*border-radius: 3px;*!*/
-/*}*/
-
-/*#send-button {*/
-/*    margin-left: 10px;*/
-/*    padding: 5px 10px;*/
-/*    border: none;*/
-/*    border-radius: 3px;*/
-/*    background-color: #007bff;*/
-/*    color: #fff;*/
-/*    cursor: pointer;*/
-/*}*/
-
-
 .report-modal {
     display: none; /* 초기에는 숨김 */
     width: 320px;
-    margin: 50px auto; /* 화면 중앙 정렬 */
     background-color: #ffffff;
     border-radius: 10px;
     padding: 20px;
@@ -405,8 +372,8 @@ div.dragged {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.4);
     z-index: 9998;
 }
@@ -534,7 +501,7 @@ div.dragged {
 
 /* 상품 이미지 영역: flex를 이용해 이미지 중앙 정렬 */
 .product-image {
-    height: 320px;
+    height: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -550,7 +517,7 @@ div.dragged {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 120px;
+    height: 127px;
     background-color: #F4F5F7;
     padding: 10px;
     box-sizing: border-box;
@@ -596,4 +563,98 @@ div.dragged {
 
 .buy-button:hover {
     background-color: #f0f0f0;
+}
+
+
+/* 탭 버튼들 컨테이너 */
+.tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+/* 각 탭 버튼 */
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    /*padding: 8px;*/
+    font-size: 14px;
+    text-align: center;
+    color: #333;
+}
+
+/* 활성화된 탭 버튼 */
+.tab-btn.active {
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+}
+
+/* 모든 탭 콘텐츠는 기본 숨김 */
+.tab-content {
+    display: none;
+}
+
+/* 활성화된 탭 콘텐츠만 보이도록 */
+.tab-content.active {
+    display: block;
+}
+
+/* 각 FAQ 아이템(질문+답변) */
+.faq-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    /* 펼쳐질 때 효과를 주고 싶으면 transition 등을 사용 가능 */
+}
+
+/* FAQ 탭 전용 스타일 */
+#tab-faq {
+    /* 회백색 배경 */
+
+    /* 스크롤 시 배경이 드러나도록 높이 지정 (필요에 따라 조정) */
+    max-height: 400px;
+    overflow-y: auto;
+    /*padding: 10px;       !* FAQ 전체 여백 *!*/
+}
+
+/* 질문 영역: 좌측 'Q.' + 우측 화살표 */
+.faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 질문 텍스트 왼쪽, 화살표 오른쪽 */
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0 5px;
+}
+
+/* 화살표 아이콘 */
+.faq-arrow {
+    transition: transform 0.2s ease;
+    font-size: 10px; /* 기존보다 작게 */
+    line-height: 1;  /* 필요시 조정 */
+}
+
+/* 답변 영역 (기본 숨김) */
+.faq-answer {
+    background-color: #f9f9f9;
+    display: none;
+    margin-top: 8px;
+    line-height: 1.4;
+    padding: 0 5px;
+}
+
+.faq-answer.p{
+    color: #555;
+}
+
+/* 펼쳐진 상태 (active)일 때 .faq-answer 표시, 화살표 회전 */
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+.faq-item.active .faq-arrow {
+    transform: rotate(180deg);
 }

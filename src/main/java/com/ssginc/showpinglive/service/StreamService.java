@@ -24,6 +24,8 @@ public interface StreamService {
 
     StreamResponseDto getLive();
 
+    Page<StreamResponseDto> getAllStandbyByPage(Pageable pageable);
+
     StreamResponseDto getVodByNo(Long streamNo);
 
     String uploadVideo(String filePath);
@@ -37,5 +39,9 @@ public interface StreamService {
     Boolean stopStream(Long streamNo);
 
     GetStreamProductInfoResponseDto getStreamProductInfo(Long streamNo);
+
+    Page<StreamResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
+
+    Page<StreamResponseDto> getAllBroadCastByPage(Pageable pageable);
 
 }
