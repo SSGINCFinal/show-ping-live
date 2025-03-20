@@ -50,7 +50,7 @@ public class StreamController {
     }
 
     /**
-     * 전체 Vod 목록을 반환해주는 컨트롤러 메서드
+     * 라이브 방송을 반환해주는 컨트롤러 메서드
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/live")
@@ -60,6 +60,28 @@ public class StreamController {
         // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();
         result.put("live", live);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * 준비중인 방송목록을 반환해주는 컨트롤러 메서드
+     * @return 전달할 응답객체 (json 형태로 전달)
+     */
+    @GetMapping("/standby/list")
+    public ResponseEntity<?> getStandByList(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+        Pageable pageable = null;
+
+        if (pageNo == 0) {
+            pageable = PageRequest.of(pageNo, 3);
+        }
+        else {
+            pageable = PageRequest.of(pageNo, 4);
+        }
+        Page<StreamResponseDto> pageInfo = streamService.getAllStandbyByPage(pageable);
+
+        // Map으로 전달할 응답객체 저장
+        Map<String, Object> result = new HashMap<>();
+        result.put("pageInfo", pageInfo);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

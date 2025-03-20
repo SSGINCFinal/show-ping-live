@@ -24,6 +24,8 @@ public interface StreamService {
 
     StreamResponseDto getLive();
 
+    Page<StreamResponseDto> getAllStandbyByPage(Pageable pageable);
+
     StreamResponseDto getVodByNo(Long streamNo);
 
     String uploadVideo(String filePath);

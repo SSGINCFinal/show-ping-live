@@ -94,6 +94,11 @@ public class StreamServiceImpl implements StreamService {
         return liveList.isEmpty() ? null : liveList.get(0);
     }
 
+    @Override
+    public Page<StreamResponseDto> getAllStandbyByPage(Pageable pageable) {
+        return streamRepository.findAllStandbyByPage(pageable);
+    }
+
     /**
      * 영상번호로 VOD 정보를 가져오는 메서드
      * @param streamNo 영상 번호

@@ -76,6 +76,21 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
     List<StreamResponseDto> findLive();
 
     /**
+     * 준비중인 라이브 목록과 페이지 정보를 반환해주는 쿼리 메서드
+     * @param pageable 페이징 정보 객체
+     * @return 페이징 정보가 포함된 준비중인 라이브 목록
+     */
+    @Query("""
+        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
+        FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
+        JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'STANDBY'
+        ORDER BY s.streamNo DESC
+    """)
+    Page<StreamResponseDto> findAllStandbyByPage(Pageable pageable);
+
+    /**
      * 특정 영상번호의 Vod 정보를 반환해주는 쿼리 메서드
      * @param streamNo 영상 번호
      * @return vod 목록
