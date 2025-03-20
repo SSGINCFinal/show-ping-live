@@ -24,7 +24,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      */
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
-        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        (s.streamNo, s.streamTitle, s.streamDescription ,s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
@@ -38,7 +38,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      */
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
-        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
@@ -53,7 +53,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      */
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
-        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
@@ -67,7 +67,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      */
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
-        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ONAIR'
@@ -82,7 +82,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      */
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
-        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'STANDBY'
@@ -97,7 +97,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      */
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
-        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamNo = :streamNo
@@ -120,7 +120,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
 
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
-        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        (s.streamNo, s.streamTitle, s.streamDescription ,s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
