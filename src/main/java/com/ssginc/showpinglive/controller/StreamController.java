@@ -64,26 +64,27 @@ public class StreamController {
     }
 
     /**
+     * 라이브 중.예정 방송목록을 반환해주는 컨트롤러 메서드
+     * @return 전달할 응답객체 (json 형태로 전달)
+     */
+    @GetMapping("/lives")
+    public ResponseEntity<?> getLives(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 4);
+        Page<StreamResponseDto> pageInfo = streamService.getAllLivesByPage(pageable);
+
+        // Map으로 전달할 응답객체 저장
+        Map<String, Object> result = new HashMap<>();
+        result.put("pageInfo", pageInfo);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
      * 준비중인 방송목록을 반환해주는 컨트롤러 메서드
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/standby/list")
-    public ResponseEntity<?> getStandByList(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo,
-                                            @RequestParam(defaultValue = "none", name = "option") String option) {
-        Pageable pageable = null;
-
-        if (option.equals("none")) {
-            if (pageNo == 0) {
-                pageable = PageRequest.of(pageNo, 3);
-            }
-            else {
-                pageable = PageRequest.of(pageNo, 4);
-            }
-        }
-        else {
-            pageable = PageRequest.of(pageNo, 4);
-        }
-
+    public ResponseEntity<?> getStandByList(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 4);;
         Page<StreamResponseDto> pageInfo = streamService.getAllStandbyByPage(pageable);
 
         // Map으로 전달할 응답객체 저장
