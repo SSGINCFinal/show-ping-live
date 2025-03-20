@@ -119,15 +119,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                     phone
                 },
                 customData: {
-                    userInfo: { name, phone, email },
+                    userInfo: {name, phone, email},
                 },
             });
 
             if (payment.code !== undefined) {
-                console.error("결제 실패:", payment);
-                alert(`결제 실패: ${payment.message}`);
+                Swal.fire({
+                    title: "결제 실패",
+                    text: payment.message,
+                    icon: "error",
+                    confirmButtonText: "확인"
+                });
                 return;
             }
+
 
             // 결제 성공 후 주문 정보 서버에 저장
             const orderResponse = await fetch("/api/orders/create", {
@@ -147,14 +152,40 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
 
             if (orderResponse.ok) {
-                alert("결제가 성공적으로 완료되었습니다!");
-                window.location.href = "/success";
+                Swal.fire({
+                    title: '결제 성공',
+                    text: '결제가 성공적으로 완료되었습니다!',
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: '주문 내역 이동',
+                    cancelButtonText: '홈페이지 이동'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/success";
+                    } else {
+                        window.location.href = "/"
+                    }
+                });
             } else {
-                alert("주문 저장 중 오류가 발생했습니다.");
+                Swal.fire({
+                    title: "결제 중 오류",
+                    text: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
+                    icon: "error",
+                    confirmButtonText: "확인"
+                });
             }
 
         } catch (error) {
             console.error("결제 중 오류 발생:", error);
+            if (payment.code !== undefined) {
+                Swal.fire({
+                    title: "결제 중 오류",
+                    text: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
+                    icon: "error",
+                    confirmButtonText: "확인"
+                });
+                return;
+            }
             alert("결제 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     });

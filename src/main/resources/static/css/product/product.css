@@ -17,6 +17,7 @@
     flex-direction: column;
     justify-content: center; /* 내부 요소 수직 정렬 */
     align-items: center; /* 내부 요소 수평 정렬 */
+    border: 1px solid #e0e0e0;
 }
 
 .product-item:hover {
@@ -43,10 +44,6 @@
 .product-list {
     justify-content: center;
     padding: 5%;
-}
-
-#product-name {
-    font-size: 30px;
 }
 
 #product-price {
@@ -696,4 +693,49 @@ th {
 #order-list .order-box .order-details ul {
     list-style: disc;
     margin-left: 20px;
+}
+
+#product-search-bar, #reset-bar {
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+#product-search-bar label,
+#reset-bar label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+#product-search-bar input, #reset-bar input {
+    padding: 5px;
+    border-radius: 4px;
+}
+#product-search-bar button,
+#reset-bar button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+}
+#product-search-bar button:hover,
+#reset-bar button:hover {
+    background-color: #0056b3;
+}
+
+#product-name {
+    width: 300px;
+    padding: 10px;
+    font-size: 13px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+}
+
+#product-name:focus {
+    border-color: #007bff;  /* 포커스 시 테두리 색상 변경 */
+    outline: none;          /* 기본 아웃라인 제거 */
 }

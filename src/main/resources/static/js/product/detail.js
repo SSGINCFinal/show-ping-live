@@ -95,7 +95,7 @@ function loadProductReview(productNo) {
                 reviews.forEach((review, index) => {
                     reviewListHtml += `
                         <div class="review">
-                            <h3>${review.memberName}님 ${generateStars(review.reviewRating)} (${review.reviewRating}/5)</h3>
+                            <h3>${review.memberName} 님 ${generateStars(review.reviewRating)}</h3>
                             <p>${review.reviewComment}</p>
                             <small>작성일: ${new Date(review.reviewCreateAt).toLocaleDateString()}</small>
                             <div class="review-image">
