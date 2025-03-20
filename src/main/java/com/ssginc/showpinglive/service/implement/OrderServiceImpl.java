@@ -47,7 +47,6 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public void createOrder(OrderRequestDto orderRequestDto) {
-        System.out.println("OrderRequestDto 데이터: " + orderRequestDto);
 
         // 회원 조회 (예외 발생 가능)
         Member member = memberRepository.findById(orderRequestDto.getMemberNo())
@@ -62,7 +61,6 @@ public class OrderServiceImpl implements OrderService {
 
         // 주문을 먼저 저장하고, ID 값을 가져옴
         Orders savedOrder = ordersRepository.save(order);
-        System.out.println("저장된 주문 번호: " + savedOrder.getOrdersNo());
 
         // 주문 상세 저장
         List<OrderDetail> orderDetails = orderRequestDto.getOrderItems().stream().map(item -> {
