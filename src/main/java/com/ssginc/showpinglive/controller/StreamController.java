@@ -67,7 +67,7 @@ public class StreamController {
      * 라이브 중.예정 방송목록을 반환해주는 컨트롤러 메서드
      * @return 전달할 응답객체 (json 형태로 전달)
      */
-    @GetMapping("/lives")
+    @GetMapping("/broadcasting")
     public ResponseEntity<?> getLives(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 4);
         Page<StreamResponseDto> pageInfo = streamService.getAllLivesByPage(pageable);
