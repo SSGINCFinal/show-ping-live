@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr); /* 1개씩 한 줄 */
     justify-items: center; /* 그리드 아이템을 가운데 정렬 */
-    gap: 10px;
+    gap: 15px;
     width: 100%;
 }
 
@@ -11,7 +11,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr); /* 4개씩 한 줄 */
     justify-items: center; /* 그리드 아이템을 가운데 정렬 */
-    gap: 10px;
+    gap: 20px;
     width: 100%;
 }
 
@@ -28,10 +28,23 @@
 }
 
 /* 개별 상품 박스 */
-.item {
+.live-item {
     padding: 15px;
-    width: 180px; /* 상품 카드 크기 조정 */
+    width: 220px; /* 상품 카드 크기 조정 */
     height: 300px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+}
+
+/* 개별 상품 박스 */
+.vod-item {
+    padding: 15px;
+    width: 220px; /* 상품 카드 크기 조정 */
+    height: 320px;
     text-align: center; /* 텍스트 가운데 정렬 */
     border-radius: 10px;
     display: flex;
@@ -53,10 +66,8 @@
     align-items: center;
 }
 
-.item:hover {
+.live-item:hover, .vod-item:hover {
     padding: 15px;
-    width: 180px; /* 상품 카드 크기 조정 */
-    height: 300px;
     text-align: center; /* 텍스트 가운데 정렬 */
     border-radius: 10px;
     display: flex;
@@ -67,9 +78,9 @@
 }
 
 /* 이미지 스타일 */
-.item img {
-    width: 100px; /* 이미지 크기 조정 */
-    height: auto;
+.live-item img, .vod-item img {
+    width: 180px; /* 이미지 크기 조정 */
+    height: 180px;
     display: block;
     margin-bottom: 10px;
 }
@@ -85,9 +96,8 @@
     color: #999999;
 }
 
-#title {
-    font-size: 15px;
-    font-weight: bold;
+#description {
+    font-size: 10px;
 }
 
 #product-price {
@@ -100,7 +110,7 @@
 
 .live-icon {
     position: absolute;
-    left: 90px; /* 왼쪽에서 90px 만큼 띄우기 */
+    left: 150px; /* 왼쪽에서 150px 만큼 띄우기 */
 }
 
 
@@ -143,7 +153,7 @@
     padding: 5px 10px;
     font-size: 14px;
     border: 1px solid #e0e0e0;
-    border-radius: 5px;
+    border-radius: 20px;
     background-color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease;

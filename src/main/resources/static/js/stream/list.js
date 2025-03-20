@@ -4,8 +4,10 @@ let categoryNumber = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     setupFilterButtons();                      // 필터링 버튼 셋팅
-    loadBroadCast(0);                          // ONAIR + STANDBY 불러오기
+    loadBroadCast(0);                  // ONAIR + STANDBY 불러오기
     loadVod(0);                        // 최초 1페이지의 VOD 목록 불러오기
+
+    document.getElementById('filter-all').selected = true;
 });
 
 // 정렬 버튼 클릭 시
@@ -95,7 +97,7 @@ function filterStandBy() {
 }
 
 function loadBroadCast(pageNo) {
-    axios.get('/stream/broadcasting', {
+    axios.get('/stream/broadcast', {
         params: {
             pageNo: pageNo,
         }
@@ -106,35 +108,46 @@ function loadBroadCast(pageNo) {
 
         broadCastContent.forEach(broadCast => {
             const broadCastDiv = document.createElement('div');
-            broadCastDiv.classList.add('item');
+            broadCastDiv.classList.add('live-item');
             const productPrice = broadCast.productPrice;
             const discountRate = broadCast.productSale;
-            const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
+            const finalPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
 
-            const formattedOriginPrice = productPrice.toLocaleString('ko-KR');
-            const formattedDiscountedPrice = discountedPrice.toLocaleString('ko-KR');
+            const formattedPrice = finalPrice.toLocaleString('ko-KR');
 
             broadCastDiv.innerHTML = `
                             <div class="stream-img-container">
+                                <img id="live-icon" src="/img/icon/live.png" alt="product-live" class="live-icon" style="width: 50px; height: 50px;" />
                                 <img src="${broadCast.productImg}" alt="${broadCast.productName}" />
                             </div>
-                            <p id="title">${broadCast.streamTitle}</p>
-                            <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
-                            <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${broadCast.productSale} %</p>
-                            <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
+                            <p id="title" style="font-size: 15px; font-weight: bold; margin: 8px 0 4px;">${broadCast.streamTitle}</p>
+                            <p id="description" style="font-size: 13px; color: #555; margin: 0 0 8px;">${broadCast.streamDescription}</p>
+                            <div class="product-price" style="display: flex; flex-direction: row; gap: 2px;
+                            font-size: 15px; color: #000; margin: 4px 0;">
+                                <span class="product-sale-percent" id="product-sale-percent" style="color: red; 
+                                font-weight: bold; margin-top: 1px; margin-right: 3px; font-size: 12px">${broadCast.productSale} %</span>
+                                ${formattedPrice}원
+                            </div>
                         `;
 
             if (discountRate === 0) {
-                broadCastDiv.querySelector(".product-sale").style.display = "none";
                 broadCastDiv.querySelector("#product-sale-percent").style.display = "none";
             } else {
-                broadCastDiv.querySelector(".product-sale").style.display = "block";
                 broadCastDiv.querySelector("#product-sale-percent").style.display = "block";
             }
+
+            // ONAIR 중인 방송에 특수 아이콘 넣기
+            if (broadCast.streamStatus === 'ONAIR') {
+                broadCastDiv.querySelector("#live-icon").style.display = "block";
+            } else {
+                broadCastDiv.querySelector("#live-icon").style.display = "none";
+            }
+
 
             // VOD 클릭 시 상세 및 시청 페이지로 이동
             broadCastDiv.addEventListener('click', () => {
                 if (broadCast.streamStatus === 'ONAIR') {
+
                     window.location.href = window.location.href = `/webrtc/watch/${broadCast.streamNo}`;
                 }
                 else {
@@ -152,7 +165,7 @@ function loadBroadCast(pageNo) {
 
     })
         .catch(error => {
-            console.error("준비중인 라이브 목록을 불러오는 중 오류 발생: ", error);
+            console.error("방송 목록을 불러오는 중 오류 발생: ", error);
         });
 }
 
@@ -167,38 +180,32 @@ function loadLive() {
                 liveGrid.innerHTML = '<p>진행중인 라이브가 없습니다.</p>';
             } else {
                 const liveDiv = document.createElement('div');
-                liveDiv.classList.add('item');
+                liveDiv.classList.add('live-item');
                 const productPrice = live.productPrice;
                 const discountRate = live.productSale;
                 const streamStatus = live.streamStatus;
-                const streamStartTime = live.streamStartTime;
 
                 const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
-
-                const formattedOriginPrice = productPrice.toLocaleString('ko-KR');
-                const formattedDiscountedPrice = discountedPrice.toLocaleString('ko-KR');
-
-                const date = new Date(streamStartTime);
-
-                // 년, 월, 일을 추출하여 포맷
-                const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+                const formattedFinalPrice = discountedPrice.toLocaleString('ko-KR');
 
                 liveDiv.innerHTML = `
-                    <div class="stream-img-container">
-                        <img id="live-icon" src="/img/icon/live.png" alt="product-live" class="live-icon" style="width: 50px" />
-                        <img src="${live.productImg}" alt="${live.productName}" />
-                    </div>
-                    <p id="title">${live.streamTitle}</p>
-                    <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
-                    <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${live.productSale} %</p>
-                    <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
+                            <div class="stream-img-container">
+                                <img id="live-icon" src="/img/icon/live.png" alt="product-live" class="live-icon" style="width: 50px; height: 50px;" />
+                                <img src="${live.productImg}" alt="${live.productName}" />
+                            </div>
+                            <p id="title" style="font-size: 15px; font-weight: bold; margin: 8px 0 4px;">${live.streamTitle}</p>
+                            <p id="description" style="font-size: 13px; color: #555; margin: 0 0 8px;">${live.streamDescription}</p>
+                            <div class="product-price" style="display: flex; flex-direction: row; gap: 2px;
+                            font-size: 15px; color: #000; margin: 4px 0;">
+                                <span class="product-sale-percent" id="product-sale-percent" style="color: red; 
+                                font-weight: bold; margin-top: 1px; margin-right: 3px; font-size: 12px">${live.productSale} %</span>
+                                ${formattedFinalPrice}원
+                            </div>
                 `;
 
                 if (discountRate === 0) {
-                    liveDiv.querySelector(".product-sale").style.display = "none";
                     liveDiv.querySelector("#product-sale-percent").style.display = "none";
                 } else {
-                    liveDiv.querySelector(".product-sale").style.display = "block";
                     liveDiv.querySelector("#product-sale-percent").style.display = "block";
                 }
 
@@ -233,29 +240,30 @@ function loadStandBy(pageNo) {
 
             standByContent.forEach(standBy => {
                 const standByDiv = document.createElement('div');
-                standByDiv.classList.add('item');
+                standByDiv.classList.add('live-item');
                 const productPrice = standBy.productPrice;
                 const discountRate = standBy.productSale;
                 const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
 
-                const formattedOriginPrice = productPrice.toLocaleString('ko-KR');
-                const formattedDiscountedPrice = discountedPrice.toLocaleString('ko-KR');
+                const formattedFinalPrice = discountedPrice.toLocaleString('ko-KR');
 
                 standByDiv.innerHTML = `
                             <div class="stream-img-container">
                                 <img src="${standBy.productImg}" alt="${standBy.productName}" />
                             </div>
-                            <p id="title">${standBy.streamTitle}</p>
-                            <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
-                            <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${standBy.productSale} %</p>
-                            <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
+                            <p id="title" style="font-size: 15px; font-weight: bold; margin: 8px 0 4px;">${standBy.streamTitle}</p>
+                            <p id="description" style="font-size: 13px; color: #555; margin: 0 0 8px;">${standBy.streamDescription}</p>
+                            <div class="product-price" style="display: flex; flex-direction: row; gap: 2px;
+                            font-size: 15px; color: #000; margin: 4px 0;">
+                                <span class="product-sale-percent" id="product-sale-percent" style="color: red; 
+                                font-weight: bold; margin-top: 1px; margin-right: 3px; font-size: 12px">${standBy.productSale} %</span>
+                                ${formattedFinalPrice}원
+                            </div>
                         `;
 
                 if (discountRate === 0) {
-                    standByDiv.querySelector(".product-sale").style.display = "none";
                     standByDiv.querySelector("#product-sale-percent").style.display = "none";
                 } else {
-                    standByDiv.querySelector(".product-sale").style.display = "block";
                     standByDiv.querySelector("#product-sale-percent").style.display = "block";
                 }
 
@@ -296,37 +304,37 @@ function loadVod(pageNo) {
 
             vodContent.forEach(vod => {
                 const vodDiv = document.createElement('div');
-                vodDiv.classList.add('item');
+                vodDiv.classList.add('vod-item');
                 const productPrice = vod.productPrice;
                 const discountRate = vod.productSale;
                 const streamStartTime = vod.streamStartTime;
 
                 const discountedPrice = Math.floor(productPrice * ((100 - discountRate) / 100));
 
-                const formattedOriginPrice = productPrice.toLocaleString('ko-KR');
-                const formattedDiscountedPrice = discountedPrice.toLocaleString('ko-KR');
-
+                const formattedFinalPrice = discountedPrice.toLocaleString('ko-KR');
                 const date = new Date(streamStartTime);
 
                 // 년, 월, 일을 추출하여 포맷
                 const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
                 vodDiv.innerHTML = `
-                    <div class="stream-img-container">
-                        <img src="${vod.productImg}" alt="${vod.productName}" />
-                    </div>
-                    <p id="date">${formattedDate}</p>
-                    <p id="title">${vod.streamTitle}</p>
-                    <p class="product-sale" id="product-sale" style="text-decoration: line-through; font-size: 15px">${formattedOriginPrice}원</p>
-                    <p class="product-sale-percent" id="product-sale-percent" style="color: red; font-size: 15px">${vod.productSale} %</p>
-                    <p class="product-price-final" id="product-price-final" style="font-size: 20px">${formattedDiscountedPrice}원</p>
+                            <div class="stream-img-container">
+                                <img src="${vod.productImg}" alt="${vod.productName}" />
+                            </div>
+                            <p id="title" style="font-size: 15px; font-weight: bold; margin: 8px 0 4px;">${vod.streamTitle}</p>
+                            <p id="description" style="font-size: 13px; color: #555; margin: 0 0 8px;">${vod.streamDescription}</p>
+                            <div class="product-price" style="display: flex; flex-direction: row; gap: 2px;
+                            font-size: 15px; color: #000; margin: 4px 0;">
+                                <span class="product-sale-percent" id="product-sale-percent" style="color: red; 
+                                font-weight: bold; margin-top: 1px; margin-right: 3px; font-size: 12px">${vod.productSale} %</span>
+                                ${formattedFinalPrice}원
+                            </div>
+                            <p id="date">${formattedDate}</p>
                 `;
 
                 if (discountRate === 0) {
-                    vodDiv.querySelector(".product-sale").style.display = "none";
                     vodDiv.querySelector("#product-sale-percent").style.display = "none";
                 } else {
-                    vodDiv.querySelector(".product-sale").style.display = "block";
                     vodDiv.querySelector("#product-sale-percent").style.display = "block";
                 }
 
@@ -362,7 +370,7 @@ function loadVodByCategory(categoryNo, pageNo) {
 
         vodContent.forEach(vod => {
             const vodDiv = document.createElement('div');
-            vodDiv.classList.add('item');
+            vodDiv.classList.add('vod-item');
             const productPrice = vod.productPrice;
             const discountRate = vod.productSale;
             const streamStartTime = vod.streamStartTime;
