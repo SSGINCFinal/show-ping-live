@@ -306,4 +306,9 @@ public class StreamServiceImpl implements StreamService {
                 .build();
     }
 
+    @Override
+    public Page<StreamResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable) {
+        return streamRepository.findAllVodByCategoryAndPage(categoryNo, pageable);
+    }
+
 }

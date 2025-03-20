@@ -118,4 +118,13 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
             """)
     GetStreamRegisterInfoDto findStreamByMemberIdAndStreamStatus(String memberId);
 
+    @Query("""
+        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        (s.streamNo, s.streamTitle, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
+        FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
+        JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
+        AND c.categoryNo = :categoryNo ORDER BY s.streamNo DESC
+    """)
+    Page<StreamResponseDto> findAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
 }

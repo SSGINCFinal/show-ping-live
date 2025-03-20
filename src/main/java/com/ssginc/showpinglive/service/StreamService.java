@@ -40,4 +40,6 @@ public interface StreamService {
 
     GetStreamProductInfoResponseDto getStreamProductInfo(Long streamNo);
 
+    Page<StreamResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
+
 }

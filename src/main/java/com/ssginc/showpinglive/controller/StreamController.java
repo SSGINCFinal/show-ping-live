@@ -138,6 +138,22 @@ public class StreamController {
     }
 
     /**
+     * 전체 Vod 목록을 반환해주는 컨트롤러 메서드
+     * @param categoryNo 카테고리 번호
+     * @return 전달할 응답객체 (json 형태로 전달)
+     */
+    @GetMapping("/vod/category")
+    public ResponseEntity<?> getVodListByCategoryAndPage(@RequestParam(name = "categoryNo") Long categoryNo,
+                                                         @RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 4);
+        Page<StreamResponseDto> pageInfo = streamService.getAllVodByCategoryAndPage(categoryNo, pageable);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("pageInfo", pageInfo);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
      * VOD 파일을 NCP Storage에 저장을 요청하는 컨트롤러 메서드
      * @param requestData 요청 데이터 정보
      * @return VOD의 저장결과 응답객체
