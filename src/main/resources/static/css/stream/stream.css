@@ -63,7 +63,7 @@
     flex-direction: column;
     justify-content: center; /* 내부 요소 수직 정렬 */
     align-items: center; /* 내부 요소 수평 정렬 */
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);
 }
 
 /* 이미지 스타일 */
