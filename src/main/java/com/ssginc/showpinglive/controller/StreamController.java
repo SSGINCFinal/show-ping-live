@@ -68,15 +68,22 @@ public class StreamController {
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/standby/list")
-    public ResponseEntity<?> getStandByList(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+    public ResponseEntity<?> getStandByList(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo,
+                                            @RequestParam(defaultValue = "none", name = "option") String option) {
         Pageable pageable = null;
 
-        if (pageNo == 0) {
-            pageable = PageRequest.of(pageNo, 3);
+        if (option.equals("none")) {
+            if (pageNo == 0) {
+                pageable = PageRequest.of(pageNo, 3);
+            }
+            else {
+                pageable = PageRequest.of(pageNo, 4);
+            }
         }
         else {
             pageable = PageRequest.of(pageNo, 4);
         }
+
         Page<StreamResponseDto> pageInfo = streamService.getAllStandbyByPage(pageable);
 
         // Map으로 전달할 응답객체 저장
