@@ -1,7 +1,11 @@
+let liveFilterOption = 'all';
+let vodFilterOption = 'all';
+let categoryNumber = null;
+
 document.addEventListener("DOMContentLoaded", function () {
     setupFilterButtons();                      // 필터링 버튼 셋팅
     loadLive();                                // 라이브 방송 불러오기
-    loadStandBy(0, 'none');     // 준비중 방송 불러오기
+    loadStandBy(0);     // 준비중 방송 불러오기
     loadVod(0);                        // 최초 1페이지의 VOD 목록 불러오기
 });
 
@@ -38,6 +42,7 @@ function setupVodFilterButtons() {
             allButton.textContent = '전체';
 
             allButton.addEventListener('click', function() {
+                vodFiltered = false;
                 loadVod(0);
             });
             filterButtons.appendChild(allButton);
@@ -52,7 +57,9 @@ function setupVodFilterButtons() {
                 button.textContent = category.categoryName;
 
                 button.addEventListener('click', function() {
-                    loadVodByCategory(parseInt(category.categoryNo), 0);
+                    vodFilterOption = 'filtered';
+                    categoryNumber = parseInt(category.categoryNo);
+                    loadVodByCategory(categoryNumber, 0);
                 });
 
                 filterButtons.appendChild(button);
@@ -74,16 +81,19 @@ function setupVodFilterButtons() {
 }
 
 function filterAll() {
+    liveFilterOption = 'all';
     loadLive();
-    loadStandBy(0, 'none');
+    loadStandBy(0);
 }
 
 function filterLive() {
+    liveFilterOption = 'live';
     loadLive();
 }
 
 function filterStandBy() {
-    loadStandBy(0, 'filtered');
+    liveFilterOption = 'standby';
+    loadStandBy(0);
 }
 
 function loadLive() {
@@ -150,7 +160,15 @@ function loadLive() {
         });
 }
 
-function loadStandBy(pageNo, option) {
+function loadStandBy(pageNo) {
+    let option;
+
+    if (liveFilterOption === 'standby') {
+        option = 'filtered';
+    } else {
+        option = 'none';
+    }
+
     axios.get('/stream/standby/list', {
         params: {
             pageNo: pageNo,
@@ -221,6 +239,10 @@ function loadVod(pageNo) {
             const vodContent = pageInfo['content'];
             const vodGrid = document.getElementById('vod-grid');
 
+            if (pageNo === 0) {
+                vodGrid.innerHTML = '';
+            }
+
             vodContent.forEach(vod => {
                 const vodDiv = document.createElement('div');
                 vodDiv.classList.add('item');
@@ -272,31 +294,6 @@ function loadVod(pageNo) {
         });
 }
 
-function renderPageContent(pageInfo, containerName, option) {
-    // 페이지 버튼 영역 생성
-    const pageContainer = document.getElementById(containerName);
-    pageContainer.innerHTML = '';
-    const totalPages = pageInfo['totalPages'];
-    const pageNumber = pageInfo['number'];
-
-    if (pageNumber !== totalPages - 1) {
-        const pageDiv = document.createElement('div');
-        pageDiv.classList.add('page-item');
-        pageDiv.innerHTML = `<button class="load-more">더보기</button>`
-
-        // 페이지 번호 클릭시 해당 페이지의 VOD 목록을 가져옴
-        pageDiv.addEventListener('click', () => {
-            if (containerName === 'vod-page-container') {
-                loadVod(pageNumber + 1);
-            }
-            else if (containerName === 'live-page-container') {
-                loadStandBy(pageNumber + 1, option);
-            }
-        });
-        pageContainer.appendChild(pageDiv);
-    }
-}
-
 function loadVodByCategory(categoryNo, pageNo) {
     axios.get(`/stream/vod/category`, {
         params: {
@@ -308,7 +305,10 @@ function loadVodByCategory(categoryNo, pageNo) {
         const vodContent = pageInfo['content'];
         const vodGrid = document.getElementById('vod-grid');
 
-        vodGrid.innerHTML = '';
+        if (pageNo === 0) {
+            vodGrid.innerHTML = '';
+        }
+
         vodContent.forEach(vod => {
             const vodDiv = document.createElement('div');
             vodDiv.classList.add('item');
@@ -357,4 +357,34 @@ function loadVodByCategory(categoryNo, pageNo) {
         .catch(error => {
             console.error("VOD 목록을 불러오는 중 오류 발생:", error);
         });
+}
+
+function renderPageContent(pageInfo, containerName) {
+    // 페이지 버튼 영역 생성
+    const pageContainer = document.getElementById(containerName);
+    pageContainer.innerHTML = '';
+    const totalPages = pageInfo['totalPages'];
+    const pageNumber = pageInfo['number'];
+
+    if (pageNumber !== totalPages - 1) {
+        const pageDiv = document.createElement('div');
+        pageDiv.classList.add('page-item');
+        pageDiv.innerHTML = `<button class="load-more">더보기</button>`
+
+        // 페이지 번호 클릭시 해당 페이지의 VOD 목록을 가져옴
+        pageDiv.addEventListener('click', () => {
+            if (containerName === 'vod-page-container') {
+                if (vodFilterOption === 'all') {
+                    loadVod(pageNumber + 1);
+                }
+                else {
+                    loadVodByCategory(categoryNumber, pageNumber + 1);
+                }
+            }
+            else if (containerName === 'live-page-container') {
+                loadStandBy(pageNumber + 1);
+            }
+        });
+        pageContainer.appendChild(pageDiv);
+    }
 }
