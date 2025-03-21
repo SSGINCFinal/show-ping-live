@@ -200,7 +200,7 @@ function renderSale(products) {
 
     // products가 없거나 빈 배열일 경우 안내 메시지 출력
     if (!products || products.length === 0) {
-        productSaleGrid.innerHTML = '<p style="height: 200px; text-align: center">현재 세일중인 상품이 없습니다</p>';
+        productSaleGrid.innerHTML = '<p style="height: 200px; text-align: center">현재 할인 중 인 상품이 없습니다</p>';
         return;
     }
 
