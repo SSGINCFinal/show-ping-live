@@ -23,6 +23,7 @@ public class MemberController {
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final AuthService authService;
+    private final MemberService memberService;
 
     // 로그인 페이지 요청 처리
     @GetMapping("/login")
@@ -100,4 +101,17 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/member")
+    public ResponseEntity<?> getMember(@AuthenticationPrincipal UserDetails userDetails) {
+        String role = null;
+
+        if (userDetails != null) {
+            role = memberService.findMemberById(userDetails.getUsername()).getMemberRole().getRole();
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(role);
+    }
 }
