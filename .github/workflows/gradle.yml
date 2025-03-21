@@ -53,7 +53,7 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         port: 8888
         script: |
-          echo "${{ secrets.SERVER_PASSWORD }}" | sudo -S rm -rf ~/CICD/ROOT
+          echo "${{ secrets.SERVER_PASSWORD }}" | sudo -S rm -rf ~/CICD/*
 
     # ROOT.war 파일을 우분투 서버에 전송
     - name: Deploy ROOT.war to Server
