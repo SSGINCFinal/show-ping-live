@@ -84,12 +84,9 @@ public class ReportController {
                     reportDto.getEndDate(),
                     reportDto.getStatus()
             );
-            System.out.println("[DEBUG] ReportDto received #2: " + reportDto);
         } else {
             reports = reportService.getAllReports();
         }
-
-        System.out.println("[DEBUG] 검색된 결과 건수: " + reports.size());
 
         // Report 엔티티를 ReportResponseDto로 변환 (필요한 필드만 포함)
         List<ReportResponseDto> responseDtos = reports.stream().map(report -> {
@@ -97,7 +94,6 @@ public class ReportController {
             if (report.getReportCreatedAt() != null) {
                 formattedDate = report.getReportCreatedAt().toString(); // 혹은 원하는 포맷으로 변경
             }
-            System.out.println("[DEBUG] ReportDto received #3: " + report);
             return new ReportResponseDto(
                     report.getReportNo(),
                     formattedDate,
@@ -107,7 +103,6 @@ public class ReportController {
                     report.getReportStatus().getReportStatus()
             );
         }).collect(Collectors.toList());
-        responseDtos.forEach(dto -> System.out.println("[DEBUG] ReportResponseDto: " + dto));
         return responseDtos;
     }
 

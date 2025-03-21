@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (searchBtn && searchForm) {
         searchBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            // 폼의 submit 이벤트를 강제로 발생시킵니다.
+            // 폼의 submit 이벤트를 강제로 발생
             searchForm.dispatchEvent(new Event("submit", {bubbles: true, cancelable: true}));
         });
     }
@@ -121,16 +121,14 @@ document.addEventListener("DOMContentLoaded", () => {
         axios.post('/report/api/updateStatus', {
             reportNo: selectedReport.reportNo
         }).then(res => {
-            console.log("신고 처리 완료:", res.data);
             Swal.fire({
                 icon: 'success',
                 title: '신고 처리 완료',
-                text: "신고가 '처리' 상태로 변경되었습니다."
+                text: "신고를 접수 했습니다."
             });
             closeReportDetailModal();
             loadReports();
         }).catch(err => {
-            console.error("신고 상태 업데이트 중 오류:", err);
             Swal.fire({
                 icon: 'error',
                 title: '오류',
@@ -156,14 +154,13 @@ function loadReports() {
 
     axios.get('/report/api/list', {params: params})
         .then((response) => {
-            console.log("[DEBUG] Received report data:", response.data);
             // 전체 신고 목록을 전역 변수에 저장하고, 페이지를 1로 초기화
             allReports = response.data;
             currentPage = 1;
             renderPage();
         })
         .catch((error) => {
-            console.error("신고 목록을 불러오는 중 오류 발생:", error);
+            console.error("신고 목록 에러 발생:", error);
         });
 }
 
@@ -194,7 +191,7 @@ function renderTable(reports) {
         {title: "번호", field: "reportNo", type: "number"},
         {title: "접수일", field: "reportCreatedAt", type: "date"},
         {title: "신고 사유", field: "reportReason", type: "string"},
-        {title: "피신고자 ID", field: "memberId", type: "string"},
+        {title: "신고자 ID", field: "memberId", type: "string"},
         {title: "처리 여부", field: "reportStatus", type: "string"}
     ];
 
@@ -233,9 +230,6 @@ function renderTable(reports) {
         const reportNoHtml = (report.reportStatus === '미처리' || report.reportStatus !== 'PROCEEDING')
             ? `<span class="report-no-click" onclick='openReportDetailModal(${JSON.stringify(report)})'>${report.reportNo}</span>`
             : `<span>${report.reportNo}</span>`;
-        console.log("[DEBUG] reportNoHtml >> ", reportNoHtml);
-
-
 
         tr.innerHTML = `
             <td>${reportNoHtml}</td>
@@ -244,7 +238,7 @@ function renderTable(reports) {
             <td>${report.memberId}</td>
             <td>${report.reportStatus}</td>
         `;
-        // [변경!!!!] 다른 컬럼에는 click 이벤트를 부여하지 않음.
+        // 다른 컬럼에는 click 이벤트를 부여하지 않음.
         tbody.appendChild(tr);
     });
     table.appendChild(tbody);
