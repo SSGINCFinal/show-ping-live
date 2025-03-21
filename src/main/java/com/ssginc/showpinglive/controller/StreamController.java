@@ -125,6 +125,23 @@ public class StreamController {
     }
 
     /**
+     * 영상 조회수를 기준으로 내림차순 페이지네이션 반환해주는 컨트롤러 메서드
+     * @param pageNo 요청한 페이지 번호
+     * @return 전달할 응답객체 (json 형태로 전달)
+     */
+    @GetMapping("/vod/list/watch/page")
+    public ResponseEntity<?> getVodListByWatch(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+        // 페이지 당 불러올 객체 단위 지정 (4개)
+        Pageable pageable = PageRequest.of(pageNo, 4);
+        Page<StreamResponseDto> pageInfo = streamService.getAllVodByWatch(pageable);
+
+        // Map으로 전달할 응답객체 저장
+        Map<String, Object> result = new HashMap<>();
+        result.put("pageInfo", pageInfo);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
      * 전체 Vod 목록을 반환해주는 컨트롤러 메서드
      * @param categoryNo 카테고리 번호
      * @return 전달할 응답객체 (json 형태로 전달)
@@ -149,6 +166,24 @@ public class StreamController {
         Pageable pageable = PageRequest.of(pageNo, 4);
         Page<StreamResponseDto> pageInfo = streamService.getAllVodByCategoryAndPage(categoryNo, pageable);
 
+        Map<String, Object> result = new HashMap<>();
+        result.put("pageInfo", pageInfo);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * 영상 조회수를 기준으로 내림차순 페이지네이션 반환해주는 컨트롤러 메서드
+     * @param pageNo 요청한 페이지 번호
+     * @return 전달할 응답객체 (json 형태로 전달)
+     */
+    @GetMapping("/vod/list/category/watch")
+    public ResponseEntity<?> getVodListByCategoryAndWatch(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo,
+                                                          @RequestParam(name = "categoryNo") Long categoryNo) {
+        // 페이지 당 불러올 객체 단위 지정 (4개)
+        Pageable pageable = PageRequest.of(pageNo, 4);
+        Page<StreamResponseDto> pageInfo = streamService.getAllVodByCatgoryAndWatch(categoryNo, pageable);
+
+        // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();
         result.put("pageInfo", pageInfo);
         return new ResponseEntity<>(result, HttpStatus.OK);

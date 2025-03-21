@@ -141,4 +141,28 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
         AND c.categoryNo = :categoryNo ORDER BY s.streamNo DESC
     """)
     Page<StreamResponseDto> findAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
+
+    @Query("""
+        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        (s.streamNo, s.streamTitle, s.streamDescription ,s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
+        FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
+        JOIN Watch w ON w.stream.streamNo = s.streamNo
+        JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
+        GROUP BY w.stream.streamNo ORDER BY count(w.stream.streamNo) DESC
+    """)
+    Page<StreamResponseDto> findAllVodByWatch(Pageable pageable);
+
+    @Query("""
+        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        (s.streamNo, s.streamTitle, s.streamDescription ,s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
+        FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
+        JOIN Watch w ON s.streamNo = w.stream.streamNo
+        JOIN Category c ON p.category.categoryNo = c.categoryNo
+        WHERE s.streamStatus = 'ENDED' AND c.categoryNo = :categoryNo
+        GROUP BY w.stream.streamNo ORDER BY count(w.stream.streamNo) DESC
+    """)
+    Page<StreamResponseDto> findAllVodByCategoryAndWatch(Long categoryNo, Pageable pageable);
+
 }
