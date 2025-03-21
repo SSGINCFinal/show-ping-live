@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     loadCategories();
+    setAdminNav();
 });
 
 function loadCategories() {
@@ -31,6 +32,22 @@ function loadCategories() {
         .catch(error => {
             console.error("카테고리를 불러오는 중 오류 발생:", error);
         });
+}
+
+function setAdminNav() {
+    const accessToken = sessionStorage.getItem('accessToken');
+
+    axios.get('/member', {
+        headers: {
+            'Authorization': 'Bearer ' + accessToken
+        }
+    })
+        .then((response) => {
+            if (response.data === 'ROLE_ADMIN') {
+                document.getElementById('admin-menu').hidden = false;
+            }
+        })
+        .catch(() => {})
 }
 
 // 버튼 요소 가져오기
