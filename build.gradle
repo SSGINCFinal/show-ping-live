@@ -133,6 +133,9 @@ dependencies {
     //************************************************************************
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    // SLF4J 및 Logback
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
 
     //************************************************************************
     //  aho-corasick
