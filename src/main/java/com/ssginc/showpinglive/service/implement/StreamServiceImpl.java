@@ -316,4 +316,14 @@ public class StreamServiceImpl implements StreamService {
         return streamRepository.findAllBroadCastByPage(pageable);
     }
 
+    @Override
+    public Page<StreamResponseDto> getAllVodByWatch(Pageable pageable) {
+        return streamRepository.findAllVodByWatch(pageable);
+    }
+
+    @Override
+    public Page<StreamResponseDto> getAllVodByCatgoryAndWatch(Long categoryNo, Pageable pageable) {
+        return streamRepository.findAllVodByCategoryAndWatch(categoryNo, pageable);
+    }
+
 }

@@ -32,6 +32,16 @@ public class ProductController {
         return productService.getProductsByCategory(categoryNo, pageable);
     }
 
+    @GetMapping("/{cateogryNo}/saleQuantity")
+    public List<ProductDto> getTopProductsBySaleQuantity(@PathVariable("cateogryNo") Long cateogryNo) {
+        return productService.getTopProductsBySaleQuantity(cateogryNo);
+    }
+
+    @GetMapping("/{cateogryNo}/sale")
+    public List<ProductDto> getTopProductsBySale(@PathVariable("cateogryNo") Long cateogryNo) {
+        return productService.getTopProductsBySale(cateogryNo);
+    }
+
     @GetMapping("/detail/{productNo}")
     public ProductDto getProductDetail(@PathVariable Long productNo) {
         return productService.getProductById(productNo);
