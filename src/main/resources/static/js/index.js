@@ -114,10 +114,7 @@ function loadSaleQuantity(categoryNo) {
 function loadSale(categoryNo) {
     axios.get(`/api/products/${categoryNo}/sale`)
         .then(response => {
-            // API 응답의 content 배열을 가져온다고 가정합니다.
-            console.log(categoryNo)
             const products = response.data;
-            console.log(products);
             renderSale(products);
         })
         .catch(error => {
@@ -203,7 +200,7 @@ function renderSale(products) {
 
     // products가 없거나 빈 배열일 경우 안내 메시지 출력
     if (!products || products.length === 0) {
-        productSaleGrid.innerHTML = '<p>현재 세일중인 상품이 없습니다</p>';
+        productSaleGrid.innerHTML = '<p style="height: 200px; text-align: center">현재 세일중인 상품이 없습니다</p>';
         return;
     }
 
@@ -311,6 +308,7 @@ function setupLiveFilterButtons() {
 function setupVodFilterButtons() {
     axios.get('/api/categories')
         .then((response) => {
+
             const filterButtons = document.getElementById('vod-buttons');
             const categories = response.data;
 
@@ -321,7 +319,7 @@ function setupVodFilterButtons() {
             allButton.textContent = 'ALL';
 
             allButton.addEventListener('click', function() {
-                loadVod(0);
+                getVod();
             });
             filterButtons.appendChild(allButton);
 
@@ -336,7 +334,7 @@ function setupVodFilterButtons() {
 
                 button.addEventListener('click', function() {
                     categoryNumber = parseInt(category.categoryNo);
-                    loadVodByCategory(categoryNumber, 0);
+                    getVodByCategory(categoryNumber);
                 });
                 filterButtons.appendChild(button);
             });
@@ -567,6 +565,7 @@ function getVod() {
         vodGrid.innerHTML = '';
 
         vodContent.forEach(vod => {
+
             const vodDiv = document.createElement('div');
             vodDiv.classList.add('vod-item');
             const productPrice = vod.productPrice;
@@ -625,6 +624,12 @@ function getVodByCategory(categoryNumber) {
         const pageInfo = response.data['pageInfo'];
         const vodContent = pageInfo['content'];
         const vodGrid = document.getElementById('vod-grid');
+        console.log(vodContent);
+
+        if (vodContent == 0){
+            vodGrid.innerHTML = '<p style="height: 200px; text-align: center">해당 카테고리의 VOD가 없습니다</p>';
+            return;
+        }
 
         vodGrid.innerHTML = '';
 
