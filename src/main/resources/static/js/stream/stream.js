@@ -441,12 +441,14 @@ function onViewOffer(error, offerSdp) {
 }
 
 function onRecordOffer(error, offerSdp) {
+    let title = "stream_" + streamNo + "_" + document.getElementById('broadcastTitle').value;
+
     if (error)
         return console.error('Error generating the offer');
     console.info('Invoking SDP offer callback function ' + location.host);
     let message = {
         id : 'start',
-        title: 'stream(' + streamNo + ')',
+        title: title,
         sdpOffer : offerSdp,
         mode :  $('input[name="mode"]:checked').val()
     }
@@ -536,7 +538,7 @@ function onLiveError(error) {
 }
 
 function uploadFileToNCP() {
-    let title = 'stream(' + streamNo + ')';
+    let title = "stream_" + streamNo + "_" + document.getElementById('broadcastTitle').value;
     let fileName = title + ".mp4";
     axios.post('/stream/vod/upload', {
         title: fileName
