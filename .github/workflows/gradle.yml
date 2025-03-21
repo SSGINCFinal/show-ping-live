@@ -44,6 +44,17 @@ jobs:
     - name: Rename WAR file
       run: mv build/libs/*-plain.war ROOT.war
 
+    # 우분투 서버에 전송하기 전에 ROOT 디렉토리 삭제
+    - name: Clean up previous ROOT deployment
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        port: 8888
+        script: |
+          echo "${{ secrets.SERVER_PASSWORD }}" | sudo -S rm -rf ~/CICD/ROOT
+
     # ROOT.war 파일을 우분투 서버에 전송
     - name: Deploy ROOT.war to Server
       uses: appleboy/scp-action@master
@@ -51,7 +62,7 @@ jobs:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USER }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        port: 22
+        port: 8888
         source: "ROOT.war"
         target: "~/CICD/ROOT.war"
 
@@ -62,7 +73,7 @@ jobs:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USER }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        port: 22
+        port: 8888
         script: |
           cd /home/admin/nginx-https
           docker-compose restart tomcat
