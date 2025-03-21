@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -113,4 +114,57 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    public List<ProductDto> getTopProductsBySaleQuantity(Long categoryNo) {
+        List<Object[]> productDataList = productRepository.findTopProductsBySaleQuantity(categoryNo, PageRequest.of(0, 4));
+
+        return productDataList.stream().map(productData -> {
+            Product product = (Product) productData[0];
+            Double reviewAverage = (Double) productData[1];
+            Long reviewCount = (Long) productData[2];
+
+            Long discountedPrice = product.getProductPrice() -
+                    (product.getProductPrice() * product.getProductSale() / 100);
+
+            return new ProductDto(
+                    product.getProductNo(),
+                    product.getProductName(),
+                    product.getProductPrice(),
+                    product.getProductQuantity(),
+                    product.getProductImg(),
+                    product.getProductDescript(),
+                    product.getProductSale(),
+                    discountedPrice,
+                    reviewCount,
+                    reviewAverage != null ? reviewAverage : 0.0,
+                    product.getProductSaleQuantity()
+            );
+        }).collect(Collectors.toList());
+    }
+
+    public List<ProductDto> getTopProductsBySale(Long categoryNo) {
+        List<Object[]> productDataList = productRepository.findTopProductsBySale(categoryNo, PageRequest.of(0, 4));
+
+        return productDataList.stream().map(productData -> {
+            Product product = (Product) productData[0];
+            Double reviewAverage = (Double) productData[1];
+            Long reviewCount = (Long) productData[2];
+
+            Long discountedPrice = product.getProductPrice() -
+                    (product.getProductPrice() * product.getProductSale() / 100);
+
+            return new ProductDto(
+                    product.getProductNo(),
+                    product.getProductName(),
+                    product.getProductPrice(),
+                    product.getProductQuantity(),
+                    product.getProductImg(),
+                    product.getProductDescript(),
+                    product.getProductSale(),
+                    discountedPrice,
+                    reviewCount,
+                    reviewAverage != null ? reviewAverage : 0.0,
+                    product.getProductSaleQuantity()
+            );
+        }).collect(Collectors.toList());
+    }
 }
