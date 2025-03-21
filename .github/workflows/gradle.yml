@@ -64,7 +64,7 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         port: 8888
         source: "ROOT.war"
-        target: "~/CICD/ROOT.war"
+        target: "~/CICD/"
 
     # 서버에서 docker-compose를 통해 tomcat 컨테이너를 재시작
     - name: Restart Tomcat Container
