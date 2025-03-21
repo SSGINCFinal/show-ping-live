@@ -165,20 +165,24 @@ td label {
 
 .table-container table th:nth-child(1),
 .table-container table td:nth-child(1) {
-    width: 60px;  /* 번호 컬럼 */
+    width: 60px; /* 번호 컬럼 */
 }
+
 .table-container table th:nth-child(2),
 .table-container table td:nth-child(2) {
     width: 130px; /* 접수일 컬럼 */
 }
+
 .table-container table th:nth-child(3),
 .table-container table td:nth-child(3) {
     width: 150px; /* 신고 사유 컬럼 */
 }
+
 .table-container table th:nth-child(4),
 .table-container table td:nth-child(4) {
     width: 100px; /* 피신고자 ID 컬럼 */
 }
+
 .table-container table th:nth-child(5),
 .table-container table td:nth-child(5) {
     width: 60px; /* 처리 여부 컬럼 */
