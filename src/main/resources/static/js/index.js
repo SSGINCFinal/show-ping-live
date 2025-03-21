@@ -676,3 +676,7 @@ function getVodByCategory(categoryNumber) {
             console.error("VOD 목록을 불러오는 중 오류 발생:", error);
         });
 }
+
+function goToLink(element) {
+    window.location.href = element.getAttribute("data-url");
+}

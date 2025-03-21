@@ -16,19 +16,20 @@
         <button class="banner-btn prev">&lt;</button>
         <!-- 배너 이미지 트랙 -->
         <div class="banner-track">
-            <div class="banner-slide">
+            <div class="banner-slide" th:data-url="@{/product/detail/7}" onclick="goToLink(this)">
                 <img th:src="@{/img/main/banner1.jpg}" alt="배너 1"/>
             </div>
-            <div class="banner-slide">
+            <div class="banner-slide" th:data-url="@{/product/detail/38}" onclick="goToLink(this)">
                 <img th:src="@{/img/main/banner2.jpg}" alt="배너 2"/>
             </div>
-            <div class="banner-slide">
+            <div class="banner-slide" th:data-url="@{/product/detail/83}" onclick="goToLink(this)">
                 <img th:src="@{/img/main/banner3.jpg}" alt="배너 3"/>
             </div>
-            <div class="banner-slide">
+            <div class="banner-slide" th:data-url="@{/product/detail/105}" onclick="goToLink(this)">
                 <img th:src="@{/img/main/banner4.jpg}" alt="배너 4"/>
             </div>
         </div>
+
         <!-- 다음 배너 버튼 -->
         <button class="banner-btn next">&gt;</button>
     </div>
