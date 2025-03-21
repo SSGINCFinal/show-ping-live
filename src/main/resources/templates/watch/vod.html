@@ -13,6 +13,7 @@
       addWatch(streamNo);
       fetchSubtitle(title);
       streamVideo(title);
+      controlTabs();
     });
   </script>
 
@@ -35,10 +36,101 @@
           <h1>채팅화면</h1>
         </div>
       </div>
-      <div class="product-container">
-        <div id="product">
-          <h1>상품화면</h1>
+      <div class="product-view-container">
+        <!-- 상단 탭 영역 -->
+        <div class="tabs">
+          <button class="tab-btn active" data-target="tab-product">상품 정보</button>
+          <button class="tab-btn" data-target="tab-faq">FAQ</button>
+          <!--                    <button class="tab-btn" data-target="tab-event">이벤트</button>-->
         </div>
+        
+        <!-- 탭 콘텐츠: 상품 정보 -->
+        <div id="tab-product" class="tab-content active">
+          <!-- 상품 이미지 영역 -->
+          <div class="product-image">
+            <img th:src="${productInfo.productImg}" alt="상품 이미지" th:if="${productInfo != null}">
+          </div>
+          <!-- 상품 정보 영역 (하단) -->
+          <div class="product-details" th:if="${productInfo != null}">
+            <p class="product-view-name" th:text="${productInfo.productName}"></p>
+            <div class="prices">
+              <span class="current-view-price" th:text="${productInfo.productSalePrice}"></span>
+              <span class="original-view-price" th:text="${productInfo.productPrice}"></span>
+            </div>
+            <button class="buy-button"
+                    th:onclick="|location.href='@{/product/detail/{productNo}(productNo=${productInfo.productNo})}'|">
+              구매하기
+            </button>
+          </div>
+        </div>
+        
+        <!-- 탭 콘텐츠: FAQ -->
+        <div id="tab-faq" class="tab-content">
+          <!-- FAQ 항목 1 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Q. 라이브 중에만 할인이 적용되나요?</span>
+              <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+              <p>‘네 그렇습니다. 본 이벤트는 라이브 특가 이벤트로써 라이브 방송 진행 중일때만 할인가가 적용됩니다.’</p>
+            </div>
+          </div>
+          
+          <!-- FAQ 항목 2 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Q. 배송은 언제 받을 수 있나요?</span>
+              <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+              <p>배송사마다 차이가 발생할 수 있으나 기본적으로 1~2일 소요됩니다.</p>
+            </div>
+          </div>
+          
+          <!-- FAQ 항목 3 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Q. 방송 중 부적절한 메시지를 발견했어요. 사용자 신고를 할 수 있나요?</span>
+              <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+              <p>네 가능합니다. 부적절한 메시지를 입력한 유저의 아이디를 클릭하시면 해당 유저를 신고하실 수 있습니다. 이후 운영진에서 해당 유저의 메시지를 제한하는 등 적절한 조치를 취하도록 하겠습니다.</p>
+            </div>
+          </div>
+          
+          <!-- FAQ 항목 4 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Q. 라이브 방송을 놓쳤어요. 혹시 VOD는 있나요?</span>
+              <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+              <p>네 방송이 종료된 후 자동으로 VOD란에서 시청하시고자 하는 영상을 확인하실 수 있습니다.</p>
+            </div>
+          </div>
+          
+          <!-- FAQ 항목 5 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Q. 상세 문의는 어디서 하나요?</span>
+              <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+              <p>고객센터(010-1234-5678)로 전화주시면 답변 도와드리겠습니다.</p>
+            </div>
+          </div>
+          
+          <!-- FAQ 항목 6 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Q. 할인가 말고 다른 시청 이벤트는 없나요?</span>
+              <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+              <p>시청 이벤트는 판매사별로 다르게 설정할 수 있으며 시청 이벤트 등록시 FAQ 탭 옆에 시청 이벤트란에서 확인하실 수 있습니다. </p>
+            </div>
+          </div>
       </div>
     </div>
   </div>

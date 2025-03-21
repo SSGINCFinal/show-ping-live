@@ -1,6 +1,7 @@
 package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.dto.request.WatchRequestDto;
+import com.ssginc.showpinglive.dto.response.GetStreamProductInfoResponseDto;
 import com.ssginc.showpinglive.dto.response.StreamResponseDto;
 import com.ssginc.showpinglive.dto.response.WatchResponseDto;
 import com.ssginc.showpinglive.entity.Member;
@@ -57,9 +58,12 @@ public class WatchController {
             model.addAttribute("member", new Member());
         }
 
+        GetStreamProductInfoResponseDto streamProductInfo = streamService.getStreamProductInfo(streamNo);
+
         // VOD 객체 정보 불러오기
         StreamResponseDto vodDto = streamService.getVodByNo(streamNo);
         model.addAttribute("vodDto", vodDto);
+        model.addAttribute("productInfo", streamProductInfo);
 
         return "watch/vod";
     }
