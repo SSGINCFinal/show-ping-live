@@ -1,15 +1,11 @@
 package com.ssginc.showpinglive.dto.object;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDateTime;
 /**
  * @author juil1-kim
  *  몽고DB Chat Collection으로 보낼 Dto 클래스
@@ -28,6 +24,9 @@ public class ChatDto {
 
     @JsonProperty("chat_room_no")
     private Long chatRoomNo;
+
+    @JsonProperty("chat_stream_no")
+    private Long chatStreamNo;
 
     @JsonProperty("chat_message")
     private String chatMessage;

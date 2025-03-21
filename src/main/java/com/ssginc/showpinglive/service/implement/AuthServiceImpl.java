@@ -14,6 +14,7 @@ import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +34,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -53,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public ResponseEntity<?> login(Member member, HttpServletResponse response) {
-        System.out.println("로그인 요청: " + member.getMemberId());
+        log.info("📢 로그인 요청 - ID: {}", member.getMemberId());
 
         String memberId = member.getMemberId();
         String memberPassword = member.getMemberPassword();
@@ -81,6 +83,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 역할(Role) 가져오기
         String role = userDetails.getAuthorities().isEmpty() ? "ROLE_USER" : userDetails.getAuthorities().iterator().next().getAuthority();
+        log.info("✅ Access Token 생성 완료: {}", role);
 
         // 관리자(`ROLE_ADMIN`)이면 2차 인증 필요
         if ("ROLE_ADMIN".equals(role)) {

@@ -6,11 +6,13 @@
     <title>회원가입 | ShowPing</title>
     <link rel="stylesheet" th:href="@{/css/login/signup.css}">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <div class="container">
     <div class="logo-area">
-        <h2>ShowPing</h2>
+        <h2 onclick="redirectToHome()" style="cursor: pointer;">ShowPing</h2>
         <h5>회원가입</h5>
         <h6>회원이 되어 다양한 혜택을 경험해보세요!</h6>
     </div>
@@ -51,7 +53,7 @@
             <label for="email">이메일</label>
             <div class="input-group">
                 <input type="email" id="email" placeholder="이메일 입력" required autocomplete="off">
-                <button type="button" class="verify-btn" onclick="sendVerificationCode()">인증 코드 보내기</button>
+                <button type="button" class="verify-btn" onclick="sendVerificationCode()">인증 코드</button>
             </div>
 
             <div class="input-group hidden" id="email-verify-section">

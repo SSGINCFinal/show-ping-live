@@ -143,11 +143,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // 시청모드이면 접속시 viewer 함수 실행
-        if (watch) {
-            viewer();
-        }
-
         // streamInfo == null이면(등록된 방송 정보가 없다면) 방송 시작, 방송 종료 버튼 비활성화
         if (streamInfo === false) {
             setState(DISABLED);
@@ -234,6 +229,12 @@ function setState(nextState) {
             return;
     }
     state = nextState;
+}
+
+ws.onopen = function () {
+    if (watch) {
+        viewer();
+    }
 }
 
 ws.onmessage = function(message) {
@@ -663,6 +664,7 @@ function sendChatMessage() {
             _id: "", // 서버 또는 DB에서 할당
             chat_member_id: memberId,
             chat_room_no: chatRoomNo,
+            chat_stream_no : chatStreamNo || streamNo,
             chat_message: messageText,
             chat_role: memberRole,
             chat_created_at: new Date().toLocaleString()

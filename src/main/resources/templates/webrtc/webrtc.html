@@ -20,6 +20,8 @@
 
     <script type="text/javascript" th:inline="javascript">
         let streamInfo = false;
+        let chatRoomInfo = [[${chatRoomInfo}]];
+        let chatStreamNo = (typeof chatRoomInfo !== "undefined" && chatRoomInfo !== null) ? chatRoomInfo.streamNo : null;
         let streamNo;
         let chatRoomNo;
     </script>
@@ -42,7 +44,7 @@
                 <!-- 공지 영역 -->
                 <div class="announcement">
                     공지 | Live 방송 중에만 초특가
-                    <strong> 10% 세일!!</strong>
+                    <strong> 세일!!</strong>
                 </div>
 
                 <div class="chat-messages" id="chat-messages">

@@ -1,3 +1,4 @@
+/* 전체 페이지 스타일 */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f4f7;
@@ -8,6 +9,7 @@ body {
     margin: 0;
 }
 
+/* 로그인 컨테이너 */
 .container {
     background-color: #ffffff;
     border-radius: 15px;
@@ -19,6 +21,7 @@ body {
     align-items: center;
 }
 
+/* 로고 영역 */
 .logo-area {
     display: flex;
     flex-direction: column;
@@ -44,6 +47,7 @@ body {
     font-weight: bold;
 }
 
+/* 로그인 폼 */
 .login-form {
     width: 100%;
     display: flex;
@@ -56,96 +60,152 @@ body {
     margin-bottom: 20px;
 }
 
+/* 🔹 입력 필드 디자인 */
 .login-form input {
-    width: 80%;
-    padding: 10px;
+    width: 100%; /* 🔹 전체 너비로 확장 */
+    padding: 12px;
     margin: 5px 0;
     border: 1px solid #ddd;
     border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
 }
 
-.login-form button {
-    background-color: #498af0;
+/* 🔹 로그인 버튼 스타일 */
+.login-btn {
+    width: 100%; /* 🔹 버튼 크기 통일 */
+    padding: 12px;
+    background: #498af0;
     color: white;
-    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
-    justify-content: center;
-    align-items: center;
+    transition: background 0.3s ease-in-out; /* 🔹 부드러운 색상 전환 */
 }
 
-.login-form form {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 내부 요소들(입력 필드, 버튼) 중앙 정렬 */
+.login-btn:hover {
+    background: #106fb5;
+}
+
+/* 🔹 회원가입 버튼 */
+.signup-btn {
     width: 100%;
+    padding: 12px;
+    background: white;
+    color: #045eae;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #0d61a5;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s ease-in-out;
 }
 
+.signup-btn:hover {
+    background: #e8f1ff;
+}
+
+/* 🔹 로그인 옵션 (아이디 찾기 | 비밀번호 찾기) */
+.login-options {
+    width: 100%;
+    text-align: right; /* 🔹 오른쪽 정렬 */
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+.login-options a {
+    text-decoration: none;
+    color: #498af0;
+}
+
+/* 🔹 체크박스 & 라벨 정렬 */
 .remember-me {
     display: flex;
     align-items: center;
     margin-top: 10px;
+    font-size: 14px;
 }
 
 .remember-me input {
     margin-right: 5px;
 }
 
-.find-links {
-    margin-top: 10px;
-}
-
-.find-links a {
-    color: #498af0;
-    text-decoration: none;
-}
-
+/* 🔹 소셜 로그인 버튼 */
 .social-login {
     display: flex;
+    gap: 10px;
     margin-top: 20px;
+    width: 100%;
 }
 
 .social-login button {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin: 0 5px;
     color: white;
+    font-size: 14px;
+    transition: opacity 0.3s ease-in-out;
 }
 
+.social-login button:hover {
+    opacity: 0.8;
+}
+
+/* 🔹 네이버 로그인 버튼 */
 .social-login .naver-login {
-    background-color: #03E866 !important;
-    color: white !important;
-    border: none !important;
-    padding: 10px !important;
-    font-size: 16px !important;
-    cursor: pointer !important;
+    background-color: #03C75A;
 }
 
+/* 🔹 카카오 로그인 버튼 */
 .social-login .kakao-login {
-    background-color: #FFE812 !important;
-    color: black !important;
-    border: none !important;
-    padding: 10px !important;
-    font-size: 16px !important;
-    cursor: pointer !important;
+    background-color: #FEE500;
+    color: black;
 }
+
+/* 🔹 소셜 아이콘 크기 조정 */
 .social-login .social-icon {
-    width: 20px; /* 로고 크기 줄이기 */
+    width: 20px;
     height: 20px;
 }
+
+/* 🔹 회원가입 링크 */
 .signup-link {
     margin-top: 20px;
+    font-size: 14px;
 }
 
 .signup-link a {
     color: #498af0;
+    text-decoration: none;
+}
+
+/* 🔹 반응형 디자인 (모바일 최적화) */
+@media screen and (max-width: 480px) {
+    .container {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .login-btn, .signup-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .login-form input {
+        padding: 10px;
+    }
+
+    .social-login {
+        flex-direction: column;
+        gap: 8px;
+    }
 }

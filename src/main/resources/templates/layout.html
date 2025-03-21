@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <title>ShowPing</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <script defer th:src="@{/js/scripts.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
@@ -42,6 +41,16 @@
                 <li class="menu-item dropdown">
                     <a th:href="@{/watch/history}">시청 내역</a>
                 </li>
+                <li class="menu-item dropdown" id="admin-menu" hidden>
+                    <a>관리자 메뉴</a>
+                    <ul class="dropdown-menu">
+                        <!-- 카테고리 리스트 동적 추가 -->
+                        <li>
+                            <a th:href="@{/webrtc/webrtc}">라이브 송출</a>
+                            <a th:href="@{/report/report}">신고 관리</a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </nav>
 
@@ -60,18 +69,11 @@
             </div>
 
             <div class="icon-bar">
-                <div id="user-menu" class="user-menu" style="display: none;">
-                    <button class="logout-button" id="user-greeting">
-                        <img th:src="@{/img/icon/logout.png}" style="height: 30px">
-                    </button>
-                </div>
-            </div>
-
-            <div class="icon-bar">
-                <a th:href="@{/login}" id="login-button">
-                    <img th:src="@{/img/icon/login.png}" style="height: 30px">
+                <a href="#" id="auth-button">
+                    <img id="auth-icon" th:src="@{/img/icon/login.png}" style="height: 30px">
                 </a>
             </div>
+
 
         </div>
     </div>

@@ -4,39 +4,100 @@
       layout:decorate="layout.html">
 
 <head>
-  <link rel="stylesheet" th:href="@{/css/watch/stream.css}">
+    <link rel="stylesheet" th:href="@{/css/watch/stream.css}">
 
-  <script th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-      let streamNo = [[${vodDto.streamNo}]];
-      let title = 'stream(' + streamNo + ')'
-      addWatch(streamNo);
-      fetchSubtitle(title);
-      streamVideo(title);
-      controlTabs();
-    });
-  </script>
+    <script th:inline="javascript">
+        // ========== 추가된 부분: parseStreamStartTime 함수 (추가하고 싶은 HTML 코드에서 가져옴) ==========
+        function parseStreamStartTime(dateStr) {
+            dateStr = dateStr.replace(/^["']|["']$/g, "");
+            console.log("[DEBUG] parseStreamStartTime 입력:", dateStr);
+            // 이미 'T'가 포함되어 있다고 가정 (예: "2025-03-21T03:28:35.788294")
+            let fixedStr = dateStr;
+            // 정규식: 소수점 이하 3자리까지만 남김
+            fixedStr = fixedStr.replace(/(\.\d{3})\d+/, '$1');
+            // 타임존이 없으면 한국 표준시 +09:00 추가
+            if (!/[+-]\d\d:\d\d$/.test(fixedStr) && !fixedStr.endsWith("Z")) {
+                fixedStr += "+09:00";
+            }
+            console.log("[DEBUG] parseStreamStartTime 변환 후 문자열:", fixedStr);
+            let parsedDate = new Date(fixedStr);
+            console.log("[DEBUG] parseStreamStartTime 결과:", parsedDate);
+            return parsedDate;
+        }
+        // ========== 끝 ==========
 
-  <script defer th:src="@{/js/watch/vod.js}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
+        // vodDto.streamStartTime을 반드시 문자열 리터럴로 출력 (작은 따옴표 사용)
+        var rawStreamStartTime = '[[${vodDto.streamStartTime}]]';  // 수정: 큰따옴표 대신 작은따옴표 사용
+        console.log("[DEBUG] rawStreamStartTime:", rawStreamStartTime);
+
+        console.log("#######2-2#######");
+        console.log("[DEBUG] rawStreamStartTime:", rawStreamStartTime);
+        let testParsed = new Date(rawStreamStartTime);
+        console.log("[DEBUG] testParsed:", testParsed);
+
+
+        // 전역 변수 window.streamStartTime을 Date 객체로 설정
+        window.streamStartTime = parseStreamStartTime(rawStreamStartTime);
+        console.log("[DEBUG] streamStartTime 초기화:", window.streamStartTime);
+
+        console.log("#######2-2#######");
+        console.log("[DEBUG] rawStreamStartTime:", rawStreamStartTime);
+        let testParsed2 = new Date(rawStreamStartTime);
+        console.log("[DEBUG] testParsed2:", testParsed2);
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let streamNo = [[${vodDto.streamNo}]];
+            let title = 'stream(' + streamNo + ')';
+
+            addWatch(streamNo);
+            fetchSubtitle(title);
+            fetchChatMessages(streamNo);
+            streamVideo(title);
+            controlTabs();
+
+            // ========== 추가된 부분: 비디오 요소의 play 이벤트 발생 시 updateChatMessages() 호출 ==========
+            const videoElement = document.getElementById('vod');  // id 'vod'와 일치
+            if (videoElement) {
+                videoElement.addEventListener('play', () => {
+                    updateChatMessages();
+                });
+            }
+            // ========== 끝 ==========
+        });
+    </script>
+
+
+    <script defer th:src="@{/js/watch/vod.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
 </head>
 
 <div layout:fragment="content">
-  <div class="main-contents">
-    <div class="title">
-      <h1>VOD Streaming</h1>
-    </div>
-    <div class="content-container">
-      <div class="vod-container">
-        <video id="vod" controls controlsList="nofullscreen">
-        </video>
-      </div>
-      <div class="chat-container">
-        <div id="chat">
-          <h1>채팅화면</h1>
+    <div class="main-contents">
+        <div class="title">
+            <h1>VOD Streaming</h1>
         </div>
-      </div>
-      <div class="product-view-container">
+        <div class="content-container">
+            <div class="vod-container">
+                <video id="vod" controls controlsList="nofullscreen">
+                </video>
+            </div>
+            <div class="chat-container">
+                <!-- 공지 영역 -->
+                <div class="announcement">
+                    공지 | Live 방송 중에만 초특가 <strong>세일 !!</strong>
+                </div>
+
+                <div class="chat-messages" id="chat-messages">
+                    <!-- 초기 메시지 추가 가능 -->
+                </div>
+
+                <!-- 최신 채팅으로 이동 버튼 -->
+                <button id="scroll-to-latest" class="scroll-button" style="display:none;">
+                    ↓ 최신 채팅으로 이동
+                </button>
+            </div>
+            <div class="product-view-container">
         <!-- 상단 탭 영역 -->
         <div class="tabs">
           <button class="tab-btn active" data-target="tab-product">상품 정보</button>
@@ -133,18 +194,20 @@
           </div>
       </div>
     </div>
-  </div>
+        </div>
 
-  <br>
-  <div class="settings-buttons">
-    <div class="buttons-container">
-      <button id="subtitle-on" onclick="onSubtitle()">
-        <span class="glyphicon glyphicon-play">자막켜기</span>
-      </button>
-      <button id="subtitle-off" onclick="offSubtitle()">
-        <span class="glyphicon glyphicon-play">자막끄기</span>
-      </button>
+        <br>
+        <div class="settings-buttons">
+            <div class="buttons-container">
+                <button id="subtitle-on" onclick="onSubtitle()">
+                    <span class="glyphicon glyphicon-play">자막켜기</span>
+                </button>
+                <button id="subtitle-off" onclick="offSubtitle()">
+                    <span class="glyphicon glyphicon-play">자막끄기</span>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
+    </div>
 </div>
 </html>
