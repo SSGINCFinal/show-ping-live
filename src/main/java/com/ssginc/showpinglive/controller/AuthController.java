@@ -1,10 +1,14 @@
 package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.entity.Member;
+import com.ssginc.showpinglive.jwt.JwtUtil;
 import com.ssginc.showpinglive.service.AuthService;
+import com.ssginc.showpinglive.service.MemberService;
 import com.ssginc.showpinglive.service.RefreshTokenService;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Slf4j
 @RestController  // ✅ JSON 응답을 반환하도록 변경
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -22,12 +27,45 @@ public class AuthController {
 
     private final RefreshTokenService refreshTokenService;
 
+    private final MemberService memberService;
+
+    private final JwtUtil jwtUtil;
     /**
-     * 로그인 처리 (Access Token & Refresh Token 반환)
+     * (1) 로그인 처리 (관리자는 2FA 진행)
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Member member, HttpServletResponse response) {
-        return authService.login(member, response);
+    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> request) {
+        String memberId = request.get("memberId");
+        String password = request.get("password");
+
+        if (memberId == null || password == null) {
+            return ResponseEntity.status(400).body(Map.of("status", "BAD_REQUEST", "message", "Missing required parameters"));
+        }
+
+        Member member = memberService.findMember(memberId, password);
+
+        if (member != null) {
+            if (member.getMemberRole().name().equals("ROLE_USER")) {
+                // Access Token 및 Refresh Token 생성
+                String accessToken = jwtUtil.generateAccessToken(memberId, "ROLE_USER");
+                String refreshToken = jwtUtil.generateRefreshToken(memberId);
+                refreshTokenService.saveRefreshToken(memberId, refreshToken);
+
+                // 일반 사용자는 2차 인증 없이 로그인 성공 처리
+                return ResponseEntity.ok(Map.of(
+                        "status", "LOGIN_SUCCESS",
+                        "accessToken", accessToken,
+                        "refreshToken", refreshToken
+                ));
+            }
+            else if (member.getMemberRole().name().equals("ROLE_ADMIN")) {
+                return ResponseEntity.ok(Map.of(
+                        "status", "2FA_REQUIRED"));
+            }
+
+        }
+
+        return ResponseEntity.status(401).body(Map.of("status", "LOGIN_FAILED"));
     }
 
     @PostMapping("/logout")

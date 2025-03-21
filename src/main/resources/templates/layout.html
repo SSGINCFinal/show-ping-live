@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <title>ShowPing</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <script defer th:src="@{/js/scripts.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
@@ -60,18 +59,11 @@
             </div>
 
             <div class="icon-bar">
-                <div id="user-menu" class="user-menu" style="display: none;">
-                    <button class="logout-button" id="user-greeting">
-                        <img th:src="@{/img/icon/logout.png}" style="height: 30px">
-                    </button>
-                </div>
-            </div>
-
-            <div class="icon-bar">
-                <a th:href="@{/login}" id="login-button">
-                    <img th:src="@{/img/icon/login.png}" style="height: 30px">
+                <a href="#" id="auth-button">
+                    <img id="auth-icon" th:src="@{/img/icon/login.png}" style="height: 30px">
                 </a>
             </div>
+
 
         </div>
     </div>

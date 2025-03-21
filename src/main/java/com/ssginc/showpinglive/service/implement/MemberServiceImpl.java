@@ -5,9 +5,11 @@ import com.ssginc.showpinglive.repository.MemberRepository;
 import com.ssginc.showpinglive.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -18,11 +20,30 @@ import java.util.Collections;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Member findMemberById(String memberId) {
         return memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + memberId));
+    }
+
+    @Override
+    public Member findMember(String memberId, String password) {
+
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        if (member != null) {
+            if (!passwordEncoder.matches(password, member.getMemberPassword())) {
+                throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+            }
+            else {
+                return member;
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
