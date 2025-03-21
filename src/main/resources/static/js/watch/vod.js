@@ -234,3 +234,37 @@ videoElement.addEventListener('timeupdate', () => {
         activeCue.text = displayedText;
     }
 });
+
+function controlTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+
+        // 질문 영역 클릭 시 active 토글
+        question.addEventListener('click', () => {
+            // 이미 active라면 닫고, 아니면 열기
+            item.classList.toggle('active');
+        });
+    });
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // 1) 모든 버튼에서 active 제거
+            tabButtons.forEach(b => b.classList.remove('active'));
+            // 2) 모든 탭 콘텐츠에서 active 제거
+            tabContents.forEach(tc => tc.classList.remove('active'));
+
+            // 3) 클릭된 버튼에 active 추가
+            btn.classList.add('active');
+            // 4) data-target 속성으로 연결된 콘텐츠를 찾아서 active 추가
+            const targetId = btn.getAttribute('data-target');
+            const targetContent = document.getElementById(targetId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    });
+}
