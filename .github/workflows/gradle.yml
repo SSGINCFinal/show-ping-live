@@ -42,7 +42,7 @@ jobs:
 
     # 빌드된 war 파일을 ROOT.war로 이름 변경
     - name: Rename WAR file
-      run: mv build/libs/*.war ROOT.war
+      run: mv build/libs/*-plain.war ROOT.war
 
     # ROOT.war 파일을 우분투 서버에 전송
     - name: Deploy ROOT.war to Server
