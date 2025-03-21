@@ -1,5 +1,5 @@
-var ws = new WebSocket('ws://' + location.host + '/live');
-var rec = new WebSocket('ws://' + location.host + '/record');
+var ws = new WebSocket('wss://' + location.host + '/live');
+var rec = new WebSocket('wss://' + location.host + '/record');
 var live;
 var watch;
 var webRtcPeer;

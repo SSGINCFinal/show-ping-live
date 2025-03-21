@@ -54,9 +54,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketChatHandler(), "/chat");
-        registry.addHandler(liveHandler(), "/live");
-        registry.addHandler(recordHandler(), "/record");
+        registry.addHandler(liveHandler(), "/live")
+                .setAllowedOrigins("https://showping.duckdns.org");
+        registry.addHandler(recordHandler(), "/record")
+                .setAllowedOrigins("https://showping.duckdns.org");
     }
 
 }
