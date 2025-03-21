@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "webrtc/watch", "/css/**", "/js/**", "/images/**",
                                 "/assets/**", "/oauth/**", "/api/register", "/api/auth/login", "/api/auth/logout", "api/auth/user-info").permitAll()
-                        .requestMatchers("/admin/**", "/report/report", "webrtc/webrtc", "stream/stream").hasRole("ADMIN") //admin, chat/chat 주소 접근은 ADMIN role만 접근 가능
+                        .requestMatchers("/admin/**", "report/report", "webrtc/webrtc", "stream/stream").hasRole("ADMIN") //admin, chat/chat 주소 접근은 ADMIN role만 접근 가능
                         .requestMatchers("/user/**", "watch/history").hasAnyRole("USER", "ADMIN") //user 주소 접근은 ADMIN/USER role중 어떤 것이든 접근 가능
                         .anyRequest().permitAll() //모두 허용하고, admin과 user로 시작하는 사이트와 /chat/chat만 로그인 필요
                 )

@@ -1,9 +1,7 @@
 package com.ssginc.showpinglive.controller;
 
 import com.ssginc.showpinglive.dto.object.ChatDto;
-import com.ssginc.showpinglive.jwt.JwtUtil;
-import com.ssginc.showpinglive.repository.MemberRepository;
-import com.ssginc.showpinglive.repository.StreamRepository;
+import com.ssginc.showpinglive.repository.ChatRepository;
 import com.ssginc.showpinglive.service.ChatService;
 import lombok.RequiredArgsConstructor;
 
@@ -13,11 +11,11 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,16 +23,14 @@ import java.util.Map;
  * 채팅 관련 요청-응답 수행하는 Controller 클래스
  * <p>
  */
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("chat") // REST API의 기본 경로 설정
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate; // WebSocket 메시지 전송
     private final ChatService chatService; // 채팅 서비스 로직
-    private final MemberRepository memberRepository;
-    private final StreamRepository streamRepository;
-    private final JwtUtil jwtUtil;
+    private final ChatRepository chatRepository;
 
     /**
      * 채팅 메시지를 저장하는 공통 로직 처리 메소드
@@ -46,10 +42,17 @@ public class ChatController {
         return chatService.saveChatMessage(
                 chatDto.getChatMemberId(),
                 chatDto.getChatRoomNo(),
+                chatDto.getChatStreamNo(),
                 chatDto.getChatMessage(),
                 chatDto.getChatRole(),
                 chatDto.getChatCreatedAt()
         );
+    }
+
+    // streamNo(채팅방 번호) 기반으로 채팅 메시지 조회 엔드포인트
+    @GetMapping("api/messages")
+    public List<ChatDto> getChatMessages(@RequestParam Long chatStreamNo) { // streamNo == chatRoomNo로 가정
+        return chatRepository.findByChatStreamNo(chatStreamNo);
     }
 
     @GetMapping("api/info")
@@ -78,30 +81,19 @@ public class ChatController {
      */
     @MessageMapping("/chat/message")
     public void sendMessage(ChatDto message, Principal principal) {
-        System.out.println("[DEBUG] Received message: " + message);
         try {
             ChatDto savedMessage = processAndSaveMessage(message);
-            System.out.println("[DEBUG] Saved message: " + savedMessage);
-            if (savedMessage.getChatRoomNo() == null) {
-                System.err.println("[ERROR] savedMessage.getChatRoomNo() is null!");
-            }
         } catch (IllegalArgumentException e) {
-            System.err.println("[ERROR] IllegalArgumentException in sendMessage: " + e.getMessage());
             ChatDto errorResponse = new ChatDto();
             errorResponse.setChatMessage("금칙어가 포함된 메시지는 전송할 수 없습니다.");
             // 해당 사용자 채널에 메시지 전송
             if (principal != null) {
                 messagingTemplate.convertAndSendToUser(principal.getName(), "/queue/errors", errorResponse);
-                System.out.println("[DEBUG] Error sent to user: " + principal.getName());
             } else {
-                // fallback: principal이 없으면 글로벌 에러 채널로 전송하거나 로그만 남김
-                System.err.println("Principal is null; cannot send user-specific error message.");
                 messagingTemplate.convertAndSend("/topic/errors", errorResponse);
             }
-//            messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatRoomNo(), errorResponse);
         } catch (Exception e) {
             System.err.println("[ERROR] Exception in sendMessage: " + e);
-            e.printStackTrace();
         }
     }
 }
