@@ -663,6 +663,7 @@ function sendChatMessage() {
             _id: "", // 서버 또는 DB에서 할당
             chat_member_id: memberId,
             chat_room_no: chatRoomNo,
+            chat_stream_no : chatStreamNo || streamNo,
             chat_message: messageText,
             chat_role: memberRole,
             chat_created_at: new Date().toLocaleString()

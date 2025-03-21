@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.lettuce.core.internal.Futures.await;
 import static org.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,9 +50,10 @@ public class ChatMessageIntegrationTest {
                     String chatMessage = "메시지 " + j + " from " + userId;
                     String chatCreatedAt = LocalDateTime.now().toString();
                     String chatRole = "ROLE_USER";
+                    Long streamNo = ThreadLocalRandom.current().nextLong();
                     try {
                         // DB 저장은 KafkaConsumer를 통해 이루어지므로, 여기서는 ChatService 호출만 수행
-                        chatService.saveChatMessage(userId, 1L, chatMessage, chatRole ,chatCreatedAt);
+                        chatService.saveChatMessage(userId, 1L, streamNo, chatMessage ,chatRole ,chatCreatedAt);
                     } catch (Exception e) {
                         sendFailures.incrementAndGet();
                     } finally {
@@ -71,16 +71,8 @@ public class ChatMessageIntegrationTest {
 
         // KafkaConsumer가 비동기로 MongoDB에 저장할 시간을 고려하여 추가 대기 (예: 5초)
         Thread.sleep(5000);
-
-        // MongoDB에 저장된 메시지 개수 검증
-        System.out.println("테스트 유저 명 수: "  + numUsers);
-        System.out.println("유저당 보내는 메세지: " + messagesPerUser);
-        System.out.println("총 전송된 메시지: " + totalMessages);
-        System.out.println("전송 실패 건수: " + sendFailures.get());
-
         await().atMost(3, TimeUnit.SECONDS)
                 .untilAsserted(() -> assertThat(chatRepository.count()).isEqualTo(totalMessages));
-
 
         latch.await(3, TimeUnit.SECONDS); // 예: 10초 안에 모든 메시지 전송 완료
         executor.shutdown();
