@@ -6,6 +6,12 @@ body {
     overflow-x: hidden;
 }
 
+hr {
+    height: 0.8px; /* 높이 설정 */
+    background-color: #ccc; /* 색상 설정 */
+    border: none; /* 경계선 제거 */
+}
+
 h2 {
     margin: 20px;
     padding-left: 20px;
@@ -79,11 +85,11 @@ h2 {
 /* 카테고리 버튼 영역 */
 .categories {
     width: 80%;
-    margin: 20px auto;
+    margin: 40px auto;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px;
 }
 
 .category-button {
@@ -139,8 +145,8 @@ h2 {
 
 /* 필터 버튼 스타일 */
 .filters {
-    margin: 10px 0;
-    text-align: center;
+    text-align: left;
+    margin-left: 30px;
 }
 
 .filter-button {
@@ -205,6 +211,7 @@ h2 {
 }
 
 .sale-price {
+
     color: #d9534f;
 }
 
@@ -301,8 +308,8 @@ a:active {
 /* 개별 상품 박스 */
 .vod-item {
     padding: 15px;
-    max-width: 220px; /* 상품 카드 크기 조정 */
-    max-height: 320px;
+    max-width: 250px; /* 상품 카드 크기 조정 */
+    max-height: 350px;
     text-align: center; /* 텍스트 가운데 정렬 */
     border-radius: 10px;
     display: flex;
@@ -341,8 +348,8 @@ a:active {
 }
 
 .product-img {
-    width: 80px;
-    height: auto;
+    width: 180px;
+    height: 180px;
     margin-right: 10px;
 }
 
@@ -352,7 +359,7 @@ a:active {
 
 .sale-icon {
     position: absolute;
-    left: 90px; /* 왼쪽에서 90px */
+    right: 1px; /* 왼쪽에서 90px */
 }
 
 #product-name {
@@ -383,15 +390,15 @@ a:active {
 /* 개별 상품 박스 */
 .product-item {
     padding: 15px;
-    width: 200px; /* 상품 카드 크기 조정 */
-    height: 300px;
+    width: 250px; /* 상품 카드 크기 조정 */
+    height: 350px;
     text-align: center; /* 텍스트 가운데 정렬 */
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center; /* 내부 요소 수직 정렬 */
     align-items: center; /* 내부 요소 수평 정렬 */
-    border: 1px solid #e0e0e0;
+    /*border: 1px solid #e0e0e0;*/
     margin: 20px;
 }
 
@@ -410,7 +417,9 @@ a:active {
     display: grid;
     grid-template-columns: repeat(4, 1fr); /* 4개씩 한 줄 */
     justify-items: center; /* 그리드 아이템을 가운데 정렬 */
-    gap: 10px;
+    gap: 15px;
+    width: 100%;
+    margin-top: 10px;
 }
 
 .live-grid, .vod-grid {
