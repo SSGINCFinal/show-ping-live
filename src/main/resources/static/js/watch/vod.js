@@ -201,7 +201,7 @@ function msToSeconds(ms) {
 async function streamVideo(title) {
     if (Hls.isSupported()) {
         var hls = new Hls();
-        hls.loadSource(`/hls/v2/flux/${title}.m3u8`);
+        hls.loadSource(`https://kr.object.ncloudstorage.com/show-ping/video/hls/${title}.m3u8`);
         hls.attachMedia(videoElement);
     } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
         videoElement.src = `/stream/vod/${title}.m3u8`;
