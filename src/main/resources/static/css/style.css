@@ -3,35 +3,42 @@
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-    font-family: Arial, sans-serif;
     line-height: 1.6;
+    background-color: #f9f9f9;
 }
 
 main {
-    background-color: #38A7FF;
+}
+
+.main-content {
+    max-width: 90%;
+    min-height: 600px;
+    margin: auto;
+    background-color: white;
+    border: 1px solid gainsboro;
 }
 
 /* 네비게이션 바 스타일 */
 .navbar {
     color: black;
-    padding: 10px 20px;
-    position: relative;
+    font-weight: bold;
 }
 
 .navbar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    border-bottom: 1px solid black;
-
+    margin: auto;
+    border: 1px solid gainsboro;
+    background-color: white;
 }
 
 .navbar-logo a {
+    padding: 30px;
     color: black;
     text-decoration: none;
     font-size: 1.5rem;
@@ -58,7 +65,6 @@ main {
 }
 
 .menu-list .menu-item a:hover {
-    color: #38A7FF;
 }
 
 /* 드롭다운 */
@@ -90,13 +96,15 @@ main {
 }
 
 .dropdown .dropdown-menu li a:hover {
-    /*background-color: #D0E4F1;*/
+    background-color: #D0E4F1;
 }
 
 /* 드롭다운 메뉴 표시 */
 .dropdown:hover .dropdown-menu {
-    display: flex; /* 가로 정렬 */
-    flex-direction: row; /* 가로로 표시 */
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    border: 2px solid #f9f9f9;
 }
 
 /* 오른쪽 검색 및 언어 선택 */
@@ -117,13 +125,12 @@ main {
 
 /* 검색 입력 필드 */
 .search-bar input[type="text"] {
-    width: 300px; /* 입력 필드 너비 */
+    width: 400px; /* 입력 필드 너비 */
     height: 30px;
     padding: 5px 10px;
-    border: 1px solid #ccc;
+    border: 2px solid black;
+    margin-right: 50px;
     font-size: 14px;
-    background-color: #E7F1F9;
-    color: black;
     border-radius: 20px;
 }
 
@@ -140,15 +147,10 @@ main {
     transition: background-color 0.3s;
 }
 
-/* 검색 버튼 호버 효과 */
-/*.search-bar button:hover {*/
-/*    background-color: #E7F1F9;*/
-/*    color: #38A7FF;*/
-/*}*/
-
-.cart-bar{
+.icon-bar {
     padding: 10px;
     padding-top: 10px;
+    margin-right: 80px;
 }
 
 /* 스크롤 */
@@ -213,70 +215,65 @@ main {
 
 /* Footer 스타일 */
 .footer {
-    background-color: #E7F1F9;
     color: black;
-    padding: 40px 20px;
+    padding: 20px;
     font-family: Arial, sans-serif;
-    font-size: 14px;
+    font-size: 25px;
+    text-align: center; /* 텍스트 중앙 정렬 */
 }
 
 .footer-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* 가운데 정렬 */
+    align-items: flex-start;
     flex-wrap: wrap;
-    max-width: 1200px;
-    margin: 0 auto;
     gap: 20px;
+    max-width: 1200px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 중앙 정렬 */
 }
 
-.footer-column h4 {
-    margin-bottom: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #38A7FF;
+.footer-column {
+    flex: 1;
+    min-width: auto;
+    margin-left: 200px;
+    text-align: left; /* 내부 텍스트 왼쪽 정렬 */
 }
 
-.footer-column ul {
-    list-style: none;
-    padding: 0;
+.footer-column p {
+    margin: 5px 0;
+    font-size: 15px
 }
 
-.footer-column ul li {
-    margin-bottom: 10px;
-}
-
-.footer-column ul li a {
-    color: black;
+.footer-column a {
     text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-column ul li a:hover {
     color: #38A7FF;
+    font-weight: bold;
 }
 
-/* 하단 섹션 */
+.footer-column a:hover {
+    text-decoration: underline;
+}
+
 .footer-bottom {
-    margin-top: 40px;
+    margin-top: 30px;
     text-align: center;
     border-top: 1px solid #444;
-    padding-top: 20px;
-}
-
-.footer-bottom p {
-    margin: 10px 0;
+    padding-top: 10px;
     font-size: 12px;
-    color: black;
 }
 
-.social-icons a {
-    margin: 0 10px;
-    color: #38A7FF;
-    text-decoration: none;
-    font-size: 16px;
-    transition: color 0.3s;
-}
+/* 아이콘 */
 
+/* Icon 스타일 */
 .social-icons a:hover {
     color: black; /* 아이콘 호버 시 색상 변경 */
+}
+
+.item-name {
+    width: 300px;
+}
+
+.logout-button{
+    background-color: transparent;
+    border:white;
 }

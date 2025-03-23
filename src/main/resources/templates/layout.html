@@ -3,9 +3,13 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
-    <title>공통 레이아웃</title>
+    <title>ShowPing</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script defer src="/js/scripts.js"></script>
+    <script defer th:src="@{/js/scripts.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script defer th:src="@{/js/login/logout.js}"></script>
 </head>
 <body>
 <!-- 공통 헤더 -->
@@ -13,90 +17,102 @@
     <div class="navbar-container">
         <!-- 로고 -->
         <div class="navbar-logo">
-            <a href="/">홈페이지</a>
+            <a href="/" style="color: #38A7FF">ShowPing</a>
         </div>
 
         <!-- 네비게이션 메뉴 -->
         <nav class="navbar-menu">
             <ul class="menu-list">
                 <li class="menu-item dropdown">
-                    <a>카테고리</a>
+                    <a>쇼핑몰</a>
                     <!-- 드롭다운 메뉴 -->
                     <ul class="dropdown-menu">
-                        <li><a href="/product/payment">결제</a></li>
-                        <li><a href="/#">옵션 2</a></li>
-                        <li><a href="/#">옵션 3</a></li>
-                        <li><a href="/#">옵션 4</a></li>
+                        <li class="menu-item dropdown">
+                            <ul class="dropdown-menu">
+                                <!-- 카테고리 리스트 동적 추가 -->
+                                <li>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
                 <li class="menu-item dropdown">
-                    <a href="/#">라이브</a>
+                    <a th:href="@{/stream/list}">라이브</a>
                 </li>
                 <li class="menu-item dropdown">
-                    <a href="/#">TV 편성표</a>
+                    <a th:href="@{/watch/history}">시청 내역</a>
                 </li>
-                <li class="menu-item dropdown">
-                    <a href="/#">이벤트</a>
+                <li class="menu-item dropdown" id="admin-menu" hidden>
+                    <a>관리자 메뉴</a>
+                    <ul class="dropdown-menu">
+                        <!-- 카테고리 리스트 동적 추가 -->
+                        <li>
+                            <a th:href="@{/webrtc/webrtc}">라이브 송출</a>
+                            <a th:href="@{/report/report}">신고 관리</a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </nav>
 
-        <!-- 검색 및 언어 선택 -->
+        <!-- 검색 및 사용자 메뉴 -->
         <div class="navbar-right">
-            <div class="search-bar">
-                <form action="#" method="GET">
-                    <input type="text" name="search">
-                    <button type="submit">
-                        <img src="/img/search.png" style="height: 20px">
-                    </button>
-                </form>
-            </div>
-            <div class="cart-bar">
-                <a href="/cart">
-                    <img src="/img/cart.png" style="height: 20px">
+            <div class="icon-bar">
+                <a th:href="@{/cart}">
+                    <img th:src="@{/img/icon/cart.png}" style="height: 30px">
                 </a>
             </div>
+
+            <div class="icon-bar">
+                <a th:href="@{/success}">
+                    <img th:src="@{/img/icon/order.png}" style="height: 30px">
+                </a>
+            </div>
+
+            <div class="icon-bar">
+                <a href="#" id="auth-button">
+                    <img id="auth-icon" th:src="@{/img/icon/login.png}" style="height: 30px">
+                </a>
+            </div>
+
+
         </div>
     </div>
 </header>
+
 <!-- 페이지 내용 -->
-<main layout:fragment="content">
-</main>
+<div class="main-content">
+    <main layout:fragment="content"></main>
+</div>
+
 <button id="scrollToTop" class="scroll-to-top">▲</button>
+
 <!-- 공통 푸터 -->
-
 <footer class="footer">
-<!--    <div class="footer-container">-->
-<!--        &lt;!&ndash; 첫 번째 열: 카테고리 &ndash;&gt;-->
-<!--        <div class="footer-column">-->
-<!--            <h4>메뉴 1</h4>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; 두 번째 열: 파트너 &ndash;&gt;-->
-<!--        <div class="footer-column">-->
-<!--            <h4 a href="#">라이브</h4>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; 세 번째 열: 문의하기 &ndash;&gt;-->
-<!--        <div class="footer-column">-->
-<!--            <h4 a href="#">편성표</h4>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; 네 번째 열: 회사 소개 &ndash;&gt;-->
-<!--        <div class="footer-column">-->
-<!--            <h4 a href="#">이벤트</h4>-->
-<!--        </div>-->
-<!--    </div>-->
-
-    <!-- Footer 하단 -->
-    <div class="footer-bottom">
-        <p>&copy; 2025 신세계 I&C. All rights reserved.</p>
-        <div class="social-icons">
-            <a href="/#">Facebook</a>
-            <a href="/#">Twitter</a>
-            <a href="/#">LinkedIn</a>
+    <div class="footer-container">
+        <!-- 회사 정보 섹션 -->
+        <div class="footer-column">
+            <p><strong>주식회사 신세계라이브쇼핑</strong></p>
+            <p>대표이사: 이석구 | 서울특별시 성동구 야차산로 17, 10층(성수동1가)</p>
+            <p>사업자등록번호: 502-86-28395</p>
+            <p>통신판매업 신고번호: 2015-서울성동-01053호</p>
+            <p>호스팅 서비스: (주)신세계 아이앤씨</p>
         </div>
+
+        <!-- 고객센터 섹션 -->
+        <div class="footer-column">
+            <p><strong>고객센터</strong></p>
+            <p>1800-0850 (운영시간 365일 24시간)</p>
+            <p><a href="mailto:csr_tv@shinsegae.com">csr_tv@shinsegae.com</a></p>
+        </div>
+
+    </div>
+
+    <!-- 하단 섹션 -->
+    <div class="footer-bottom">
+        <p>COPYRIGHT© SHINSEGAE LIVE SHOPPING INC. ALL RIGHTS RESERVED.</p>
     </div>
 </footer>
+
 </body>
 </html>

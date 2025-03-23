@@ -2,16 +2,15 @@ package com.ssginc.showpinglive.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "member")
@@ -32,7 +31,7 @@ public class Member {
 
     @NotNull
     @Column(name = "member_password")
-    private String memberPassword;
+    private String memberPassword; // → 저장 전 암호화 필수!
 
     @NotNull
     @Column(name = "member_email", length = 100, unique = true)
@@ -47,11 +46,18 @@ public class Member {
     private MemberRole memberRole;
 
     @NotNull
-    @Column(name = "stream_key")
+    @Column(name = "stream_key", unique = true)
     private String streamKey;
 
     @Column(name = "member_point")
     private Long memberPoint;
+
+    @Column(name = "otp_secret_key")
+    private String otpSecretKey;
+
+    @NotNull
+    @Column(name = "member_address")
+    private String memberAddress;
 
     // =========== 관계 연결 ===========
 
@@ -95,4 +101,28 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Report> reports;
 
+    // 소셜회원
+    // 회원 : 소셜회원은 1 : N의 관계를 가진다.
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<SocialMember> socialmembers;
+
+    // memberId & memberPassword만 받는 생성자 추가
+    public Member(String memberId, String memberPassword) {
+        this.memberId = memberId;
+        this.memberPassword = memberPassword;
+    }
+
+    // ⭐ 기본값 설정
+    @PrePersist
+    public void setDefaultValues() {
+        if (this.streamKey == null || this.streamKey.isEmpty()) {
+            this.streamKey = UUID.randomUUID().toString();
+        }
+        if (this.memberRole == null) {
+            this.memberRole = MemberRole.ROLE_USER;
+        }
+        if (this.memberPoint == null) {
+            this.memberPoint = 0L; // 포인트 기본값 설정
+        }
+    }
 }
