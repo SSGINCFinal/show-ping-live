@@ -11,13 +11,6 @@ public class UserCustomHandshakeHandler extends DefaultHandshakeHandler {
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         Principal user = (Principal) attributes.get("user");
-
-        if (user == null) {
-            System.err.println("[ERROR] UserCustomHandshakeHandler: Principal is null!");
-        } else {
-            System.out.println("[DEBUG] WebSocket connection established with Principal: " + user.getName());
-        }
-
         return user;
     }
 }

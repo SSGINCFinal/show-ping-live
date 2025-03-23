@@ -45,7 +45,6 @@ function fetchChatMessages(chatStreamNo) {
             // 각 메시지에 대해 offsetSeconds 계산
             chatMessages.forEach(msg => {
                 msg.offsetSeconds = getOffsetSeconds(msg.chat_created_at);
-                console.log("[DEBUG] msg.offsetSeconds", msg.offsetSeconds);
             });
 
             // offsetSeconds 기준 오름차순 정렬
@@ -93,7 +92,6 @@ function updateChatMessages() {
 // 사용자가 영상의 시크(seek) 이벤트로 재생 시간을 변경할 때 채팅 영역을 새로 갱신하는 함수
 function updateChatOnSeek() {
     const currentSec = videoElement.currentTime;
-    console.log("[DEBUG] updateChatOnSeek - currentSec:", currentSec);
     const chatContainer = document.getElementById('chat-messages');
     // 채팅 영역을 비웁니다.
     chatContainer.innerHTML = "";
@@ -111,7 +109,6 @@ function updateChatOnSeek() {
         }
     });
     nextChatIndex = newNextIndex;
-    console.log("[DEBUG] updateChatOnSeek - nextChatIndex reset to:", nextChatIndex);
 }
 
 // ================= 수정된 appendChatMessage 함수 =================

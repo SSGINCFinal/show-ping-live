@@ -50,7 +50,6 @@ public class ForbiddenWordFilterServiceImpl implements ForbiddenWordFilterServic
                 .ignoreCase()  // 대소문자 구분 없이 매칭
                 .addKeywords(forbiddenWords)
                 .build();
-        System.out.println("[DEBUG] 금칙어 Trie 재구성 완료: " + forbiddenWords.size() + "개 단어");
     }
 
     /**

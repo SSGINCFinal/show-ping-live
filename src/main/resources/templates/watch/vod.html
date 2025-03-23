@@ -9,11 +9,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script th:inline="javascript">
-        // ========== 추가된 부분: parseStreamStartTime 함수 (추가하고 싶은 HTML 코드에서 가져옴) ==========
         function parseStreamStartTime(dateStr) {
             dateStr = dateStr.replace(/^["']|["']$/g, "");
-            console.log("[DEBUG] parseStreamStartTime 입력:", dateStr);
-            // 이미 'T'가 포함되어 있다고 가정 (예: "2025-03-21T03:28:35.788294")
             let fixedStr = dateStr;
             // 정규식: 소수점 이하 3자리까지만 남김
             fixedStr = fixedStr.replace(/(\.\d{3})\d+/, '$1');
@@ -21,24 +18,18 @@
             if (!/[+-]\d\d:\d\d$/.test(fixedStr) && !fixedStr.endsWith("Z")) {
                 fixedStr += "+09:00";
             }
-            console.log("[DEBUG] parseStreamStartTime 변환 후 문자열:", fixedStr);
             let parsedDate = new Date(fixedStr);
-            console.log("[DEBUG] parseStreamStartTime 결과:", parsedDate);
             return parsedDate;
         }
 
         // ========== 끝 ==========
 
         // vodDto.streamStartTime을 반드시 문자열 리터럴로 출력 (작은 따옴표 사용)
-        var rawStreamStartTime = '[[${vodDto.streamStartTime}]]';  // 수정: 큰따옴표 대신 작은따옴표 사용
-        console.log("[DEBUG] rawStreamStartTime:", rawStreamStartTime);
+        var rawStreamStartTime = '[[${vodDto.streamStartTime}]]';
         let testParsed = new Date(rawStreamStartTime);
-        console.log("[DEBUG] testParsed:", testParsed);
 
         // 전역 변수 window.streamStartTime을 Date 객체로 설정
         window.streamStartTime = parseStreamStartTime(rawStreamStartTime);
-        console.log("[DEBUG] streamStartTime 초기화:", window.streamStartTime);
-
 
         document.addEventListener("DOMContentLoaded", function () {
             let streamNo = [[${vodDto.streamNo}]];
