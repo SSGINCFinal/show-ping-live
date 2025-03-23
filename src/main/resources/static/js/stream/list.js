@@ -279,7 +279,7 @@ function loadStandBy(pageNo) {
                 liveGrid.appendChild(standByDiv);
             });
 
-            renderPageContent(pageInfo, 'live-page-container', option);
+            renderPageContent(pageInfo, 'live-page-container');
 
         })
         .catch(error => {
