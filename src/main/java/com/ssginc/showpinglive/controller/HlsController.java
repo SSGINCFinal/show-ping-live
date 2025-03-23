@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 
 
 /**
@@ -29,6 +28,7 @@ public class HlsController {
      * @param title 영상 제목
      * @return HLS 파일이 포함된 응답객체 (확장자: m3u8)
      */
+    @CrossOrigin(origins = "https://showping.duckdns.org")
     @GetMapping(value = "/v1/{title}.m3u8")
     public Mono<?> getHLSV1(@PathVariable String title) {
         // 불러온 m3u8 파일을 응답으로 전송
@@ -45,6 +45,7 @@ public class HlsController {
      * @param segment 세그먼트 번호
      * @return TS 파일이 있는 응답객체 (확장자: ts)
      */
+    @CrossOrigin(origins = "https://showping.duckdns.org")
     @GetMapping(value = "/v1/{title}{segment}.ts")
     public Mono<?> getTsSegmentV1(@PathVariable String title,
                                 @PathVariable String segment) {
@@ -61,6 +62,7 @@ public class HlsController {
      * @param title 영상 제목
      * @return TS 파일이 있는 응답객체 (확장자: ts)
      */
+    @CrossOrigin(origins = "https://showping.duckdns.org")
     @GetMapping(value = "/v2/flux/{title}.m3u8")
     public Mono<?> getHLSV2Flux(@PathVariable String title) {
         // 불러온 ts 파일을 응답으로 전송
@@ -77,6 +79,7 @@ public class HlsController {
      * @param segment 세그먼트 번호
      * @return TS 파일이 있는 응답객체 (확장자: ts)
      */
+    @CrossOrigin(origins = "https://showping.duckdns.org")
     @GetMapping(value = "/v2/flux/{title}{segment}.ts")
     public Mono<?> getTsSegmentV2Flux(@PathVariable String title,
                                   @PathVariable String segment) {
@@ -93,6 +96,7 @@ public class HlsController {
      * @param title 영상 제목
      * @return TS 파일을 포함한 응답 객체 (확장자: ts)
      */
+    @CrossOrigin(origins = "https://showping.duckdns.org")
     @GetMapping(value = "/v2/{title}.m3u8")
     public ResponseEntity<?> getHLSV2(@PathVariable String title) {
         // 동기 방식으로 리소스를 가져옵니다.
@@ -112,6 +116,7 @@ public class HlsController {
      * @param segment 세그먼트 번호
      * @return TS 파일을 포함한 응답 객체 (확장자: ts)
      */
+    @CrossOrigin(origins = "https://showping.duckdns.org")
     @GetMapping(value = "/v2/{title}{segment}.ts")
     public ResponseEntity<?> getTsSegmentV2(@PathVariable String title,
                                             @PathVariable String segment) {
