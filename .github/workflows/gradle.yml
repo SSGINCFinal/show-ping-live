@@ -76,4 +76,4 @@ jobs:
         port: 8888
         script: |
           cd /home/admin/nginx-https
-          docker-compose restart tomcat
+          docker-compose restart tomcat nginx
