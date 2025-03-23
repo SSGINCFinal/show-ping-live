@@ -68,7 +68,7 @@ public class HlsController {
         // 불러온 ts 파일을 응답으로 전송
         return hlsService.getHLSV2Flux(title)
                 .map(resource -> ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
+                        .header(HttpHeaders.CONTENT_TYPE, "application/vnd.apple.mpegurl")
                         .body(resource))
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
@@ -103,7 +103,7 @@ public class HlsController {
         Resource resource = hlsService.getHLSV2(title);
         if (resource != null) {
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/vnd.apple.mpegurl")
                     .body(resource);
         } else {
             return ResponseEntity.notFound().build();
