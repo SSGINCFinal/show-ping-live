@@ -44,7 +44,6 @@ public class WebSocketAuthInterceptorConfig implements HandshakeInterceptor {
             String userId = jwtUtil.getUsernameFromToken(token); // 토큰에서 사용자 ID 추출
             if (userId != null && !userId.isEmpty()) {
                 attributes.put("user", new StompPrincipal(userId)); // 사용자 ID를 Principal로 설정
-                System.out.println("[DEBUG] Principal set to: " + userId);
             } else {
                 System.err.println("[ERROR] Invalid token: no userId found.");
             }

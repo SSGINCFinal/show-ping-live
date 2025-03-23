@@ -28,12 +28,9 @@ public class ChatRoomController {
      */
     @PostMapping("/create")
     public ResponseEntity<?> createChatRoom(@RequestBody Map<String, Long> data) {
-        System.out.println(data);
         Long streamNo = data.get("streamNo");
         try {
-            System.out.println();
             ChatRoom newRoom = chatRoomService.createChatRoom(streamNo);
-            System.out.println(newRoom);
             if (newRoom != null) {
                 return ResponseEntity.status(HttpStatus.CREATED).body(ChatRoomResponseDto.builder()
                         .chatRoomNo(newRoom.getChatRoomNo())

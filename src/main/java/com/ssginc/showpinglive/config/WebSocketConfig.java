@@ -1,6 +1,5 @@
 package com.ssginc.showpinglive.config;
 
-import com.ssginc.showpinglive.handler.WebSocketChatHandler;
 import com.ssginc.showpinglive.handler.LiveHandler;
 import com.ssginc.showpinglive.handler.RecordHandler;
 import com.ssginc.showpinglive.util.UserRegistry;
@@ -31,9 +30,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public RecordHandler recordHandler() {
         return new RecordHandler();
     }
-
-    @Bean
-    public WebSocketChatHandler webSocketChatHandler() {return new WebSocketChatHandler();}
 
     @Bean
     public KurentoClient kurentoClient() {
