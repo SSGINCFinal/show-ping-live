@@ -42,7 +42,7 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             let streamNo = [[${vodDto.streamNo}]];
-            let title = 'stream(' + streamNo + ')';
+            let title = 'stream_' + streamNo + '_' + [[${vodDto.streamTitle}]];
 
             addWatch(streamNo);
             fetchSubtitle(title);
