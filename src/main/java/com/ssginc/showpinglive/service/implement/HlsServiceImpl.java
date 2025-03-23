@@ -117,24 +117,10 @@ public class HlsServiceImpl implements HlsService {
      */
     @Override
     public Mono<?> getHLSV2Flux(String title) {
-//        return Mono.fromCallable(() -> {
-//            String fileName = title + ".m3u8";
-//            return storageLoader.getHLS(fileName);
-//        }).subscribeOn(Schedulers.boundedElastic())
-//                .onErrorResume(FileNotFoundException.class, e -> Mono.empty());
         return Mono.fromCallable(() -> {
-                    String fileName = title + ".m3u8";
-                    // 로컬 파일 시스템의 경로 설정
-                    Path filePath = Paths.get(VIDEO_PATH, fileName);
-                    // 파일 존재 여부 확인
-                    if (!Files.exists(filePath)) {
-                        throw new FileNotFoundException("File not found: " + filePath.toString());
-                    }
-                    // 파일 시스템 리소스로 감싸서 반환
-                    Resource resource = new FileSystemResource(filePath.toFile());
-                    return resource;
-                })
-                .subscribeOn(Schedulers.boundedElastic())
+            String fileName = title + ".m3u8";
+            return storageLoader.getHLS(fileName);
+        }).subscribeOn(Schedulers.boundedElastic())
                 .onErrorResume(FileNotFoundException.class, e -> Mono.empty());
     }
 
@@ -146,24 +132,10 @@ public class HlsServiceImpl implements HlsService {
      */
     @Override
     public Mono<?> getTsSegmentV2Flux(String title, String segment) {
-//        return Mono.fromCallable(() -> {
-//            String fileName = title + segment + ".ts";
-//            return storageLoader.getHLS(fileName);
-//        }).subscribeOn(Schedulers.boundedElastic())
-//                .onErrorResume(FileNotFoundException.class, e -> Mono.empty());
         return Mono.fromCallable(() -> {
-                    String fileName = title + segment + ".ts";
-                    // 로컬 파일 시스템의 경로 설정
-                    Path filePath = Paths.get(VIDEO_PATH, fileName);
-                    // 파일 존재 여부 확인
-                    if (!Files.exists(filePath)) {
-                        throw new FileNotFoundException("File not found: " + filePath.toString());
-                    }
-                    // 파일 시스템 리소스로 감싸서 반환
-                    Resource resource = new FileSystemResource(filePath.toFile());
-                    return resource;
-                })
-                .subscribeOn(Schedulers.boundedElastic())
+            String fileName = title + segment + ".ts";
+            return storageLoader.getHLS(fileName);
+        }).subscribeOn(Schedulers.boundedElastic())
                 .onErrorResume(FileNotFoundException.class, e -> Mono.empty());
     }
 

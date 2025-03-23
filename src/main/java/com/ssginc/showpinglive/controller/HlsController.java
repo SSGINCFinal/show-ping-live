@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
  * <p>
  */
 @Controller
-@RequestMapping("hls")
+@RequestMapping("vod")
 @RequiredArgsConstructor
 public class HlsController {
 
