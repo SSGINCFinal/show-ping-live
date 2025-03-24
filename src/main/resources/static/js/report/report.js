@@ -25,6 +25,26 @@ function openReportDetailModal(report) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    const accessToken = sessionStorage.getItem('accessToken');
+
+    // 로그인 여부 확인
+    if (!accessToken) {
+        window.location.href = '/login';
+    }
+    else {
+        axios.get('/member', {
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        })
+            .then((response) => {
+                if (response.data !== 'ROLE_ADMIN') {
+                    window.location.href = '/';
+                }
+            })
+            .catch(() => {})
+    }
+
     // 페이지 로딩 시 신고 목록 호출
     loadReports();
 
