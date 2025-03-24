@@ -296,7 +296,7 @@ a:active {
 .live-item {
     padding: 15px;
     width: 250px; /* 상품 카드 크기 조정 */
-    height: 350px;
+    height: 400px;
     text-align: center; /* 텍스트 가운데 정렬 */
     border-radius: 10px;
     display: flex;
@@ -308,8 +308,8 @@ a:active {
 /* 개별 상품 박스 */
 .vod-item {
     padding: 15px;
-    max-width: 250px; /* 상품 카드 크기 조정 */
-    max-height: 350px;
+    width: 250px; /* 상품 카드 크기 조정 */
+    height: 400px;
     text-align: center; /* 텍스트 가운데 정렬 */
     border-radius: 10px;
     display: flex;
@@ -391,7 +391,7 @@ a:active {
 .product-item {
     padding: 15px;
     width: 250px; /* 상품 카드 크기 조정 */
-    height: 350px;
+    height: 400px;
     text-align: center; /* 텍스트 가운데 정렬 */
     border-radius: 10px;
     display: flex;
