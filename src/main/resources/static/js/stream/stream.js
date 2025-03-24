@@ -22,6 +22,27 @@ document.addEventListener('DOMContentLoaded', function () {
         live = document.getElementById('live-video');
         watch = document.getElementById('live');
 
+        if (live) {
+            const accessToken = sessionStorage.getItem('accessToken');
+
+            if (!accessToken) {
+                window.location.href = '/login';
+            }
+            else {
+                axios.get('/member', {
+                    headers: {
+                        'Authorization': 'Bearer ' + accessToken
+                    }
+                })
+                    .then((response) => {
+                        if (response.data !== 'ROLE_ADMIN') {
+                            window.location.href = '/';
+                        }
+                    })
+                    .catch(() => {})
+            }
+        }
+
         getMemberInfo();
 
         // send 버튼 이벤트와 STOMP 연결 초기화
