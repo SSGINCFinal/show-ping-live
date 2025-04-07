@@ -1,55 +1,28 @@
-# SSG I&C 최종 프로젝트 ShowPing팀
+# 🛍 SSG I&C 최종 프로젝트 ShowPing팀
 
 ## 목차
-  * [프로젝트 개요](#📝-프로젝트-개요)
-  * [멤버 및 역할 소개](#👥-멤버-및-역할-소개)
-  * [기술 스텍](#💻-기술-스텍)
-  * [프로젝트 설계](#📄-프로젝트-설계)
-      - 요구사항 정의서
-      - ERD
-      - 프로젝트 구조
-      - UseCase
-- [구현기능](#구현기능)
-  * [[회원 관련 기능]](#회원-관련-기능)
-    + [회원가입](#회원가입)
-    + [로그인](#로그인)
-    + [비밀번호 찾기](#비밀번호-찾기)
-    + [회원 정보 확인 / 수정](#회원-정보-확인--수정)
-  * [[발주 관련 기능]](#발주-관련-기능)
-    + [발주 등록](#발주-등록)
-    + [발주 취소](#발주-취소)
-    + [발주 내역 조회](#발주-내역-조회)
-  * [[출고 관련 기능]](#출고-관련-기능)
-    + [출고 등록](#출고-등록)
-    + [출고 내역 조회](#출고-내역-조회)
-    + [출고 완료 처리](#출고-완료-처리)
-  * [[재고 관련 기능]](#재고-관련-기능)
-    + [재고 조회](#재고-조회)
-    + [재고 필터링 조회](#재고-필터링-조회)
-  * [[대시보드 기능]](#대시보드-기능)
-    + [카테고리별 판매량 차트](#카테고리별-판매량-차트)
-    + [카테고리별 입고 대비 판매량 차트](#카테고리별-입고-대비-판매량-차트)
-    + [일자별 판매량 차트](#일자별-판매량-차트)
-    + [각 출고 상태 비율 차트](#각-출고-상태-비율-차트)
-    + [년원일 총 판매 금액 차트](#년월일-총-판매-금액-카드)
-  * [[시스템 관련 기능]](#시스템-관련-기능)
-    + [지점 정보 조회 기능](#지점-정보-조회-기능)
-    + [발주 내역서 OCR](#발주-내역서-ocr)
-    + [지점 회원 관리](#지점-회원-관리)
-- [시연연상](#시연-영상)
-  * [[회원가입]](#회원가입-1)
-  * [[지점직원 로그인 후 재고 조회]](#지점직원-로그인-후-재고-조회)
-  * [[지점직원 정보수정]](#지점직원-정보수정)
-  * [[대시보드]](#대시보드)
-  * [[출고 관리]](#출고-관리)
-  * [[지점 정보 조회]](#지점-정보-조회)
-  * [[지점 회원 관리 / 발주 내역서 OCR]](#지점-회원-관리--발주-내역서-ocr)
-  * [[발주 등록 / 취소 / 내역 조회]](#발주-등록--취소--내역-조회)
+- [프로젝트 개요](#📝-프로젝트-개요)
+- [프로젝트 기획안](#📄-프로젝트-기획안)
+- [멤버 및 역할 소개](#👥-멤버-및-역할-소개)
+- [기술 스택](#💻-기술-스택)
+- [프로젝트 설계](#📄-프로젝트-설계)
+- [기타 문서](#📎-기타-문서)
+- [구현 기능](#🧩-구현-기능)
+- [시연 영상](#🎥-시연-영상)
+- [수상 실적](#🏆-수상-실적)
 </br><br>
 
 ## 📝 프로젝트 개요
-<img src="https://github.com/user-attachments/assets/558ede48-54c9-4db3-a317-2288082c2967" width=640 height=360>
-<img src="https://github.com/user-attachments/assets/f715bbf4-4348-4afe-964e-6d310898e7d8" width=640 height=360>
+<img src="https://github.com/user-attachments/assets/24e91d8b-0122-4425-af39-5403d555193f" width=640 height=360>
+<img src="https://github.com/user-attachments/assets/4e7dc7f9-2af4-470d-b55d-f495588ca5e0" width=640 height=360>
+<img src="https://github.com/user-attachments/assets/992672ea-ed6c-4797-85ac-5c5444dad589" width=640 height=360>
+<img src="https://github.com/user-attachments/assets/a9390b45-b214-4d79-bbe6-64b64ef7615f" width=640 height=360>
+
+
+## 📄 프로젝트 기획안
+- [프로젝트 기획안](https://docs.google.com/document/d/1stluxmkzcYi-PUtaffVXQa2G5qr3XP-I/edit)
+
+
 
 </br></br>
 
@@ -57,203 +30,141 @@
 
 | 이름                                           | 역할                                                                                                                  |
 | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| [김대철](https://github.com/gunny97h) | 회원가입, 로그인/로그아웃, 비밀번호 찾기, 회원 정보 확인/수정, 지점 회원 관리 |
-| [김창훈](https://github.com/C-H-Kim) | 발표, 대시보드, 형상 관리 |
-| [김주일](https://github.com/Queue-ri) | 팀장, 출고, 재고, OCR, 형상 관리, 버그 패치/파일 통합, UI 디자인 |
-| [박헌우](https://github.com/phwoo1315) | 발주, 지점 정보 조회, UI 디자인 |
-| [조민호](https://github.com/Jenius-95) | 발주, 지점 정보 조회, UI 디자인 |
+| [김대철](https://github.com/dckat) | 프로젝트 형상관리, 라이브 스트리밍 기능, VOD 기능 |
+| [김창훈](https://github.com/C-H-Kim) | 팀장, 서버 인프라 구축, 라이브 스트리밍 기능 |
+| [김주일](https://github.com/juil1-kim) | 스케줄러, 채팅 기능, 신고 관리 기능 |
+| [박헌우](https://github.com/hunwoo0122) | 문서화 작업, 회원 기능, 보안 기능 |
+| [조민호](https://github.com/0O000) | ERD 관리, 상품 기능, 장바구니 기능, 결제 기능 |
 
 </br>
 </br>
 
-## 💻 기술 스텍
+## 💻 기술 스택
 
-- 언어
+### 🛠 Tech
+- Java 17
+- Spring Boot
+- Docker
+- AWS
+- Apache Kafka
+- Thymeleaf
+- Spring Security
+- JWT (JSON Web Token)
+- Redis
+- RTMP
+- HLS
+- WebRTC
+- Kurento
+- WebSocket
+- NCP (NAVER Cloud Platform)
+- Spring Batch
 
-  <img src="https://img.shields.io/badge/Java17-007396?style=for-the-badge&logo=java&logoColor=white">
+### 🗄 DB
+- MySQL
+- MongoDB
 
-- 프레임워크
+### 🧰 IDE
+- IntelliJ IDEA
+- MySQL Workbench
 
-  <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=spring boot&logoColor=white">
+### 🤝 협업 툴
+- Slack
+- GitHub
+- Notion
+- Discord
+- Trello
+- Figma
 
-- 템플릿 엔진
 
-  <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white">
-
-- ORM
-
-  <img src="https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white">
-
-- DB
-
-  <img src="https://img.shields.io/badge/My sql-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">
-
-- Open API
-
-  <img src="https://img.shields.io/badge/Clovar-60C482?style=for-the-badge&logo=clovar&logoColor=white">
-  <img src="https://img.shields.io/badge/Kakaomap-FFCD00?style=for-the-badge&logo=kakao&logoColor=white">
 
 </br><br>
 
 ## 📄 프로젝트 설계
-- [요구사항 정의서](https://docs.google.com/spreadsheets/d/1_6-NCzGmZEZd5BXc_wEngiWOverpghhMh5qpPRPSXLM/edit?usp=sharing)
+- [요구사항 정의서](https://docs.google.com/spreadsheets/d/1B2Xh4MM-a8fpIrJ0o5u8PtvXWkOSMslSr4-mpu_N6tA/edit?gid=701501336#gid=701501336)
+
+- [프로젝트 정의서](https://docs.google.com/spreadsheets/d/1WuRzZpiT6L6AvS-WqLMLbuonoKae5F2yX-TeyTS0Jm0/edit?gid=2108164687#gid=2108164687)
+
+- [API 정의서](https://docs.google.com/spreadsheets/d/1a2va1yE9eO1GhXdlTX66Sbv8bIg_HpDYU70eke21O_0/edit?gid=1813995370#gid=1813995370)
+
+- 유스케이스 다이어그램
+ ![ShowPing_UseCase](https://github.com/user-attachments/assets/695afa9c-ae76-4cdb-9c9a-d2fba92a1354)
 
 - ERD
-![NoJam](https://github.com/user-attachments/assets/4e82f20f-bd92-4c0b-a163-02af3d3ebc18)
+![ShowPing_ERD](https://github.com/user-attachments/assets/515ba904-fd94-47ce-a671-68eec107dc32)
 
-- 프로젝트 구조
-![프로젝트 구조_4팀(NoJam)_쇼핑몰 관리자 관점 어드민 및 쇼핑몰 개발](https://github.com/user-attachments/assets/975e28c7-8701-41c6-9c2a-0951fe1c8f57)
+- 아키텍처 구조
+![ShowPing_Architecture](https://github.com/user-attachments/assets/e46d40d6-cfcc-4991-9a7b-cadb4b69e35c)
 
-- UseCase
-![UseCase_4팀(NoJam)_쇼핑몰 관리자 관점 어드민 및 쇼핑몰 개발](https://github.com/user-attachments/assets/103ae59e-a262-41ce-9c2f-21ced5c57c0b)
-
-</br></br><br>
-
-# 구현기능
-
-## [회원 관련 기능]
-
-### 회원가입
-- 회원가입은 아이디 중복 체크 / 비밀번호 확인 일치 여부 / 이메일 인증을 해야만 가입이 가능합니다.
-<br><br>
-
-### 로그인
-- 로그인 시 계정의 권한에 따라 사이드바의 메뉴가 달라집니다.
-<br><br>
-
-### 비밀번호 찾기
-- 비밀번호 찾기는 랜덤 비밀번호가 이메일로 발송되며, 해당 비밀번호로 로그인 가능합니다.
-<br><br>
-
-### 회원 정보 확인 / 수정
-- 로그인한 회원 정보를 확인할 수 있으며, 사용자명과 비밀번호를 변경할 수 있습니다.
-<br><br>
+- CI/CD 아키텍처
+![image](https://github.com/user-attachments/assets/46448e6c-d0fd-4fe1-b3a1-3f0fb7fdf176)
 
 
-## [발주 관련 기능]
-발주 등록과 취소는 지점장 권한으로 로그인했을 때만 이용할 수 있습니다.<br>
-발주 내역 조회는 지점장과 지점직원 권한 모두 이용 가능합니다.
+</br><br>
 
-### 발주 등록
-- 좌측의 상품 목록에서 상품을 선택하고 수량을 입력하여 발주 목록에 추가할 수 있습니다.
-- 발주 목록에 있는 상품 중 원하는 상품을 선택하여 삭제하거나 발주 신청할 수 있습니다.
-<br><br>
-
-### 발주 취소
-- 발주 내역 중 원하는 내역을 선택하여 발주를 취소할 수 있습니다.
-<br><br>
-
-### 발주 내역 조회
-- 발주 내역 전체를 조회할 수 있으며 필터링을 설정해 조회할 수 있습니다.
-- 필터링 옵션을 선택해 검색어를 입력하여 조회할 수 있습니다.
-- 옵션에는 발주 번호, 상품 번호, 상품명, 대분류, 소분류, 발주 상태가 있습니다.
-<br><br>
+## 📎 기타 문서
+- [테스트 케이스 보고서](https://docs.google.com/spreadsheets/d/1WPUqP0UAcemfe37NDUGeEIVTZ0Rh04jSg2ZWEtxt6ok/edit?gid=1293478023#gid=1293478023)
 
 
-## [출고 관련 기능]
-출고 관련 기능은 본사 권한으로 로그인했을 때만 이용할 수 있습니다.
+## 🧩 구현 기능
 
-### 출고 등록
-- 지점에서 신청한 발주 내역들이 보이며 출고 승인 혹은 출고 거절을 선택할 수 있습니다.
-- 본사 재고가 발주 수량보다 적을 시 강조되어 표시되며 자동으로 출고 승인 버튼이 비활성화 됩니다.
-<br><br>
+### ✅ 회원 관리 기능
+- **Spring Security + JWT** 기반 로그인 및 권한 인증 구현
+- **Access Token + Refresh Token 구조**로 보안 강화
+  - Refresh Token은 **Redis에 저장**되어 토큰 재발급 및 만료 관리
+- 회원가입, 비밀번호 변경, 탈퇴 및 정보 수정 기능 제공
+- 비밀번호 암호화: `BCryptPasswordEncoder`
+- **TOTP(Time-based One Time Password)**를 이용한 **관리자 전용 2차 인증** 구현
+  - Google Authenticator 앱과 연동하여 OTP 입력 방식 적용
+- 비정상 접근 및 토큰 위조 대응 예외처리 적용
+- OAuth를 활용한 소셜로그인 기능 
 
-### 출고 내역 조회
-- 출고 승인된 발주 내역은 자동으로 출고 내역으로 생성됩니다.
-- 출고 내역으로 생성될 때는 기본적으로 출고 중인 상태로 생성됩니다.
-<br><br>
+### 🛒 장바구니 및 결제 기능
+- 사용자 장바구니 기능 및 수량 조절, 삭제 가능
+- 카카오페이 API 연동으로 외부 결제 처리
+- 결제 완료 시 Spring Batch를 통한 자동 정산
+- 주문 내역 및 상태 변경 관리 기능 포함
 
-### 출고 완료 처리
-- 출고 상태가 출고 중인 내역만 출력됩니다.
-- 출고 완료 처리를 하면 출고 상태가 출고 중에서 출고 완료로 변경됩니다.
-<br><br>
+### 📺 LIVE 기능
+- WebRTC + Kurento를 활용한 실시간 방송 구현
+- RTMP 송출 및 HLS 수신 방식 지원
+- 방송 상태 저장 및 조회
+- Kafka를 통해 방송 이벤트 처리
 
+### 💬 Chatting 기능
+- WebSocket + STOMP 기반 실시간 채팅 구현
+- Pub/Sub을 활용한 메시지 분산 처리
+- 채팅 신고 기능 및 관리자용 대시보드 제공
+- 유저 입장/퇴장 로그 기록
 
-## [재고 관련 기능]
-
-### 재고 조회
-- 본사 계정으로 로그인 했을 때는 본사 재고를 조회할 수 있습니다.
-- 지점 계정으로 로그인 했을 때는 해당 계정이 속한 지점의 재고를 조회할 수 있습니다.
-<br><br>
-
-### 재고 필터링 조회
-- 필터링 옵션을 선택해 검색어를 입력하여 조회할 수 있습니다.
-- 옵션에는 상품 번호, 상품명, 대분류, 소분류가 있습니다.
-<br><br>
-
-
-## [대시보드 기능]
-![image](https://github.com/user-attachments/assets/09bdf799-3154-4c80-94ac-ea396f84a89b)
-본사 계정으로 로그인 했을 때는 지점의 합산된 수치를 확인할 수도 있으며 지점을 선택해 해당 지점의 수치를 확인할 수 있습니다.<br>
-지점 계정으로 로그인 했을 때는 해당 지점의 수치만 확인할 수 있습니다.
-
-### 카테고리별 판매량 차트
-- 카테고리에 대한 판매량을 확인할 수 있습니다.
-<br><br>
-
-### 카테고리별 입고 대비 판매량 차트
-- 카테고리에 대한 입고량과 판매량을 확인할 수 있습니다.
-<br><br>
-
-### 일자별 판매량 차트
-- 날짜를 선택하여 해당 날짜까지 일주일 간의 판매량을 확인할 수 있습니다.
-- 날짜를 선택하지 않을 시 금일 날짜로 적용됩니다.
-<br><br>
-
-### 각 출고 상태 비율 차트
-- 본사 계정으로 로그인 했을 때만 해당 차트를 확인할 수 있습니다.
-- 전체 출고 내역에서의 출고 중과 출고 완료 비율을 확인할 수 있습니다.
-<br><br>
-
-### 년월일 총 판매 금액 카드
-- 이번 년도, 이번 달, 금일 총 판매 금액을 확인할 수 있습니다.
-<br><br>
+### 🎬 VOD 관리 기능
+- 방송 종료 시 VOD 자동 저장 및 관리
+- AWS S3 저장소와 연동
+- 다시보기 목록 조회 및 삭제 기능
+- 썸네일 및 메타데이터 자동 처리
 
 
-## [시스템 관련 기능]
-시스템 관련 기능은 본사 계정으로 로그인 했을 때만 이용할 수 있습니다.
+# 🎥 시연 영상
 
-### 지점 정보 조회 기능
-![Image](https://github.com/user-attachments/assets/2cd17629-8bca-43ed-b963-5ea19e9c3179)
-- 전체 지점이 지도와 테이블에 표시됩니다.
-- 지도에 표시된 포인트를 선택 시 해당 지점의 정보를 확인할 수 있습니다.
-- 테이블에 표시된 지점을 선택해도 해당 지점의 정보를 확인할 수 있습니다.
-- 주소, 지점명으로 검색할 수 있습니다. 검색 시 지도에는 검색에 부합되는 지점만 표기됩니다.
-<br><br>
+[회원 기능 시연](https://drive.google.com/file/d/1i4lRS6S8sLMfJmFsQ2xRUCx8Wq_VyhVD/view?usp=drive_link)
 
-### 발주 내역서 OCR
-![Image](https://github.com/user-attachments/assets/e7cb2270-3d14-43e1-a9e4-e24ff9fcc9c7)
-- 발주 내역서 이미지를 업로드하여 해당 발주 내역서에 있는 텍스트를 추출하고 발주 내역으로 등록할 수 있습니다.
-- 해당 기능을 통해 발주 내역 등록 과정을 간소화하고 업무 프로세스를 증진시킬 수 있습니다.
-<br><br>
+[상품 등록 및 결제 기능 장바구니 기능](https://drive.google.com/file/d/1Q8yVMdZh1H_YhIaJr6Ql7Ys2zXRn6Vns/view?usp=drive_link)
 
-### 지점 회원 관리
-![Image](https://github.com/user-attachments/assets/cf91117f-2197-4966-bc80-c9e282dc0ded)
-- 회원 목록을 확인하여 회원의 직급을 지점장 혹은 지점 직원으로 조정 가능합니다.
-<br><br>
+[라이브 목록](https://drive.google.com/file/d/1Tv_o1_1YjykuWc6C6YU_MEHlXvPOBqIA/view?usp=drive_link)
 
-# 시연 영상
+[라이브 송출, 상품 등록, 관리자 채팅](https://drive.google.com/file/d/1mBoVsOPUcwQEcQdbTlmautA39BhvUtnV/view?usp=drive_link)
 
-## [회원가입]
-https://github.com/user-attachments/assets/18bb905d-b0c2-469f-9ecf-0407495e934e
+[라이브 시청 및 채팅](https://drive.google.com/file/d/1mBVnLwW-fCfcUmgxhFVf6DryBCMiWnFd/view?usp=drive_link)
 
-## [지점직원 로그인 후 재고 조회]
-https://github.com/user-attachments/assets/cc56762e-8fff-4a2f-84de-13a766ccf7e7
+[신고 관리](https://drive.google.com/file/d/1GLM7hKx6dib64YYZS0uJ-RR97forXEAJ/view?usp=drive_link)
 
-## [지점직원 정보수정]
-https://github.com/user-attachments/assets/13cbe755-e55f-4863-9e44-eda0eaed4bb4
+[vod 시연](https://drive.google.com/file/d/1vMz9gbg43u3xXhuP2JNPx7HzVnzwS98z/view?usp=drive_link)
 
-## [대시보드]
-https://github.com/user-attachments/assets/6b1a3498-1e7c-4642-b61b-6e332daa08be
+[vod기능_시연](https://drive.google.com/file/d/15_bidqyn_1mZoWO_C3NM5oKlOTw68npt/view?usp=drive_link)
 
-## [출고 관리]
-https://github.com/user-attachments/assets/69240bb9-69b0-4327-9c49-557862a4bc18
+## [전체 시연 영상]
+[전체 시연](https://drive.google.com/file/d/1qRfUPvz5sc0aGOEi5frr-GHMHEO6eOMj/view?usp=drive_link)
 
-## [지점 정보 조회]
-https://github.com/user-attachments/assets/49dd600e-ccde-44cf-a24f-0574f107e411
-
-## [지점 회원 관리 / 발주 내역서 OCR]
-https://github.com/user-attachments/assets/136d5620-293c-4d65-bd0e-97cb1d84d788
-
-## [발주 등록 / 취소 / 내역 조회]
-https://github.com/user-attachments/assets/c843af95-a6ba-4120-8065-9c4d7b63b45c
+## 🏆 수상 실적
+- **SSG I&C 부트캠프 최우수 프로젝트 선정**
+  - WebRTC, Redis, Kafka 등 다양한 기술을 조합해 실시간 커머스 환경을 안정적으로 구현한 점을 높이 평가받음
+  - 제한된 4주라는 개발 기간 동안 **성과 중심의 기술 선택**과 팀워크를 통해 완성도 높은 결과물 도출
