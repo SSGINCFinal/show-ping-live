@@ -161,7 +161,7 @@
 
 [vod기능_시연](https://drive.google.com/file/d/15_bidqyn_1mZoWO_C3NM5oKlOTw68npt/view?usp=drive_link)
 
-## [전체 시연 영상]
+## 🎥 전체 시연 영상
 [전체 시연](https://drive.google.com/file/d/1qRfUPvz5sc0aGOEi5frr-GHMHEO6eOMj/view?usp=drive_link)
 
 ## 🏆 수상 실적
