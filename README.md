@@ -115,8 +115,6 @@
 - 비밀번호 암호화: `BCryptPasswordEncoder`
 - **TOTP(Time-based One Time Password)**를 이용한 **관리자 전용 2차 인증** 구현
   - Google Authenticator 앱과 연동하여 OTP 입력 방식 적용
-- 비정상 접근 및 토큰 위조 대응 예외처리 적용
-- OAuth를 활용한 소셜로그인 기능 
 
 ### 🛒 장바구니 및 결제 기능
 - 사용자 장바구니 기능 및 수량 조절, 삭제 가능
